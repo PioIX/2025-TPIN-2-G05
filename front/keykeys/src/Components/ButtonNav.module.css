@@ -1,0 +1,20 @@
+.buttonNav {
+  background-color: #3b82f6; 
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.buttonNav:hover {
+  background-color: black; 
+  transform: translateY(-2px); 
+}
+
+.button:active {
+  transform: translateY(0);
+}
