@@ -1,26 +1,19 @@
 "use client"
 
-import Image from "next/image";
 import Input from "@/Components/Input";
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Nav from "@/Components/Nav";
 import styles from "@/app/page.module.css";
-import { fetchPostUsuario } from "@/api/fetch";
+// import { fetchPostUsuario } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 
 export default function Home() {
 
-  const [email, setEmail] = useState("");
   const [image, setImage] = useState("");
   const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
-  const [usuarioLogueado, setUsuarioLogueado] = useState(-1);
   const router = useRouter()
 
-  function ingresoEmail(event) {
-    setEmail(event.target.value)
-  }
   function ingresoNombre(event) {
     setNombre(event.target.value)
   }
@@ -29,13 +22,10 @@ export default function Home() {
     setContraseña(event.target.value)
   }
 
-  function ingresoLogued(idUsuario) {
-    setUsuarioLogueado(idUsuario)
-  }
   
   async function checkRegister() {
-    console.log(email, contraseña, nombre, image)
-    let respond = await fetchPostUsuario(email, contraseña, nombre, image)
+    console.log( contraseña, nombre, image)
+    // let respond = await fetchPostUsuario(contraseña, nombre, image)//REEMPLAZAR CON EL FETCH CORRESPONDIENTE
     console.log(respond)
     if (respond == -1) {
       alert("Usuario existente, reingrese")
@@ -44,7 +34,7 @@ export default function Home() {
 
       localStorage.setItem("chatAPPId_user", respond.res[0].id_usuario)
       alert("Ingresando...")
-      router.replace('../Chat', { scroll: false })
+      router.replace('../Home', { scroll: false })
     }
   }
 
@@ -54,17 +44,15 @@ export default function Home() {
 
   return (
     <>
-      <Nav></Nav>
       <div className={styles.container}>
       <div className={styles.card}>
-
         <h1 className={styles.title} >ChatApp</h1>
         <h2 className={styles.subtitle}>Registro</h2>
-        <h3 className={styles.subtitle2}>Ingrese un email, nombre y contraseña</h3>
+        <h3 className={styles.subtitle2}>Ingrese un nombre y contraseña</h3>
         <div className={styles.container}>
-          <Input placeholder="Ingrese su nuevo mail" id="email" onChange={ingresoEmail} className={styles.input}></Input>
           <Input placeholder="Ingrese su nombre" id="nombre" onChange={ingresoNombre} className={styles.input}></Input>
           <Input placeholder="Ingrese su nueva contraseña" id="contraseña" onChange={ingresoContraseña} className={styles.input} type = "password"></Input>
+          <a href="#" onClick={directionLogin}> Iniciar Sesion</a>
           <Button type="button" onClick={checkRegister} text={"Registrarse"} className={styles.button}> </Button>
       </div>
       </div>

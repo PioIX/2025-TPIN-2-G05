@@ -1,32 +1,35 @@
 "use client"
 
 import styles from "./page.module.css";
-import Nav from "@/Components/Nav";
 import clsx from "clsx";
 import Input from "@/Components/Input";
-import { fetchUserLog } from "@/api/fetch";
+// import { fetchUserLog } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
 
-  const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
   const router = useRouter()
 
-  function ingresoEmail(event) {
-    setEmail(event.target.value)
+  function ingresoNombre(event) {
+    setNombre(event.target.value)
   }
   function ingresoContraseña(event) {
     setContraseña(event.target.value)
   }
 
+  function directionRegister() {
+      router.push('/Registro', { scroll: true })
+  }
+
   async function checkLogin() {
-    if (contraseña == "" || email == "") {
+    if (contraseña == "" || nombre == "") {
       alert("faltan rellenar campos")
     } else {
-      let respond = await fetchUserLog(email, contraseña)
+      // let respond = await fetchUserLog(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
       switch (respond.result.id) {
         case -2:
           alert("Contraseña no coincide, reingrese")
@@ -37,7 +40,7 @@ export default function Home() {
         default:
           localStorage.setItem("chatAPPId_user", respond.result.id)
           alert("Ingresando...")
-          router.replace('/Chat', { scroll: false })
+          router.replace('/Home', { scroll: false })
           break
       }
     }
@@ -46,7 +49,6 @@ export default function Home() {
 
   return (
     <>
-      <Nav></Nav>
       <div className={styles.container}>
       <div className={styles.card}>
       <h1 className={clsx(styles.title)}>ChatApp</h1>
@@ -56,13 +58,14 @@ export default function Home() {
         }>Inicie sesión</h2 >
       <h3 className= {clsx({
         [styles.subtitle2]: true,
-      })}>Ingrese su email y contraseña</h3>
+      })}>Ingrese su nombre y contraseña</h3>
       <div className={clsx(styles.container)}>
-      <Input placeholder="Ingrese su mail" id="email" onChange={ingresoEmail} className={clsx({
+      <Input placeholder="Ingrese su nombre" id="nombre" onChange={ingresoNombre} className={clsx({
         [styles.input]: true,
       })}> </Input>
       <Input placeholder="Ingrese su contraseña" id="contraseña" onChange={ingresoContraseña} className={clsx(styles.input)} type = "password"
       > </Input>
+      <a href="#" onClick={directionRegister}> Registrarse</a>
       <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={styles.button}> </Button>
       </div>
       </div>

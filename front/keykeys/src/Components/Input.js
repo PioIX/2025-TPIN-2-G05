@@ -1,5 +1,5 @@
 "use client";
-import ImagenClick from "@/components/ImagenClick";
+import ImagenClick from "@/Components/ImagenClick";
 import styles from "./Input.module.css"; 
 
 export default function Input(props) {
