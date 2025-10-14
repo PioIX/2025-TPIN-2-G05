@@ -1,1 +1,0 @@
-//insertar todos los pedidos a la base de datos y a las api
