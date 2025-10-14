@@ -17,7 +17,8 @@ export default function Game() {
   const [ronda, setRonda] = useState("");
   const [activo, setActivo] = useState("");
   const router = useRouter();
-
+  
+  //codigo en eladmin
   //hacer tema rondas
   useEffect(()=>{
     //seteos
