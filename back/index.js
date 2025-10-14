@@ -37,9 +37,9 @@ io.use((socket, next) => {
 });
 
 /*
-	A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
-	A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
-	A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
+  A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
+  A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
+  A PARTIR DE ACÁ LOS EVENTOS DEL SOCKET
 */
 
 let contador = 0; // Movido fuera del evento connection
@@ -92,12 +92,12 @@ io.on("connection", (socket) => {
 
 //EMPIEZA LO NUESTRO//
 
-//recibe mail -> retorna el id.
+//recibe nombre -> retorna el id.
 
-app.get("/user", async function (req, res) {
+app.get("/traerDatosUsuarios", async function (req, res) {
   try {
     respuesta = await realizarQuery(
-      `SELECT * FROM UsuariosWpp WHERE mail = "${req.query.mail}"`
+      `SELECT * FROM UsuariosKey WHERE nombre = "${req.query.id}"`
     );
     if (respuesta.length > 0) {
       res.send(respuesta);
@@ -112,21 +112,75 @@ app.get("/user", async function (req, res) {
   }
 });
 
-app.post("/insertUsuario", async function (req, res) {
+// app.get("/ingresarUsuario", async function (req, res) {
+//   try {
+//     let checkNombre = await realizarQuery(
+//       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
+//     );
+//     if (checkNombre.length != 0) {
+//       let checkContraseña = await realizarQuery(
+//         `SELECT contraseña FROM UsuariosKey WHERE contraseña = "${req.query.contraseña}"`
+//       ); if (checkContraseña.length != 0) {
+
+
+//         let respuesta = await realizarQuery(`SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`);
+//         res.send(respuesta);
+//       } else {
+//         res.send("Lo siento, el usuario que quiere ingresar no existe");
+//       }
+//     } else {
+//       res.send("lo siento, la contraseña es incorrecta");
+//     }
+//   } catch (error) {
+//     res.send({ mensaje: "Tuviste un error", error: error.message });
+//   }
+// });
+
+app.get("/ingresarUsuario", async function (req, res) {
+  try {
+    let checkNombre = await realizarQuery(
+      `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
+    );
+
+    if (checkNombre.length === 0) {
+      res.send("El nombre de usuario no existe");
+      return -1;
+    }
+
+    let checkContraseña = await realizarQuery(
+      `SELECT contraseña FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND contraseña = "${req.query.contraseña}"`
+    );
+
+    if (checkContraseña.length === 0) {
+      res.send("La contraseña es incorrecta");
+      return -2;
+    }
+
+    let respuesta = await realizarQuery(
+      `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
+    );
+    res.send(respuesta);
+
+  } catch (error) {
+    res.send({ mensaje: "Tuviste un error", error: error.message });
+  }
+});
+
+app.post("/insertarUsuario", async function (req, res) {
   try {
     let check = await realizarQuery(
-      `SELECT mail FROM UsuariosWpp WHERE mail = "${req.body.mail}"`
+      `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
     );
     if (check.length == 0) {
       //Este condicional corrobora que exista algun usuario con ese mail
-      await realizarQuery(`INSERT INTO UsuariosWpp (mail, contraseña, nombre, foto) VALUES
-                ("${req.body.mail}", "${req.body.contraseña}", "${req.body.nombre}", "${req.body.foto}")`); //Cambiar a nombres de variables que sean el username y la password, el récord por default es 0
+      await realizarQuery(`INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES
+                ("${req.body.nombre}", "${req.body.contraseña}", "${req.body.foto}"`); //Cambiar a nombres de variables que sean el username y la password, el récord por default es 0
       let respuesta = await realizarQuery(
-        `SELECT id_usuario FROM UsuariosWpp WHERE mail = "${req.body.mail}"`
+        `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
       ); //Pasarle como parámetro el nombre de usuario, de acá en más nos manejaremos con el id de usuario
-      res.send({ res: respuesta });
+      res.send(respuesta);
     } else {
-      res.send({ res: "-1" });
+      res.send("-1");
     }
   } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message });
@@ -168,26 +222,7 @@ app.get("/chat", async function (req, res) {
 });
 
 //Pedidos de la tabla users
-app.post("/insertUsuario", async function (req, res) {
-  try {
-    let check = await realizarQuery(
-      `SELECT mail FROM UsuariosWpp WHERE mail = "${req.body.mail}"`
-    );
-    if (check.length == 0) {
-      //Este condicional corrobora que exista algun usuario con ese mail
-      await realizarQuery(`INSERT INTO UsuariosWpp (mail, contraseña, nombre, foto) VALUES
-                ("${req.body.mail}", "${req.body.contraseña}", "${req.body.nombre}", "${req.body.foto}")`); //Cambiar a nombres de variables que sean el username y la password, el récord por default es 0
-      let respuesta = await realizarQuery(
-        `SELECT id_usuario FROM UsuariosWpp WHERE mail = "${req.body.mail}"`
-      ); //Pasarle como parámetro el nombre de usuario, de acá en más nos manejaremos con el id de usuario
-      res.send({ res: respuesta });
-    } else {
-      res.send({ res: "-1" });
-    }
-  } catch (error) {
-    res.send({ mensaje: "Tuviste un error", error: error.message });
-  }
-});
+
 
 //Pedidos tabla chat
 app.post("/insertChat", async function (req, res) {
