@@ -2,23 +2,37 @@
 
 import styles from "./page.module.css";
 import clsx from "clsx";
-import Input from "@/Components/Input";
 // import {  } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
-import Button from "@/Components/Button";
+import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Game() {
   // const [jugadores, setJugadores] = useState([]); depende de como hagamos la sala
   const [palabra, setPalabra] = useState("");
+  const [id, setId] = useState("");
   const [prevPalabra, setPrevPalabra] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
   const [rondas, setRondas] = useState("");
   const [ronda, setRonda] = useState("");
+  const [activo, setActivo] = useState("");
   const router = useRouter();
 
   //hacer tema rondas
+  useEffect(()=>{
+    //seteos
+    if(id==localStorage(idAdmin)){
 
+    }
+  },[])
+  //cada vez que te llega el turno
+  useEffect(()=>{
+    const letras = "abcdefghijklmnñopqrstuvwxyz"
+    for(let i=0;i<5;i++){
+      const indiceAleatorio = Math.floor(Math.random() * letras.length);
+      setLetrasprohibidas((prev)=>[...prev, letras.charAt(indiceAleatorio)]) ;
+    }
+  },[socket])
   //hacer tema partida
   
   //esto va en el on key down
@@ -32,11 +46,14 @@ export default function Game() {
     }
   }
   //Esto va en el onchange del input
-  async function envioPalabra(event) {
+  async function envioPalabra() {
     if(prevPalabra.length< palabra.length){
       //let valid = fetch de palabras o comprobacion si la palabra existe-es valida
       if(valid){
         //cambia de persona en la room, le manda la palabra anterior 
+        setActivo(false)
+      }else{
+        //palbra invalida
       }
     }else{
       // return que palabra es invalida
@@ -51,5 +68,6 @@ export default function Game() {
   },[])
 
   return <>
+    <Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
   </>;
 }
