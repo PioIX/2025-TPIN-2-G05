@@ -3,7 +3,7 @@
 import styles from "./page.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
-// import {infoUsuario, subirUsuario};
+import {loguearUsuario} from "@/API/fetch";
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +30,7 @@ export default function Home() {
     if (contraseña == "" || nombre == "") {
       alert("faltan rellenar campos")
     } else {
-      // let respond = await fetchUserLog(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+      let respond = await loguearUsuario(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
       switch (respond.result.id) {
         case -2:
           alert("Contraseña no coincide, reingrese")

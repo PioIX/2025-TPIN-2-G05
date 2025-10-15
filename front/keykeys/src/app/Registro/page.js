@@ -5,7 +5,7 @@ import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import styles from "@/app/page.module.css";
-// import { fetchPostUsuario } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+import { registrarUsuario } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 
 export default function Home() {
 
@@ -25,7 +25,7 @@ export default function Home() {
   
   async function checkRegister() {
     console.log( contraseña, nombre, image)
-    // let respond = await fetchPostUsuario(contraseña, nombre, image)//REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+    let respond = await registrarUsuario(contraseña, nombre, image)//REEMPLAZAR CON EL FETCH CORRESPONDIENTE
     console.log(respond)
     if (respond == -1) {
       alert("Usuario existente, reingrese")

@@ -8,7 +8,7 @@ export async function infoUsuario(mail) {
         });
 }
 
-export async function fetchUserLog(mail, contraseña) {
+export async function loguearUsuario(mail, contraseña) {
   let datos = {
     mail: mail,
     contraseña: contraseña,
@@ -27,7 +27,7 @@ export async function fetchUserLog(mail, contraseña) {
 }
 
 
-export async function subirUsuario(nombre, contraseña, foto) {
+export async function registrarUsuario(nombre, contraseña, foto) {
     let datos = {
         nombre: nombre,
         contraseña: contraseña,
