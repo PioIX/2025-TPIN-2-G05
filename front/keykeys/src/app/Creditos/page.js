@@ -1,22 +1,19 @@
-import {useRouter} from 'next/navigation'
-export default function Creditos(){
-    router=useRouter()
+"use client"
 
-    function volver(){
-        router.push("../")
-    }
+import Volver from '@/Components/Volver'
+
+export default function Creditos(){
     return(
         <div>
-
         <h1>Key Keys</h1>
         <p>Key Keys fué desarrollado por...</p>
         <p>Francisco Pascuet,<br/>
             Martín Tello,<br/>
             Julián Brianza,<br/>
-            Juan Lucas Casanova,<br/>
+            Juan Lucas Casanova<br/>
             y Matías Mahlknecht.
         </p>
-        <ImagenClick onClick={volver} src={"../../../keykeys/public/volver.png"}/>
+        <Volver/>
         </div>
 
     )

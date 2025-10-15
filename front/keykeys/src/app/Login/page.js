@@ -1,12 +1,13 @@
 "use client"
 
-import styles from "./page.module.css";
+import styles from "@/app/Login/login.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
 // import { fetchUserLog } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Volver from "@/Components/Volver";
 
 export default function Login() {
 
@@ -70,6 +71,7 @@ export default function Login() {
       </div>
       </div>
       </div>
+      <Volver/>
   </>
   );
 }
