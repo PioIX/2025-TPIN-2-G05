@@ -112,30 +112,6 @@ app.get("/traerDatosUsuarios", async function (req, res) {
   }
 });
 
-// app.get("/ingresarUsuario", async function (req, res) {
-//   try {
-//     let checkNombre = await realizarQuery(
-//       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
-//     );
-//     if (checkNombre.length != 0) {
-//       let checkContraseña = await realizarQuery(
-//         `SELECT contraseña FROM UsuariosKey WHERE contraseña = "${req.query.contraseña}"`
-//       ); if (checkContraseña.length != 0) {
-
-
-//         let respuesta = await realizarQuery(`SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`);
-//         res.send(respuesta);
-//       } else {
-//         res.send("Lo siento, el usuario que quiere ingresar no existe");
-//       }
-//     } else {
-//       res.send("lo siento, la contraseña es incorrecta");
-//     }
-//   } catch (error) {
-//     res.send({ mensaje: "Tuviste un error", error: error.message });
-//   }
-// });
-
 app.get("/ingresarUsuario", async function (req, res) {
   try {
     let checkNombre = await realizarQuery(
