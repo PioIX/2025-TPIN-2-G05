@@ -3,10 +3,11 @@
 import styles from "./page.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
-// import { fetchUserLog } from "@/api/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+// import {infoUsuario, subirUsuario};
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
 
 export default function Home() {
 

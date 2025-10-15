@@ -8,6 +8,25 @@ export async function infoUsuario(mail) {
         });
 }
 
+export async function fetchUserLog(mail, contraseña) {
+  let datos = {
+    mail: mail,
+    contraseña: contraseña,
+  };
+  return fetch(`http://localhost:4000/ingresarUsuario`, {
+    method: "POST",
+    body: JSON.stringify(datos),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return { result };
+    });
+}
+
+
 export async function subirUsuario(nombre, contraseña, foto) {
     let datos = {
         nombre: nombre,
