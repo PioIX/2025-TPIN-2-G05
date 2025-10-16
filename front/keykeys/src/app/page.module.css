@@ -1,98 +1,110 @@
-.page {
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
-  align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  padding: 80px;
-  gap: 64px;
-  font-family: var(--font-geist-sans);
+html, body{
+  background-color:#111;
 }
-
-.title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #1e1e2f;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  margin-top: 2rem;
-  opacity: 0;
-  transform: translateY(20px); /* empieza un poco abajo */
-  animation: fadeSlide 0.8s ease-out forwards;
-}
-
-.subtitle {
-  text-align: center;
-  color: #555;
-  font-weight: 400;
-  margin: 0.5rem 0;
-  opacity: 0;
-  transform: translateY(20px); /* empieza un poco abajo */
-  animation: fadeSlide 0.8s ease-out forwards;
-}
-
-.subtitle2 {
-  text-align: center;
-  color: #555;
-  font-weight: 400;
-  margin: 0.5rem 0;
-  margin-bottom: 4rem;
-  opacity: 0;
-  transform: translateY(20px); /* empieza un poco abajo */
-  animation: fadeSlide 0.8s ease-out forwards;
-}
-
-
 .container {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.inputWrapper {
   display: flex;
-  flex-direction: column;     /* los elementos uno debajo del otro */
-  align-items: center;        /* centrar horizontalmente */
-  justify-content: center;    /* centrar verticalmente (si el contenedor tiene altura) */
-  gap: 1rem;                  /* separación entre los elementos */
-  margin-top: 2rem;
-  opacity: 0;
-  transform: translateY(20px); /* empieza un poco abajo */
-  animation: fadeSlide 0.8s ease-out forwards;
+  align-items: center;
+  width: 30%;
+  margin: 0.8rem 0;
+  background: rgb( rgb(148, 145, 145));
+  border: 1px solid #ccc;
+  padding: 0.6rem 1.4rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+  margin:2rem;
+}
+
+.inputWrapper:focus-within {
+  border-color: red;
+  box-shadow: 0 0 5px red;
 }
 
 .input {
-  width: 100%;
-  max-width: 300px;           /* ancho máximo para que no se estiren demasiado */
+  flex: 1;
+  border: none;
+  outline: none;
   padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
   font-size: 1rem;
+  color: white;
+  background: transparent;
+}
+
+.input::placeholder {
+  color: white
+}
+
+.containerInputs{
+  display:flex;
+  justify-content: center;
+}
+
+
+.title {
+  font-size: 4rem;
+  color: #d32f2f; /* rojo */
+  margin: 3rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle2 {
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 1.8rem;
+  text-align: center;
 }
 
 .button {
-  background-color: #3b82f6;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 500;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
+  width: 65%;
+  background-color: #851010;
+  color: #fff;
+  border: 1px solid #ccc;
+  padding: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+  margin-top: 0.5rem;
+  margin-bottom: 3rem;
 }
 
 .button:hover {
-  background-color: #2563eb;
-  transform: translateY(-2px);
+  background-color: red;
 }
 
-.button:active {
-  transform: translateY(0);
+.subtitle3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: white;
 }
 
+.irALaOtraPagina {
+  color: #90caf9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.irALaOtraPagina:hover {
+  color: #64b5f6;
+}
 @media (prefers-color-scheme: dark) {
   .page {
     --gray-rgb: 255, 255, 255;
@@ -253,82 +265,7 @@ a.secondary {
     transform: translateY(0);
   }
 }
-/* Contenedor general centrado */
-.authWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1e1e2f, #3b82f6);
-  padding: 1rem;
-}
 
-/* Tarjeta del login/registro */
-.authCard {
-  background: #ffffff;
-  padding: 2.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-  animation: fadeSlide 0.8s ease-out forwards;
-}
-
-/* Títulos */
-.authCard h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #1e1e2f;
-}
-
-.authCard p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 2rem;
-}
-
-/* Inputs personalizados */
-.authInput {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  margin: 0.5rem 0;
-  border: 1px solid #ccc;
-  border-radius: 0.7rem;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-.authInput:focus {
-  border: 1px solid #3b82f6;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
-}
-
-/* Botón primario */
-.authButton {
-  width: 100%;
-  padding: 0.9rem;
-  background: #3b82f6;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 0.7rem;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.authButton:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-}
-
-.authButton:active {
-  transform: translateY(0);
-}
 
 /* Responsive */
 @media (max-width: 480px) {
@@ -338,56 +275,4 @@ a.secondary {
   .authCard h1 {
     font-size: 1.7rem;
   }
-}
-/* Tarjeta del login */
-.card {
-  background: #ffffff;
-  padding: 2.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-  animation: fadeSlide 0.8s ease-out forwards;
-}
-
-/* Inputs dentro de la tarjeta */
-.card .input {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  margin: 0.5rem 0;
-  border: 1px solid #ccc;
-  border-radius: 0.7rem;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card .input:focus {
-  border: 1px solid #3b82f6;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
-}
-
-/* Botón dentro de la tarjeta */
-.card .button {
-  width: 100%;
-  padding: 0.9rem;
-  background: #3b82f6;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 0.7rem;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.card .button:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-}
-
-.card .button:active {
-  transform: translateY(0);
 }
