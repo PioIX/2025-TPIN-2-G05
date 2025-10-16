@@ -1,5 +1,6 @@
 "use client"
 
+
 import styles from "./page.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
@@ -8,9 +9,6 @@ import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link"
-
-
-export default function Home() {
 
   const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
@@ -42,9 +40,26 @@ export default function Home() {
           router.replace('/Home', { scroll: false })
           break
       }
+
+    }
+    function creditos(){
+        router.push("/Creditos")
+    }
+    function iniciarSesion(){
+        router.push("/Login")
     }
 
-  }
+
+    return(
+        <div>
+            <h1>Key Keys</h1>
+            <p>Un juego de conocimiento sobre el lenguaje.</p>
+            <p>10 segundos para pensar una palabra cada vez mas<br/>larga que la del rival.</p>
+            <p>¿Podrás demostrar que sos el hispanohablante definitivo?</p>
+            <ImagenClick onClick={home} src={"/next.png"}/> {/*ESTO SE SACA CUANDO FUNCIONE LOGIN*/}
+            <ImagenClick onClick={creditos} src={"/creditos.png"}/> {/*ey ey ey*/}
+            <ImagenClick onClick={iniciarSesion} src={"/sesion.png"}/>
+        </div>
 
   return (
     <>
