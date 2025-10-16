@@ -3,7 +3,9 @@ var bodyParser = require("body-parser"); //Convierte los JSON
 const cors = require("cors");
 const session = require("express-session"); // Para el manejo de las variables de sesión
 const { realizarQuery } = require("./modulos/mysql");
+var multer = require("multer")// Middleware para manejar multipart/form-data (para la foto)
 
+const upload = multer({ storage: multer.memoryStorage() }); // Configuración de multer para almacenar en memoria la foto y luego dividir entre req.body y req.file
 var app = express(); //Inicializo express
 
 const port = process.env.PORT || 4000; // Puerto por el que estoy ejecutando la página Web
@@ -20,7 +22,7 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 
 const server = app.listen(port, () => {
-  console.log(`Servidor NodeJS corriendo en http://localhost:${port}/`);
+  console.log(`Servidor NodeJS corriendo en http://localhost:${port}`);
 });
 
 const io = require("socket.io")(server, {
@@ -99,6 +101,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
+    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -118,40 +121,41 @@ app.get("/ingresarUsuario", async function (req, res) {
       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
     );
     if (checkNombre.length === 0) {
-      res.send("El nombre de usuario no existe");
-      return -1;
+      res.send({ id: "-1" });
+      return;
     }
     let checkContraseña = await realizarQuery(
       `SELECT contraseña FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND contraseña = "${req.query.contraseña}"`
     );
     if (checkContraseña.length === 0) {
-      res.send("La contraseña es incorrecta");
-      return -2;
+      res.send({ id: "-2" });
+      return;
     }
     let respuesta = await realizarQuery(
       `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
     );
-    res.send(respuesta);
+    res.send({ id: respuesta });
   } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message });
   }
 });
 
-app.post("/insertarUsuario", async function (req, res) {
+app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { // Con upload.single("foto") manejo la subida de la foto y la division de datos en req.body y req.file
   try {
     let check = await realizarQuery(
       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
     );
     if (check.length == 0) {
-      //Este condicional corrobora que exista algun usuario con ese mail
-      await realizarQuery(`INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES
-  ("${req.body.nombre}", "${req.body.contraseña}", "${req.body.foto}")`); //Cambiar a nombres de variables que sean el username y la password, el récord por default es 0
-      let respuesta = await realizarQuery(
-        `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
-      ); //Pasarle como parámetro el nombre de usuario, de acá en más nos manejaremos con el id de usuario
-      res.send(respuesta);
-    } else {
-      res.send("-1");
+      const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
+        await realizarQuery(
+          "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
+          [req.body.nombre, req.body.contrasena, foto]) //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
+        let respuesta = await realizarQuery(
+          `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
+        );
+        res.send(respuesta);
+      }else {
+      res.send({ id: "-1" });
     }
   } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message });
