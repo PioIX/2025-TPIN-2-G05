@@ -24,8 +24,8 @@ export default function Home(){
             <p>Un juego de conocimiento sobre el lenguaje.</p>
             <p>10 segundos para pensar una palabra cada vez mas<br/>larga que la del rival.</p>
             <p>¿Podrás demostrar que sos el hispanohablante definitivo?</p>
-            <ImagenClick onClick={home} src={"/next.png"}/>
-            <ImagenClick onClick={creditos} src={"/creditos.png"}/>
+            <ImagenClick onClick={home} src={"/next.png"}/> {/*ESTO SE SACA CUANDO FUNCIONE LOGIN*/}
+            <ImagenClick onClick={creditos} src={"/creditos.png"}/> {/*ey ey ey*/}
             <ImagenClick onClick={iniciarSesion} src={"/sesion.png"}/>
         </div>
 
