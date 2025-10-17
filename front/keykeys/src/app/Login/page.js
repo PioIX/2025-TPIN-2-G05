@@ -1,5 +1,5 @@
 "use client"
-
+import Modal from "@/Components/Modal";
 import ImagenClick from '@/Components/ImagenClick';
 import styles from "./login.module.css";
 import clsx from "clsx";
@@ -16,7 +16,19 @@ export default function Home() {
   const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
   const router = useRouter()
+  const [modalMessage, setModalMessage] = useState("");  
+  const [modalAction, setModalAction] = useState("");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  function openModal(mensaje,action){
+    setModalMessage(mensaje);  
+    setModalAction(action)
+    setIsModalOpen(true);     
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   function ingresoNombre(event) {
     setNombre(event.target.value)
   }
@@ -30,21 +42,20 @@ export default function Home() {
 
   async function checkLogin() {
     if (contraseña == "" || nombre == "") {
-      alert("faltan rellenar campos")
+      openModal("faltan rellenar campos")
     } else {
       let respond = await loguearUsuario(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
       typeof (respond.result.id == "string") && (respond.result.id = parseInt(respond.result.id))
       switch (respond.result.id) {
         case -2:
-          alert("Contraseña no coincide, reingrese")
+          openModal("Contraseña no coincide, reingrese")
           break
         case -1:
-          alert("Usuario inexistente, reingrese")
+          openModal("Usuario inexistente, reingrese")
           break
         default:
           localStorage.setItem("chatAPPId_user", respond.result.id)
-          alert("Ingresando...")
-          router.replace('/Home', { scroll: false })
+          openModal("Ingresando...",router.replace('../Home', { scroll: false }))
           break
       }
     }
@@ -70,6 +81,13 @@ export default function Home() {
           <Link href="/Registro" className={styles.irALaOtraPagina}>Registrarse</Link>
         </div>
       </div>
+      {/* Modal Component */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        mensaje={modalMessage}
+        action={modalAction || null} // Si modalAction está vacío, pasa null
+      />    
     </>
   );
 }

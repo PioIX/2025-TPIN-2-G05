@@ -1,5 +1,6 @@
 "use client"
 
+import Modal from "@/Components/Modal";
 import Input from "@/Components/Input";
 import Link from "next/link"
 import ImagenClick from '@/Components/ImagenClick';
@@ -17,6 +18,19 @@ export default function Home() {
   const [contraseña, setContraseña] = useState("");
   const router = useRouter()
   const fileInputRef = useRef()
+  const [modalMessage, setModalMessage] = useState("");  
+  const [modalAction, setModalAction] = useState("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  function openModal(mensaje,action){
+    setModalMessage(mensaje);  
+    setModalAction(action)
+    setIsModalOpen(true);     
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   function ingresoNombre(event) {
     setNombre(event.target.value)
@@ -50,6 +64,9 @@ export default function Home() {
   }
   
   async function checkRegister() {
+    if (contraseña == "" || nombre == "") {
+      openModal("faltan rellenar campos")
+    }
     const formData = new FormData(); //Se enviaran los datos en formData porque admite imagenes (o sea, binarios)
     formData.set("nombre", nombre) 
     formData.set("contrasena", contraseña)
@@ -58,14 +75,13 @@ export default function Home() {
     console.log(formData.get("nombre"))
     console.log(formData.get("contrasena"))
 
-    let respond = await registrarUsuario(formData)//REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+    let respond = await registrarUsuario(formData)
     console.log(respond.result.id)
     if (respond.result.id == "-1") {
-      alert("Usuario existente, reingrese")
+      openModal("Usuario existente, reingrese")
     } else {
       localStorage.setItem("chatAPPId_user", respond.result.id)
-      alert("Ingresando...")
-      router.replace('../Home', { scroll: false })
+      openModal("Ingresando...",router.replace('../Home', { scroll: false }))
     }
   }
 
@@ -104,6 +120,13 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* Modal Component */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        mensaje={modalMessage}
+        action={modalAction || null} // Si modalAction está vacío, pasa null
+      />     
     </>
   );
 }
