@@ -70,12 +70,12 @@ export default function Home() {
         <h2 className={styles.subtitle}>Inicie sesión</h2 >
         <h3 className={styles.subtitle2}>Ingrese su nombre y contraseña</h3>
         <div className={styles.containerInputs}>
-          <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper}> </Input>
-          <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper} type="password"
+          <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"}> </Input>
+          <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"
           > </Input>
         </div>
 
-        <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={styles.button}> </Button>
+        <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={"buttonLog"}> </Button>
         <h4 className={styles.subtitle3}>¿No tiene cuenta? Registrarse ahora</h4>
         <div className={styles.containerLinks}>
           <Link href="/Registro" className={styles.irALaOtraPagina}>Registrarse</Link>

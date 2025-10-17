@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from "react";
-import styles from "./Modal.module.css"; // Assuming we'll use CSS modules
+import styles from "./Modal.module.css";
+import Button from "@/Components/Button";
 
 const Modal = ({ isOpen, onClose, mensaje ,action}) => {
   if (!isOpen) return null; // Don't render the modal if it's not open
@@ -16,7 +17,7 @@ const Modal = ({ isOpen, onClose, mensaje ,action}) => {
       <div className={styles.modal}>
         <div className={styles.modalContent}>
           <p>{mensaje}</p>
-          <button onClick={handleClose}>Close Modal</button>
+          <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>
       </div>
     </>

@@ -4,9 +4,10 @@ import styles from "./Input.module.css";
 
 export default function Input(props) {
   return (
-    <div className={props.classNameInputWrapper}>
+    <div className={styles[props.classNameInputWrapper]}>
       <input
-        className={props.classNameInput}   
+        
+        className={styles[props.classNameInput]}
         placeholder={props.placeholder}
         onChange={props.onChange}
         type={props.type || "text"}

@@ -25,7 +25,7 @@ export default function Home() {
       <p className = {styles.red}>Un juego de conocimiento sobre el lenguaje.</p>
       <p className = {styles.rest}>10 segundos para pensar una palabra cada vez mas<br />larga que la del rival.</p>
       <p className={styles.rest}>¿Podrás demostrar que sos el hispanohablante definitivo?</p>
-      <ImagenClick onClick={home} src={"/next.png"} />
+      {/* <ImagenClick onClick={home} src={"/next.png"} /> Que vaya al home?? */}
       <ImagenClick onClick={creditos} src={"/creditos.png"} />
       <ImagenClick onClick={iniciarSesion} src={"/sesion.png"} />
     </div>

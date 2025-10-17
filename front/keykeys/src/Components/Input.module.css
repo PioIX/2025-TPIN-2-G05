@@ -1,1 +1,42 @@
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0.8rem 0;
+    background: rgb(rgb(148, 145, 145));
+    border: 1px solid #ccc;
+    padding: 0.6rem 1.4rem;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    margin: 2rem;
+    margin-left: 6rem;
+}
+.inputWrapperLog {
+    display: flex;
+    align-items: center;
+    width: 30%;
+    margin: 0.8rem 0;
+    background: rgb( rgb(148, 145, 145));
+    border: 1px solid #ccc;
+    padding: 0.6rem 1.4rem;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    margin:2rem;
+}
+.inputWrapper:focus-within {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
 
+.input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.6rem;
+    font-size: 1rem;
+    color: white;
+    background: transparent;
+}
+
+.input::placeholder {
+    color: white;
+    text-align: center;
+}
