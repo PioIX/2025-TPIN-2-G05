@@ -2,6 +2,7 @@
 
 import Input from "@/Components/Input";
 import Link from "next/link"
+import ImagenClick from '@/Components/ImagenClick';
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
@@ -44,6 +45,10 @@ export default function Home() {
     setPreview(null)
   }
 
+    function volver(){
+    router.push("/")
+  }
+  
   async function checkRegister() {
     const formData = new FormData(); //Se enviaran los datos en formData porque admite imagenes (o sea, binarios)
     formData.set("nombre", nombre) 
@@ -68,14 +73,15 @@ export default function Home() {
     <>
       <div className={styles.container}>
         <div className={styles.card}>
+          <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
           <h1 className={styles.title} >Keykeys</h1>
           <h2 className={styles.subtitle}>Registro</h2>
           <h3 className={styles.subtitle2}>Ingrese un nombre, una contraseña y una foto</h3>
           <div className={styles.container}>
             <div className={styles.containerInputsYBoton}>
               <div className={styles.conatinerInputs}>
-                <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper}></Input>
-                <Input placeholder="Ingrese su nueva contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper} type="password"></Input>
+                <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper}></Input>
+                <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper} type="password"></Input>
                 <Button type="button" onClick={checkRegister} text={"Registrarse"} className={styles.button}> </Button>
               </div>
               <div className={styles.uploadContainer}>
@@ -94,7 +100,7 @@ export default function Home() {
               </div>
             </div>
             <h4 className={styles.subtitle3}>¿Ya tiene cuenta? Iniciar sesión</h4>
-            <Link href="/" className={styles.irALaOtraPagina}>Inicio de sesión</Link>
+            <Link href="/Login" className={styles.irALaOtraPagina}>Inicio de sesión</Link>
           </div>
         </div>
       </div>
