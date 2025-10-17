@@ -1,5 +1,18 @@
 //insertar todos los fetch
 
+
+//API API API API API API API API API API API API API API API API API
+export async function checkearPalabra(palabra){
+        return fetch(`https://rae-api.com/api/words/${palabra}`)
+        .then(response => response.json())
+        .then(result => {
+            return result.ok;
+        });
+}
+//API API API API API API API API API API API API API API API API API
+
+
+
 export async function infoUsuario(mail) {
     return fetch(`http://localhost:4000/traerDatosUsuarios?nombre=${mail}`)
         .then(response => response.json())
