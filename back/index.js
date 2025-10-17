@@ -115,6 +115,26 @@ app.get("/traerDatosUsuarios", async function (req, res) {
   }
 });
 
+app.get("/traerTodosUsuarios", async function (req, res) {
+  try {
+    respuesta = await realizarQuery(
+      `SELECT * FROM UsuariosKey`
+    );
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
+  }
+});
+
+
 app.get("/ingresarUsuario", async function (req, res) {
   try {
     let checkNombre = await realizarQuery(
@@ -161,3 +181,23 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
     res.send({ mensaje: "Tuviste un error", error: error.message });
   }
 });
+
+app.get("/traerDatosUsuarios", async function (req, res) {
+  try {
+    respuesta = await realizarQuery(
+      `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+    );
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
+  }
+});
+
