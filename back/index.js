@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
 
 //EMPIEZA LO NUESTRO//
 
-//recibe nombre -> retorna el id.
+//USUARIOS-------------------------------------------------------------------------------------------------
 
 app.get("/traerDatosUsuarios", async function (req, res) {
   try {
@@ -182,7 +182,7 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
   }
 });
 
-
+//AMIGOS------------------------------------------------------ --------------------------------------------
 app.get('/traerAmigos', async function (req, res) {
     try {
         const idUsuario = req.query.id;
@@ -191,6 +191,7 @@ app.get('/traerAmigos', async function (req, res) {
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
+                usuarioskey.mail
                 UsuariosKey.foto
             FROM Relaciones
             INNER JOIN UsuariosKey 
@@ -203,5 +204,50 @@ app.get('/traerAmigos', async function (req, res) {
 
     } catch (error) {
         res.send({ mensaje: "Error al traer amigos", error: error.message });
+    }
+});
+
+// SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
+
+// app.get('/traerSolicitudes', async function (req, res) {
+//     try {
+//         const idUsuario = req.query.id;
+
+//         let respuesta = await realizarQuery(`
+//             SELECT 
+//                 Solicitudes.id_usuario_recibo
+//             FROM Solicitudes
+//             INNER JOIN UsuariosKey 
+//                 ON (UsuariosKey.id_usuario = Solicitudes.id_usuario1 OR UsuariosKey.id_usuario = Solicitudes.id_usuario2)
+//             WHERE (Solicitudes.id_usuario_recibo = "${idUsuario}" OR Solicitudes.id_usuario_envio = "${idUsuario}")
+//               AND Solicitudes.id_usuario_envio != "${idUsuario}"
+//         `);
+
+//         res.send(respuesta);
+
+//     } catch (error) {
+//         res.send({ mensaje: "Error al traer solicitud", error: error.message });
+//     }
+// });
+
+app.get('/traerSolicitudes', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+
+        let respuesta = await realizarQuery(`
+            SELECT 
+                UsuariosKey.id_usuario,
+                UsuariosKey.nombre,
+                UsuariosKey.foto
+            FROM Solicitudes
+            INNER JOIN UsuariosKey 
+                ON UsuariosKey.id_usuario = Solicitudes.id_usuario_envio
+            WHERE Solicitudes.id_usuario_recibo = "${idUsuario}"
+        `);
+
+        res.send(respuesta);
+
+    } catch (error) {
+        res.send({ mensaje: "Error al traer solicitudes", error: error.message });
     }
 });
