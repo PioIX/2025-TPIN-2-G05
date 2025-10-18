@@ -182,22 +182,26 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
   }
 });
 
-app.get("/traerDatosUsuarios", async function (req, res) {
-  try {
-    respuesta = await realizarQuery(
-      `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
-    );
-    console.log(respuesta);
-    if (respuesta.length > 0) {
-      res.send(respuesta);
-    } else {
-      res.send(-1);
-    }
-  } catch (error) {
-    res.send({
-      mensaje: "Tuviste un error en back/user",
-      error: error.message,
-    });
-  }
-});
 
+app.get('/traerAmigos', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+
+        let respuesta = await realizarQuery(`
+            SELECT 
+                UsuariosKey.id_usuario,
+                UsuariosKey.nombre,
+                UsuariosKey.foto
+            FROM Relaciones
+            INNER JOIN UsuariosKey 
+                ON (UsuariosKey.id_usuario = Relaciones.id_usuario1 OR UsuariosKey.id_usuario = Relaciones.id_usuario2)
+            WHERE (Relaciones.id_usuario1 = "${idUsuario}" OR Relaciones.id_usuario2 = "${idUsuario}")
+              AND UsuariosKey.id_usuario != "${idUsuario}"
+        `);
+
+        res.send(respuesta);
+
+    } catch (error) {
+        res.send({ mensaje: "Error al traer amigos", error: error.message });
+    }
+});
