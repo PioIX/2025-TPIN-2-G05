@@ -167,7 +167,6 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
     );
     if (check.length == 0) {
       const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
-      console.log("🚀 ~ file buffer:", foto);
         await realizarQuery(
           "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
           [req.body.nombre, req.body.contrasena, foto]) //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
@@ -233,9 +232,9 @@ app.get('/traerSolicitudes', async function (req, res) {
     }
 });
 
-app.post('/eliminarSolicitud', async function (req, res) {
+app.delete('/eliminarSolicitud', async function (req, res) {
     try {
-        const { id_solicitud } = req.body.id;
+        const id_solicitud = req.body.id;
         await realizarQuery(`
             DELETE FROM Solicitudes 
             WHERE id_solicitud = "${id_solicitud}"
@@ -245,3 +244,19 @@ app.post('/eliminarSolicitud', async function (req, res) {
         res.send({ mensaje: "Error al eliminar solicitud", error: error.message });
     }
 });
+
+app.post('/insertarSolicitud', async function (req, res) {
+    try {
+        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE id_solicitud = "${req.body.id}"`);
+        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
+            await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
+                ("${req.body.id}", "${req.body.id_envio}")`);  //Si no existe, inserta la solicitud
+            res.send({ res: 1 })
+        } else {
+            res.send({ res: -1 }) //Si ya existe, devuelve -1
+        };
+    } catch (error) {
+        res.send({ mensaje: "Tuviste un error", error: error.message })
+    }
+})
+
