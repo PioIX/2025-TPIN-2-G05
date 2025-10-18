@@ -167,6 +167,7 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
     );
     if (check.length == 0) {
       const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
+      console.log("🚀 ~ file buffer:", foto);
         await realizarQuery(
           "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
           [req.body.nombre, req.body.contrasena, foto]) //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
@@ -209,33 +210,13 @@ app.get('/traerAmigos', async function (req, res) {
 
 // SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
 
-// app.get('/traerSolicitudes', async function (req, res) {
-//     try {
-//         const idUsuario = req.query.id;
-
-//         let respuesta = await realizarQuery(`
-//             SELECT 
-//                 Solicitudes.id_usuario_recibo
-//             FROM Solicitudes
-//             INNER JOIN UsuariosKey 
-//                 ON (UsuariosKey.id_usuario = Solicitudes.id_usuario1 OR UsuariosKey.id_usuario = Solicitudes.id_usuario2)
-//             WHERE (Solicitudes.id_usuario_recibo = "${idUsuario}" OR Solicitudes.id_usuario_envio = "${idUsuario}")
-//               AND Solicitudes.id_usuario_envio != "${idUsuario}"
-//         `);
-
-//         res.send(respuesta);
-
-//     } catch (error) {
-//         res.send({ mensaje: "Error al traer solicitud", error: error.message });
-//     }
-// });
-
 app.get('/traerSolicitudes', async function (req, res) {
     try {
         const idUsuario = req.query.id;
 
         let respuesta = await realizarQuery(`
             SELECT 
+                solicitudes.id_solicitud,
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
                 UsuariosKey.foto
@@ -249,5 +230,18 @@ app.get('/traerSolicitudes', async function (req, res) {
 
     } catch (error) {
         res.send({ mensaje: "Error al traer solicitudes", error: error.message });
+    }
+});
+
+app.post('/eliminarSolicitud', async function (req, res) {
+    try {
+        const { id_solicitud } = req.body.id;
+        await realizarQuery(`
+            DELETE FROM Solicitudes 
+            WHERE id_solicitud = "${id_solicitud}"
+        `);
+        res.send({ mensaje: "Solicitud eliminada correctamente" });
+    } catch (error) {
+        res.send({ mensaje: "Error al eliminar solicitud", error: error.message });
     }
 });
