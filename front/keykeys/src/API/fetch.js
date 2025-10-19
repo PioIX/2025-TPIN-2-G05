@@ -29,6 +29,15 @@ export async function loguearUsuario(nombre, contraseña) {
         });
 }
 
+export async function traerFotoUsuario(id) {
+    return fetch(`http://localhost:4000/traerFotoUsuario?id=${id}`)
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
+
 
 export async function registrarUsuario(formData) {
 
