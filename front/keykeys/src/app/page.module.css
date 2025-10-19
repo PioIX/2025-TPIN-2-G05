@@ -30,3 +30,7 @@ html, body{
 .rest{
   margin:1rem;
 }
+.center{
+  display: flex;
+  justify-content: center;
+}

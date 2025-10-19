@@ -10,36 +10,6 @@ html, body{
   font-family: 'Poppins', sans-serif;
 }
 
-.inputWrapper {
-  display: flex;
-  align-items: center;
-  width: 30%;
-  margin: 0.8rem 0;
-  background: rgb( rgb(148, 145, 145));
-  border: 1px solid #ccc;
-  padding: 0.6rem 1.4rem;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
-  margin:2rem;
-}
-
-.inputWrapper:focus-within {
-  border-color: red;
-  box-shadow: 0 0 5px red;
-}
-
-.input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 0.6rem;
-  font-size: 1rem;
-  color: white;
-  background: transparent;
-}
-
-.input::placeholder {
-  color: white
-}
 
 .containerInputs{
   display:flex;
@@ -70,22 +40,6 @@ html, body{
   text-align: center;
 }
 
-.button {
-  width: 65%;
-  background-color: #851010;
-  color: #fff;
-  border: 1px solid #ccc;
-  padding: 0.9rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 0.5rem;
-  margin-bottom: 3rem;
-}
-
-.button:hover {
-  background-color: red;
-}
 
 .subtitle3 {
   margin-top: 1.5rem;
@@ -104,17 +58,4 @@ html, body{
 
 .irALaOtraPagina:hover {
   color: #64b5f6;
-}
-.imagenClick{
-  display:flex;
-  justify-content: flex-start;
-  width: 50px;
-  height: auto ;
-  object-fit: contain;
-  cursor:pointer;
-}
-
-.imagenClick:hover{
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
 }
