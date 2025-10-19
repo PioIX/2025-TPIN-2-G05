@@ -1,6 +1,3 @@
-html, body{
-  background-color:#111;
-}
 .container {
   display: block;
   justify-content: center;
@@ -14,48 +11,4 @@ html, body{
 .containerInputs{
   display:flex;
   justify-content: center;
-}
-
-
-.title {
-  font-size: 4rem;
-  color: #d32f2f; /* rojo */
-  margin: 2rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.subtitle {
-  font-size: 2rem;
-  color: white;
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-.subtitle2 {
-  font-size: 1.2rem;
-  color: white;
-  margin-bottom: 1.8rem;
-  text-align: center;
-}
-
-
-.subtitle3 {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: white;
-}
-
-.irALaOtraPagina {
-  color: #90caf9;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
-}
-
-.irALaOtraPagina:hover {
-  color: #64b5f6;
 }

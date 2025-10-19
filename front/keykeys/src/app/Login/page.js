@@ -1,7 +1,8 @@
 "use client"
 import Modal from "@/Components/Modal";
 import ImagenClick from '@/Components/ImagenClick';
-import styles from "./login.module.css";
+import stylesL from "./login.module.css";
+import styles from "@/app/page.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
 import { loguearUsuario } from "@/API/fetch";
@@ -69,7 +70,7 @@ export default function Home() {
         <h1 className={styles.title}>Keykeys</h1>
         <h2 className={styles.subtitle}>Inicie sesión</h2 >
         <h3 className={styles.subtitle2}>Ingrese su nombre y contraseña</h3>
-        <div className={styles.containerInputs}>
+        <div className={stylesL.containerInputs}>
           <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"}> </Input>
           <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"
           > </Input>

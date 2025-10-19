@@ -7,7 +7,8 @@ import ImagenClick from '@/Components/ImagenClick';
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import styles from "./page.module.css";
+import styles from "@/app/page.module.css";
+import stylesR from "@/app/Registro/page.module.css"
 import { registrarUsuario } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 
 export default function Home() {
@@ -90,25 +91,25 @@ export default function Home() {
       <div className={styles.container}>
         <div className={styles.card}>
         <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
-          <h1 className={styles.title} >Keykeys</h1>
+          <h1 className={stylesR.title} >Keykeys</h1>
           <h2 className={styles.subtitle}>Registro</h2>
           <h3 className={styles.subtitle2}>Ingrese un nombre, una contraseña y una foto</h3>
           <div className={styles.container}>
-            <div className={styles.containerInputsYBoton}>
-              <div className={styles.conatinerInputs}>
+            <div className={stylesR.containerInputsYBoton}>
+              <div className={stylesR.conatinerInputs}>
                 <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
                 <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} type="password"></Input>
                 <Button type="button" onClick={checkRegister} text={"Registrarse"} className={"button"}> </Button>
               </div>
-              <div className={styles.uploadContainer}>
+              <div className={stylesR.uploadContainer}>
                 {image ? <><img src={preview} alt="Cargando..." width={450} height={700} onClick={removeImageAndPreview}></img></> :
                   <>
-                    <label htmlFor="file-input" className={styles.uploadButton}>...</label>
+                    <label htmlFor="file-input" className={stylesR.uploadButton}>...</label>
                     <input
                       type="file"
                       id="file-input"
                       accept="image/*"
-                      className={styles.fileInput}
+                      className={stylesR.fileInput}
                       onChange={handleChangeImage}></input>
                   </>
                 }

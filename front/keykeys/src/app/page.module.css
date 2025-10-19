@@ -34,3 +34,14 @@ html, body{
   display: flex;
   justify-content: center;
 }
+.irALaOtraPagina {
+  color: #90caf9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.irALaOtraPagina:hover {
+  color: #64b5f6;
+}

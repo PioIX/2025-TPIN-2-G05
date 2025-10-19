@@ -1,16 +1,4 @@
-html, body{
-  background-color:#111;
-}
-.container {
-  display: block;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 70vh;
-  font-family: 'Poppins', sans-serif;
-}
-
-
+/* especifico registro */
 .containerInputsYBoton {
   display: flex;
   justify-content: space-between; 
@@ -46,8 +34,6 @@ html, body{
   transform: scale(1.08);
 }
 
-
-/* botón de los tres puntitos */
 .uploadButton {
   background-color: #333;
   color: white;
@@ -58,46 +44,11 @@ html, body{
   cursor: pointer;
 }
 
-
-/* input file invisible */
 .fileInput {
   position: absolute;
   inset: 0;
   opacity: 0;
   cursor: pointer;
-}
-
-
-.title {
-  font-size: 4rem;
-  color: #d32f2f;
-  margin: 2rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.subtitle {
-  font-size: 2rem;
-  color: white;
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-.subtitle2 {
-  font-size: 1.2rem;
-  color: white;
-  margin-bottom: 1.8rem;
-  text-align: center;
-}
-
-
-
-.subtitle3 {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: white;
 }
 
 .irALaOtraPagina {
@@ -110,4 +61,13 @@ html, body{
 
 .irALaOtraPagina:hover {
   color: #64b5f6;
+}
+
+.title {
+  font-size: 4rem;
+  color: #d32f2f;
+  margin: 1.4rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
 }
