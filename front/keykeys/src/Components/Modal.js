@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import styles from "./Modal.module.css";
 import Button from "@/Components/Button";
 
-const Modal = ({ isOpen, onClose, mensaje ,action}) => {
+function Modal({ isOpen, onClose, mensaje ,action}){
   if (!isOpen) return null; // Don't render the modal if it's not open
   function handleClose(){
     onClose();  // Cerrar el modal
     if (action) {
-      action();  // Ejecutar la acción si existe
+      action.accion();  // Ejecutar la acción si existe
     }
   };
   return (
