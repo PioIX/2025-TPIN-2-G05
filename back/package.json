@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "proyecto nextjs",
   "main": "index.js",
+  
   "scripts": {
     "pio": "nodemon --env-file=.pio.env index.js",
     "home": "nodemon --env-file=.home.env index.js",
-    "script": "nodemon index.js",
-    "type":"module" 
+    "script": "nodemon index.js"
   },
   "repository": {
     "type": "git",

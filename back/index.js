@@ -121,24 +121,34 @@ app.get("/ingresarUsuario", async function (req, res) {
       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
     );
     if (checkNombre.length === 0) {
-      res.send({ id: "-1" });
+      res.send({ id_usuario: "-1" });
       return;
     }
     let checkContraseña = await realizarQuery(
       `SELECT contraseña FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND contraseña = "${req.query.contraseña}"`
     );
     if (checkContraseña.length === 0) {
-      res.send({ id: "-2" });
+      res.send({ id_usuario: "-2" });
       return;
     }
     let respuesta = await realizarQuery(
       `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
     );
-    res.send({ id: respuesta });
+    res.send(respuesta);
   } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message });
   }
 });
+
+app.get("/traerFotoUsuario", async function (req, res) {
+  try{
+    let foto = await realizarQuery(`SELECT foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`)
+    res.send({foto: foto})
+  } catch (error){
+    res.send({ mensaje: "Tuviste un error", error: error.message });
+  }
+}
+)
 
 app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { // Con upload.single("foto") manejo la subida de la foto y la division de datos en req.body y req.file
   try {
@@ -153,7 +163,7 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
         let respuesta = await realizarQuery(
           `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
         );
-        res.send(respuesta);
+        res.send({respuesta});
       }else {
       res.send({ id: "-1" });
     }

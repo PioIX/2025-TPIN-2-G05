@@ -77,11 +77,10 @@ export default function Home() {
     console.log(formData.get("contrasena"))
 
     let respond = await registrarUsuario(formData)
-    console.log(respond.result.id)
     if (respond.result.id == "-1") {
       openModal("Usuario existente, reingrese")
     } else {
-      localStorage.setItem("chatAPPId_user", respond.result.id)
+      localStorage.setItem("idUser", respond.result.respuesta[0].id_usuario)
       openModal("Ingresando...",router.replace('../Home', { scroll: false }))
     }
   }

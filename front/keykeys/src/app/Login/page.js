@@ -46,8 +46,9 @@ export default function Home() {
       openModal("faltan rellenar campos")
     } else {
       let respond = await loguearUsuario(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
-      typeof (respond.result.id == "string") && (respond.result.id = parseInt(respond.result.id))
-      switch (respond.result.id) {
+      console.log(typeof(respond.result.id_usuario) == "string")
+      typeof (respond.result.id_usuario == "string") && (respond.result.id_usuario = parseInt(respond.result.id_usuario))
+      switch (respond.result.id_usuario) {
         case -2:
           openModal("Contraseña no coincide, reingrese")
           break
@@ -55,7 +56,7 @@ export default function Home() {
           openModal("Usuario inexistente, reingrese")
           break
         default:
-          localStorage.setItem("chatAPPId_user", respond.result.id)
+          localStorage.setItem("idUser", respond.result[0].id_usuario)
           openModal("Ingresando...",router.replace('../Home', { scroll: false }))
           break
       }
