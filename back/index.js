@@ -207,6 +207,23 @@ app.get('/traerAmigos', async function (req, res) {
     }
 });
 
+
+app.post('/insertarAmigos', async function (req, res) {
+    try {
+        let check = await realizarQuery(`SELECT id_relacion FROM Relaciones WHERE (id_usuario1 = "${req.body.id}" AND id_usuario2 = "${req.body.id2}") OR (id_usuario1 = "${req.body.id2}" AND id_usuario2 = "${req.body.id}")`);
+        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
+            await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
+                ("${req.body.id}", "${req.body.id2}")`); //Si no existe, inserta la solicitud
+            res.send({ res: 1 })
+        } else {
+            res.send({ res: -1 }) //Si ya existe, devuelve -1
+        };
+    } catch (error) {
+        res.send({ mensaje: "Tuviste un error", error: error.message })
+    }
+})
+
+
 // SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
 
 app.get('/traerSolicitudes', async function (req, res) {
@@ -247,7 +264,7 @@ app.delete('/eliminarSolicitud', async function (req, res) {
 
 app.post('/insertarSolicitud', async function (req, res) {
     try {
-        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE id_solicitud = "${req.body.id}"`);
+        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE (id_usuario_envio = "${req.body.id}" AND id_usuario_recibo = "${req.body.id_envio}") OR (id_usuario_envio = "${req.body.id_envio}" AND id_usuario_recibo = "${req.body.id}")`);
         if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
             await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
                 ("${req.body.id}", "${req.body.id_envio}")`);  //Si no existe, inserta la solicitud
