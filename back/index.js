@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
 
 //EMPIEZA LO NUESTRO//
 
-//recibe nombre -> retorna el id.
+//USUARIOS-------------------------------------------------------------------------------------------------
 
 app.get("/traerDatosUsuarios", async function (req, res) {
   try {
@@ -114,6 +114,26 @@ app.get("/traerDatosUsuarios", async function (req, res) {
     });
   }
 });
+
+app.get("/traerTodosUsuarios", async function (req, res) {
+  try {
+    respuesta = await realizarQuery(
+      `SELECT * FROM UsuariosKey`
+    );
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
+  }
+});
+
 
 app.get("/ingresarUsuario", async function (req, res) {
   try {
@@ -171,3 +191,82 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
     res.send({ mensaje: "Tuviste un error", error: error.message });
   }
 });
+
+//AMIGOS------------------------------------------------------ --------------------------------------------
+app.get('/traerAmigos', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+
+        let respuesta = await realizarQuery(`
+            SELECT 
+                UsuariosKey.id_usuario,
+                UsuariosKey.nombre,
+                usuarioskey.mail
+                UsuariosKey.foto
+            FROM Relaciones
+            INNER JOIN UsuariosKey 
+                ON (UsuariosKey.id_usuario = Relaciones.id_usuario1 OR UsuariosKey.id_usuario = Relaciones.id_usuario2)
+            WHERE (Relaciones.id_usuario1 = "${idUsuario}" OR Relaciones.id_usuario2 = "${idUsuario}")
+              AND UsuariosKey.id_usuario != "${idUsuario}"
+        `);
+
+        res.send(respuesta);
+
+    } catch (error) {
+        res.send({ mensaje: "Error al traer amigos", error: error.message });
+    }
+});
+
+// SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
+
+app.get('/traerSolicitudes', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+
+        let respuesta = await realizarQuery(`
+            SELECT 
+                solicitudes.id_solicitud,
+                UsuariosKey.id_usuario,
+                UsuariosKey.nombre,
+                UsuariosKey.foto
+            FROM Solicitudes
+            INNER JOIN UsuariosKey 
+                ON UsuariosKey.id_usuario = Solicitudes.id_usuario_envio
+            WHERE Solicitudes.id_usuario_recibo = "${idUsuario}"
+        `);
+
+        res.send(respuesta);
+
+    } catch (error) {
+        res.send({ mensaje: "Error al traer solicitudes", error: error.message });
+    }
+});
+
+app.delete('/eliminarSolicitud', async function (req, res) {
+    try {
+        const id_solicitud = req.body.id;
+        await realizarQuery(`
+            DELETE FROM Solicitudes 
+            WHERE id_solicitud = "${id_solicitud}"
+        `);
+        res.send({ mensaje: "Solicitud eliminada correctamente" });
+    } catch (error) {
+        res.send({ mensaje: "Error al eliminar solicitud", error: error.message });
+    }
+});
+
+app.post('/insertarSolicitud', async function (req, res) {
+    try {
+        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE id_solicitud = "${req.body.id}"`);
+        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
+            await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
+                ("${req.body.id}", "${req.body.id_envio}")`);  //Si no existe, inserta la solicitud
+            res.send({ res: 1 })
+        } else {
+            res.send({ res: -1 }) //Si ya existe, devuelve -1
+        };
+    } catch (error) {
+        res.send({ mensaje: "Tuviste un error", error: error.message })
+    }
+})
+
