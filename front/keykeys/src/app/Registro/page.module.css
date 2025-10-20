@@ -1,0 +1,73 @@
+/* especifico registro */
+.containerInputsYBoton {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.containerInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1; 
+}
+
+
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 32vw;
+  height: 38vh;
+  position: relative;
+  cursor: pointer;
+  margin-right:5rem;
+}
+
+.uploadContainer:hover{
+  transform: scale(1.08);
+}
+
+.uploadButton {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.irALaOtraPagina {
+  color: #90caf9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.irALaOtraPagina:hover {
+  color: #64b5f6;
+}
+
+.title {
+  font-size: 4rem;
+  color: #d32f2f;
+  margin: 1.4rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}

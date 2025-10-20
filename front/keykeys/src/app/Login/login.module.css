@@ -1,0 +1,14 @@
+.container {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+.containerInputs{
+  display:flex;
+  justify-content: center;
+}

@@ -1,0 +1,36 @@
+{
+  "name": "proyecto_nextjs",
+  "version": "1.0.0",
+  "description": "proyecto nextjs",
+  "main": "index.js",
+  
+  "scripts": {
+    "pio": "nodemon --env-file=.pio.env index.js",
+    "home": "nodemon --env-file=.home.env index.js",
+    "script": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juan-Lucas07/Proyecto_NextJs.git"
+  },
+  "keywords": [
+    "ES"
+  ],
+  "author": "juan lucas casanova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Juan-Lucas07/Proyecto_NextJs/issues"
+  },
+  "homepage": "https://github.com/Juan-Lucas07/Proyecto_NextJs#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.4",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}

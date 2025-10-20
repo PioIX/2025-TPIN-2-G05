@@ -1,0 +1,47 @@
+html, body{
+  background-color:#111;
+}
+
+.container {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 70vh;
+  font-family: 'Poppins', sans-serif;
+  color:white;
+}
+
+.title {
+  font-size: 5rem;
+  color: #d32f2f;
+  margin: 6rem;
+  margin-bottom: 4rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.red{ 
+  color: #d32f2f;
+  margin:1rem;
+}
+
+.rest{
+  margin:1rem;
+}
+.center{
+  display: flex;
+  justify-content: center;
+}
+.irALaOtraPagina {
+  color: #90caf9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.irALaOtraPagina:hover {
+  color: #64b5f6;
+}

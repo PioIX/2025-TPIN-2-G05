@@ -1,0 +1,41 @@
+.button {
+    width: 100%;
+    height: 3rem;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 3rem;
+    margin-left: 6rem;
+}
+.buttonModal {
+    width: fit-content;
+    height: fit-content;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 3rem;
+}
+.button:hover,.buttonLog:hover,.buttonModal:hover {
+    background-color: red;
+}
+
+.buttonLog {
+    width: 65%;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.9rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+    margin-bottom: 3rem;
+}
