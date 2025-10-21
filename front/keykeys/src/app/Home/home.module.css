@@ -160,6 +160,10 @@
   color: #000;
 }
 
+.join:hover{
+  background-color:#b22222 ;
+}
+
 .create {
   background-color: #b22222;
   color: #fff;

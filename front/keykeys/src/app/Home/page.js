@@ -4,18 +4,21 @@ import Button from '@/Components/Button'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ImagenClick from '@/Components/ImagenClick'
-import { traerFotoUsuario } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario } from '@/API/fetch'
 import styles from './home.module.css'
 
 export default function Home() {
+    const [nombreUsuario, setNombreUsuario] = useState("")
     const [idUser, setIdUser] = useState(0)
     const [image, setImage] = useState("")
     const router = useRouter()
 
     useEffect(() => {
         let id = localStorage.getItem("idUser")
+        console.log("holaa ", id)
         setIdUser(id)
         fetchFotoUsuario(id)
+        fetchDatosUsuario(id)
     }, [])
 
     async function fetchFotoUsuario(id) {
@@ -24,6 +27,14 @@ export default function Home() {
         const base64 = Buffer.from(bytes).toString("base64")
         const dataUrl = `data:image/png;base64,${base64}`
         setImage(dataUrl)
+    }
+
+    async function fetchDatosUsuario(id) {
+        let respond = await infoUsuario(id)
+        console.log("chauu", respond)
+        setNombreUsuario(respond[0].nombre)
+
+        
     }
 
     function logOut() { router.replace("../") }
@@ -37,7 +48,7 @@ export default function Home() {
                         className={styles.userImage}
                         alt="Usuario"
                     />
-                    <h3 className={styles.userName}>Scott</h3>
+                    <h3 className={styles.userName}>{nombreUsuario}</h3>
                     <button className={styles.logoutButton} onClick={logOut}>
                         CERRAR SESIÓN
                     </button>
