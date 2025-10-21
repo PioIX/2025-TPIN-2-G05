@@ -5,88 +5,61 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ImagenClick from '@/Components/ImagenClick'
 import { traerFotoUsuario } from '@/API/fetch'
+import styles from './home.module.css'
 
 export default function Home() {
     const [idUser, setIdUser] = useState(0)
     const [image, setImage] = useState("")
-
-
-    useEffect(()=>{
-        console.log("IMAGEN DEL USUARIO EN HOME: ", image)
-    }, [image])
+    const router = useRouter()
 
     useEffect(() => {
         let id = localStorage.getItem("idUser")
-        console.log("ID DEL USUARIO EN HOME: ", id)
         setIdUser(id)
-        fetchFotoUsuario(id) // <-- le pasamos el id directamente
+        fetchFotoUsuario(id)
     }, [])
 
-async function fetchFotoUsuario(id) {
-    console.log(id)
-    let respond = await traerFotoUsuario(id)
-    const bytes = respond.result.foto[0].foto.data; // Array de bytes obtenido de la base de datos
-
-    // Se convierte el buffer a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
-    const base64 = Buffer.from(bytes).toString("base64"); //Lo pasa a un string entendible para renderizarlo
-
-    // Se crea la data URl, que es el formato que usa HTML para representar imágenes
-    
-    const dataUrl = `data:image/png;base64,${base64}`; //Pense que el mymetype podia complicar las cosas al representar la imagen, pero no es el caso
-
-    // Guardar el data URL en el estado
-    setImage(dataUrl);
-}
-    const router = useRouter()
-
-    function logOut() {
-        router.replace("../")
+    async function fetchFotoUsuario(id) {
+        let respond = await traerFotoUsuario(id)
+        const bytes = respond.result.foto[0].foto.data
+        const base64 = Buffer.from(bytes).toString("base64")
+        const dataUrl = `data:image/png;base64,${base64}`
+        setImage(dataUrl)
     }
 
-    function showUnirseSala() {
-        console.log("Mostrando el modal de unirse a sala")//<---ACÁ SE MUESTRA EL MODAL
-    }
-
-    function showCrearSala() {
-        console.log("Mostrando el modal de crear sala")//<---ACÁ SE MUESTRA EL MODAL
-    }
-
-    function showConfiguracion() {
-        console.log("Mostrando el modal de configuracion")//<---ACÁ SE MUESTRA EL MODAL
-    }
-
-    function showAgregarAmigos() {
-        console.log("Mostrando el modal de agregar amigos")//<---ACÁ SE MUESTRA EL MODAL
-    }
-
-    function showSolicitudes() {
-        console.log("Mostrando el modal las solicitudes de amistad")//<---ACÁ SE MUESTRA EL MODAL
-    }
-
-
+    function logOut() { router.replace("../") }
 
     return (
-        <div>
-            <div id="menuLateral">
-                {image != "data:image/png;base64," ? <ImagenClick src={image}></ImagenClick> : <ImagenClick src={"/sesion.png"}></ImagenClick>} {/*<--- ACÁ VÁ LA IMÁGEN DEL USUARIO*/}
-                <h3></h3>       {/*<--- ACÁ VÁ EL NOMBRE DEL USUARIO*/}
-                <Button text="Cerrar Sesión" onClick={logOut} />
-                <ImagenClick onClick={showSolicitudes} src={"/notificacion.png"} />
+        <div className={styles.container}>
+            <div className={styles.menuLateral}>
+                <div className={styles.userSection}>
+                    <img
+                        src={image !== "data:image/png;base64," ? image : "/sesion.png"}
+                        className={styles.userImage}
+                        alt="Usuario"
+                    />
+                    <h3 className={styles.userName}>Scott</h3>
+                    <button className={styles.logoutButton} onClick={logOut}>
+                        CERRAR SESIÓN
+                    </button>
+                </div>
 
                 <h3>Amigos</h3>
-                <div id="menuAmigos"></div> {/*<--- ACÁ VAN LOS AMIGOS*/}
-                <Button text="Agregar" onClick={showAgregarAmigos} />
+                <div className={styles.menuAmigos}>
+                    <div className={styles.amigo}><img src="/gunter.png" /> Gunter</div>
+                    <div className={styles.amigo}><img src="/messi.png" /> Missi</div>
+                    <div className={styles.amigo}><img src="/bob.png" /> Bob</div>
+                    <div className={styles.amigo}><img src="/patricio.png" /> Patricio</div>
+                </div>
 
+                <button className={styles.agregarButton}>AGREGAR</button>
             </div>
 
-            <div id="menuJuego">
+            <div className={styles.menuJuego}>
                 <h1>KEY KEYS</h1>
-                <Button text="Unirse a la sala" onClick={showUnirseSala} />
-                <Button text="Crear una sala" onClick={showCrearSala} />
-                <Button text="Configuración" onClick={showConfiguracion} />
+                <button className={`${styles.mainButton} ${styles.join}`}>Unirse a una sala</button>
+                <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
+                <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
             </div>
-
-            <div id="" />
         </div>
     )
 }
