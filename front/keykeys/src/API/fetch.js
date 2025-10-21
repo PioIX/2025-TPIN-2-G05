@@ -21,6 +21,14 @@ export async function infoUsuario(mail) {
         });
 }
 
+export async function traerTodosLosUsuarios() {
+    return fetch(`http://localhost:4000/traerTodosLosUsuarios`)
+        .then(response => response.json())
+        .then(result => {
+            return result;
+        });
+}
+
 export async function loguearUsuario(nombre, contraseña) {
     return fetch(`http://localhost:4000/ingresarUsuario?nombre=${nombre}&contraseña=${contraseña}`)
         .then((response) => response.json())
