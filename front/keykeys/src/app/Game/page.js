@@ -13,6 +13,7 @@ export default function Game() {
   const [id, setId] = useState("");
   const [prevPalabra, setPrevPalabra] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
+  const [cantidadLetras, setCantidadLetras] = useState("");
   const [rondas, setRondas] = useState("");
   const [ronda, setRonda] = useState(undefined);
   const [activo, setActivo] = useState(undefined);
@@ -24,6 +25,7 @@ export default function Game() {
     //conecta a la room localstorage(room)
     if(id==localStorage(idAdmin)){ 
       // setRondas(localStorage(rondas))
+      // setCantidadLetras(localStorage(letrasProhibidas))
       if(ronda==undefined){
         setRonda(1)
       }
@@ -34,17 +36,18 @@ export default function Game() {
   useEffect(()=>{
     if(id==localStorage(idAdmin)){   
       if(ronda>rondas){
-        //termina la partida
+        //termina la partida 
+        //Modal de fin de partida + resultados
       }else{
         setRonda(ronda+1)
         setLetrasprohibidas([])
         setPrevPalabra("")
         const letras = "abcdefghijklmnñopqrstuvwxyz"
-        for(let i=0;i<5;i++){
-          // setActivo(true) hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+        for(let i=0;i<cantidadLetras;i++){
           const indiceAleatorio = Math.floor(Math.random() * letras.length);
           setLetrasprohibidas((prev)=>[...prev, letras.charAt(indiceAleatorio)]) ; 
         }
+        // setActivo(true) hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
       }
     }
   },[ronda, socketRonda])

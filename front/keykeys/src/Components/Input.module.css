@@ -21,7 +21,7 @@
     transition: border 0.3s ease, box-shadow 0.3s ease;
     margin:2rem;
 }
-.inputWrapper:focus-within {
+.inputWrapper:focus-within,.inputWrapperLog:focus-within {
     border-color: red;
     box-shadow: 0 0 5px red;
 }
