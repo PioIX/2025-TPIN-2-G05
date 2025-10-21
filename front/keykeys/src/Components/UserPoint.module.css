@@ -13,3 +13,8 @@
   object-fit: cover;
   border: 1px solid #000000;
 }
+.star {
+  width: 1.5vw;
+  height: 1.5vw;
+  object-fit: contain;
+}
