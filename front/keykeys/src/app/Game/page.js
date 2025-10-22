@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./page.module.css";
+//import styles from "./page.module.css";
 import clsx from "clsx";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Input from "@/Components/Input";
