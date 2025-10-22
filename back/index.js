@@ -98,6 +98,7 @@ io.on("connection", (socket) => {
 
 app.get("/traerDatosUsuarios", async function (req, res) {
   try {
+    console.log(req.query)
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );

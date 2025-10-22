@@ -13,8 +13,8 @@ export async function checkearPalabra(palabra){
 
 
 
-export async function infoUsuario(mail) {
-    return fetch(`http://localhost:4000/traerDatosUsuarios?nombre=${mail}`)
+export async function infoUsuario(id) {
+    return fetch(`http://localhost:4000/traerDatosUsuarios?id=${id}`)
         .then(response => response.json())
         .then(result => {
             return result;
