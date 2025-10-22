@@ -6,7 +6,7 @@ import clsx from "clsx";
 import UserPoint from "@/Components/UserPoint"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
 import LetraProhibida from "@/Components/LetraProhibida";
 
@@ -15,6 +15,7 @@ export default function Game() {
   const [palabra, setPalabra] = useState("");
   const [id, setId] = useState("");
   const [prevPalabra, setPrevPalabra] = useState("");
+  const [room, setRoom] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
   const [cantidadLetras, setCantidadLetras] = useState("");
   const [rondas, setRondas] = useState("");
@@ -24,23 +25,26 @@ export default function Game() {
   
   //codigo en eladmin y //hacer tema rondas
   useEffect(()=>{
-    //id de persona setId(localstorage(idUser))
+      async function getroomadmin(){
+        setRoom(localStorage.getItem(`room`))
+        setId(localStorage.getItem(`idUser`))
+      }
+      getroomadmin()
     //conecta a la room localstorage(room)
     if(id==localStorage(idAdmin)){ 
-      // setRondas(localStorage(rondas))
-      // setCantidadLetras(localStorage(letrasProhibidas))
+      setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
+      setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
       if(ronda==undefined){
         setRonda(1)
       }
-      setActivo(true)
+      setActivo(true)//hacer q no siempre sea el admin
     }
   },[])
     //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(()=>{
     if(id==localStorage(idAdmin)){   
       if(ronda>rondas){
-        //termina la partida 
-        //Modal de fin de partida + resultados
+        //evento de socket //termina la partida 
       }else{
         setRonda(ronda+1)
         setLetrasprohibidas([])
@@ -54,6 +58,10 @@ export default function Game() {
       }
     }
   },[ronda, socketRonda])
+  //terminar partida
+  useEffect(()=>{
+    //Modal de fin de partida + resultados//boton 
+  },socketTerminarPartida)
   //cada vez que te llega el evento de cambio de turno
   useEffect(()=>{
     setJugadores(socket.jugadores)//Sus puntos y fotos
@@ -69,7 +77,6 @@ export default function Game() {
       // setPlayerActive(socket.nameTurno)
     }
   },[socketTurno])
-  //hacer tema partida
   
   //esto va en el on key down
   function checkLetra(event) {
