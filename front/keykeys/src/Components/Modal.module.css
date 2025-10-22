@@ -28,3 +28,23 @@
 .modalContent {
   text-align: center;
 }
+
+.tablaJugadores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.filaJugador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f3f3f3;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+}
+.puntosJugador {
+  font-weight: 500;
+  color: #444;
+}

@@ -48,7 +48,7 @@ export default function Game() {
         setId(localStorage.getItem(`idUser`))
       }
       getroomadmin()
-    //conecta a la room localstorage(room)
+    //conecta a la room
     if(id==localStorage(idAdmin)){ 
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
@@ -82,8 +82,8 @@ export default function Game() {
 
   //terminar partida
   useEffect(()=>{
-    //momentaneo
-    router.replace('../SalaEspera', { scroll: false })
+    const accion = () => {router.replace('../SalaEspera', { scroll: false })}; 
+    openModal("Partida Finalizada",{accion: accion})
     //Modal de fin de partida + resultados
     //boton de ir a sala de espera
   },socketTerminarPartida)
@@ -187,6 +187,7 @@ export default function Game() {
         isOpen={isModalOpen}
         onClose={closeModal}
         mensaje={modalMessage}
+        jugadores={jugadores}
         action={modalAction || null} // Si modalAction está vacío, pasa null
       />     
     </div>
