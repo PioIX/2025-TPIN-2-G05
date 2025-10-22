@@ -42,7 +42,7 @@ export default function Home() {
     let respond = await traerFotoUsuario(id);
     const bytes = respond.result.foto[0].foto.data; // Array de bytes obtenido de la base de datos
 
-    // Se convierte el buffer a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
+    // Se convierten los datos () a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
     const base64 = Buffer.from(bytes).toString("base64"); //Lo pasa a un string entendible para renderizarlo
 
     // Se crea la data URl, que es el formato que usa HTML para representar imágenes
