@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import { infoUsuario, traerFotoUsuario, traerAmigos } from "@/API/fetch";
 import styles from "./home.module.css";
+import Person from "@/Components/Person";
 
 export default function Home() {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -16,34 +17,39 @@ export default function Home() {
 
   useEffect(() => {
     let id = localStorage.getItem("idUser");
-    console.log("holaa ", id);
+    console.log("ID del usuario:", id);
     setIdUser(id);
     fetchFotoUsuario(id);
     fetchDatosUsuario(id);
     async function dataFetch(id) {
       let datos = await traerAmigos(id);
-        console.log("amigoss", datos);
-      setAmigos(datos);
+      console.log("Datos de amigos recibidos:", datos);
+      // Aquí está el cambio: acceder a datos.result
+      setAmigos(datos.result);
+      console.log("Estado de amigos después de setear:", amigos);
     }
     dataFetch(id);
   }, []);
 
-//   useEffect(() => {
-//     async function dataFetch(idUser) {
-//       let datos = await traerAmigos(idUser);
-//       console.log("MIERDA", idUser);
-//         console.log("amigoss", datos);
-//       setAmigos(datos);
-//     }
-//     dataFetch(idUser);
-//   }, []);
-
   async function fetchFotoUsuario(id) {
     let respond = await traerFotoUsuario(id);
-    const bytes = respond.result.foto[0].foto.data;
-    const base64 = Buffer.from(bytes).toString("base64");
-    const dataUrl = `data:image/png;base64,${base64}`;
-    setImage(dataUrl);
+    console.log("Respuesta foto usuario:", respond); // Debug log
+
+    // Verificar si respond y respond.result existen
+    if (!respond || !respond.result) {
+      console.log("No hay datos de foto");
+      return;
+    }
+
+    try {
+      const bytes = respond.result.foto.data || respond.result.foto[0].foto.data;
+      const base64 = Buffer.from(bytes).toString("base64");
+      const dataUrl = `data:image/png;base64,${base64}`;
+      setImage(dataUrl);
+    } catch (error) {
+      console.error("Error procesando la foto:", error);
+      setImage(""); // Establecer imagen vacía para que muestre la imagen por defecto
+    }
   }
 
   async function fetchDatosUsuario(id) {
@@ -81,28 +87,20 @@ export default function Home() {
 
         <h3>Amigos</h3>
         <div className={styles.menuAmigos}>
-          {/* {usuarios.map((amigo) => (
-            <ComponenteMagico
-              key={usuario.id_usuario}
-              id_usuario={usuario.id_usuario}
-              email={usuario.email}
-              contraseña={usuario.contraseña}
-              nombre={usuario.nombre}
-              foto={usuario.foto}
-            />
-          ))} */}
-          <div className={styles.amigo}>
-            <img src="/gunter.png" /> Gunter
-          </div>
-          <div className={styles.amigo}>
-            <img src="/messi.png" /> Missi
-          </div>
-          <div className={styles.amigo}>
-            <img src="/bob.png" /> Bob
-          </div>
-          <div className={styles.amigo}>
-            <img src="/patricio.png" /> Patricio
-          </div>
+          {amigos && amigos.length > 0 ? (
+            amigos.map((amigo) => {
+              console.log("Datos de amigo:", amigo); // Para debug
+              return (
+                <Person
+                  key={amigo.id_usuario}
+                  nombre={amigo.nombre}
+                  foto={amigo.foto}
+                />
+              );
+            })
+          ) : (
+            <p>No hay amigos para mostrar</p>
+          )}
         </div>
 
         <button className={styles.agregarButton}>AGREGAR</button>
