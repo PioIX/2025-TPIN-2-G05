@@ -11,6 +11,7 @@ import Button from "@/Components/Button";
 export default function Game() {
   const [jugadores, setJugadores] = useState([]); 
   const [id, setId] = useState("");
+  const [idAdmin, setIdAdmin] = useState("");
   const [rondas, setRondas] = useState("");
   const [letrasProhibidas, setLetrasprohibidas] = useState("");
   const router = useRouter();
@@ -29,10 +30,10 @@ export default function Game() {
   };
   //codigo en eladmin y //hacer tema inicio
   useEffect(()=>{
-    setId(localstorage.getItem(idUser))
+    setId(localstorage.getItem('idUser'))
     //conecta a la room localstorage(room)
-    if(id==localStorage.getItem(idAdmin)){
-      //set Button de start partida
+    if(id==localStorage.getItem('idAdmin')){
+      setIdAdmin(id)
     }
   },[])
     //cada vez que te llega el evento de nuevo jugador en sala
@@ -61,14 +62,17 @@ export default function Game() {
   }
   return <>
     {
-        //coso de ver jugadores en sala de espera Depende de Juagdor Sala
-        // crear componente jugador con nombre y estado
-    }    
-    {/* Condicional si es admin 
-        lista de cantidad de rondas //elige cuantas rondas quiere jugar y cambia la variable rondas
-        lista de letras prohibidas //elige cuantas letras prohibidas y las guarda en una variable
-        <Button onClick={partidaInit} text={"Inicie partida"}/> 
-    */}
+      jugadores.map((jugador, index)=>{
+        <Person key={index} text={jugador[0]}src={jugador[1]}></Person>
+      })
+    }
+    {
+      idAdmin == id ? (
+        <Button onClick={partidaInit} text={"Inicie partida"} />
+      ) : (
+        <h2 className={styles.subtitle}>No es tu turno</h2>
+      )
+    }
     {/* Boton salirse de la sala */}
     {/* Modal Component */}
       <Modal
