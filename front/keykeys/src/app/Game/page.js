@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./page.module.css";
-import clsx from "clsx";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
 import Input from "@/Components/Input";
@@ -22,7 +21,11 @@ export default function Game() {
   const [ronda, setRonda] = useState(undefined);
   const [activo, setActivo] = useState(undefined);
   const router = useRouter();
-  
+
+  //lOS SOCKET MANDAN
+    //jugadores (array) contiene: array con (0 Puntos; 1foto; 2 nombre/id)
+    //
+
   //codigo en eladmin y //hacer tema rondas
   useEffect(()=>{
       async function getroomadmin(){
@@ -40,6 +43,8 @@ export default function Game() {
       setActivo(true)//hacer q no siempre sea el admin
     }
   },[])
+
+
     //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(()=>{
     if(id==localStorage(idAdmin)){   
@@ -58,6 +63,8 @@ export default function Game() {
       }
     }
   },[ronda, socketRonda])
+
+
   //terminar partida
   useEffect(()=>{
     //Modal de fin de partida + resultados//boton 
@@ -77,7 +84,8 @@ export default function Game() {
       // setPlayerActive(socket.nameTurno)
     }
   },[socketTurno])
-  
+
+
   //esto va en el on key down
   function checkLetra(event) {
     let letra = event.key
@@ -88,6 +96,8 @@ export default function Game() {
       }
     }
   }
+
+
   //Esto va en el onchange del input
   async function envioPalabra() {
     if(prevPalabra.length< palabra.length){
