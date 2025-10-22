@@ -19,7 +19,7 @@ export default function Game() {
   useEffect(()=>{
     //id de persona setId(localstorage(idUser))
     //conecta a la room localstorage(room)
-    if(id==localStorage(idAdmin)){ 
+    if(id==localStorage(idAdmin)){ //que idAdmin sea el id-sala
       //set Button de start partida
     }
   },[])
@@ -28,10 +28,17 @@ export default function Game() {
   useEffect(()=>{
     //setJugadores(jugadorSala)
   },[jugadorSala])
+    useEffect(()=>{
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
+      localStorage.setItem(`idAdmin`, idAdmin)
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      //router a la page game
+  },[socketPlay])
 
   //inicio de partida
   function partidaInit(){
-    //guardar en localstorage(rondas) (letrasProhibidas) (admin) (idUser) (room)
+    //mandar socket en localstorage(rondas) (letrasProhibidas) (admin) (idUser) (room)
     //envia evento por socket de inicio de partida con lo anterior + mandar a la pagina de juego
   }
 
@@ -45,5 +52,6 @@ export default function Game() {
         lista de letras prohibidas //elige cuantas letras prohibidas y las guarda en una variable
         <Button onClick={partidaInit} text={"Inicie partida"}/> 
     */}
+    {/* Boton salirse de la sala */}
   </>;
 }
