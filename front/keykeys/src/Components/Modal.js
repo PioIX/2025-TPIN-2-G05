@@ -46,4 +46,6 @@ export default Modal;
 // const closeModal = () => {
 // setIsModalOpen(false);  // Cierra el modal
 // };
-//abrirlo con openModal(texto,accion)
+//abrirlo
+// const accion = () => {router.replace('../Home', { scroll: false })}; 
+// openModal("texto...",{accion: accion})
