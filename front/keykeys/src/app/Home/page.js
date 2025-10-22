@@ -4,73 +4,135 @@ import Button from '@/Components/Button'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ImagenClick from '@/Components/ImagenClick'
-import { infoUsuario, traerFotoUsuario } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes } from '@/API/fetch'
 import styles from './home.module.css'
+import ModalInput from "@/Components/ModalInput"
+import Modal from "@/Components/Modal"
 
 export default function Home() {
-    const [nombreUsuario, setNombreUsuario] = useState("")
-    const [idUser, setIdUser] = useState(0)
-    const [image, setImage] = useState("")
-    const router = useRouter()
+  const [nombreUsuario, setNombreUsuario] = useState("")
+  const [idUser, setIdUser] = useState(0)
+  const [image, setImage] = useState("")
+  const router = useRouter()
+  const [amigos, setAmigos] = useState([])
+  const [isModalInputOpen, setIsModalInputOpen] = useState(false);
+  const [modalInputMessage, setModalInputMessage] = useState("");
+  const [modalAction, setModalAction] = useState("");
+  const [amigo, setAmigo] = useState("")
 
-    useEffect(() => {
-        let id = localStorage.getItem("idUser")
-        console.log("holaa ", id)
-        setIdUser(id)
-        fetchFotoUsuario(id)
-        fetchDatosUsuario(id)
-    }, [])
+  useEffect(() => {
+    let id = localStorage.getItem("idUser")
+    console.log("holaa ", id)
+    setIdUser(id)
+    fetchFotoUsuario(id)
+    fetchDatosUsuario(id)
+    fetchAmigos(id)
+  }, [])
 
-    async function fetchFotoUsuario(id) {
-        let respond = await traerFotoUsuario(id)
-        const bytes = respond.result.foto[0].foto.data
-        const base64 = Buffer.from(bytes).toString("base64")
-        const dataUrl = `data:image/png;base64,${base64}`
-        setImage(dataUrl)
+
+  const openModalInput = (mensaje) => {
+    setModalInputMessage(mensaje);
+    setIsModalInputOpen(true);       // Abre el modal
+  };
+
+  const closeModalInput = () => {
+    setIsModalInputOpen(false);  // Cierra el modal
+  };
+
+  async function fetchFotoUsuario(id) {
+    let respond = await traerFotoUsuario(id)
+    const bytes = respond.result.foto[0].foto.data
+    const base64 = Buffer.from(bytes).toString("base64")
+    const dataUrl = `data:image/png;base64,${base64}`
+    setImage(dataUrl)
+  }
+
+  async function fetchDatosUsuario(id) {
+    let respond = await infoUsuario(id)
+    console.log("chauu", respond)
+    setNombreUsuario(respond[0].nombre)
+  }
+
+  async function fetchInsertarSolicitud() {
+    let respond = await traerTodosLosUsuarios()
+    console.log("Estoy en la funcion")
+    let usuarioExiste = respond.filter(res => res.nombre == amigo)
+    if (usuarioExiste.length > 0) {
+      let yaEsAmigo = amigos.find(friend => friend.nombre == amigo)
+      if (yaEsAmigo) {
+        alert("Este usuario ya es tu amigo, no puedes enviarle una solicitud a tu amigo")
+        setAmigo("")
+        return
+      } else {
+        let solicitudesDelOtroUsuario = await traerSolicitudes(usuarioExiste[0].id_usuario)
+        let solicitudesMias = await traerSolicitudes(idUser)
+        let solicitudFueEnviada = solicitudesDelOtroUsuario.result.find(sol => sol.id_usuario == idUser)
+        let solicitudFueRecibida = solicitudesMias.result.find(sol => sol.id_usuario == usuarioExiste[0].id_usuario)
+        if (solicitudFueEnviada || solicitudFueRecibida) {
+          alert("El usuario ya tiene una solicitud de amistad tuya o tú una de él, no puedes mandarle otra")
+          setAmigo("")
+          return;
+        } else {
+          console.log("Se puede insertar la solicitud")
+        }
+      }
+    } else {
+      alert("El usuario ingresado no existe")
+      setAmigo("")
+      return;
     }
+  }
 
-    async function fetchDatosUsuario(id) {
-        let respond = await infoUsuario(id)
-        console.log("chauu", respond)
-        setNombreUsuario(respond[0].nombre)
 
-        
-    }
+  async function fetchAmigos(id) {
+    let respond = await traerAmigos(id)
+    setAmigos(respond.result)
+  }
 
-    function logOut() { router.replace("../") }
+  useEffect(() => {
+    console.log(amigos)
+  }, [amigos])
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.menuLateral}>
-                <div className={styles.userSection}>
-                    <img
-                        src={image !== "data:image/png;base64," ? image : "/sesion.png"}
-                        className={styles.userImage}
-                        alt="Usuario"
-                    />
-                    <h3 className={styles.userName}>{nombreUsuario}</h3>
-                    <button className={styles.logoutButton} onClick={logOut}>
-                        CERRAR SESIÓN
-                    </button>
-                </div>
+  const handleChangeAmigo = (event) => {
+    setAmigo(event.target.value)
+  }
 
-                <h3>Amigos</h3>
-                <div className={styles.menuAmigos}>
-                    <div className={styles.amigo}><img src="/gunter.png" /> Gunter</div>
-                    <div className={styles.amigo}><img src="/messi.png" /> Missi</div>
-                    <div className={styles.amigo}><img src="/bob.png" /> Bob</div>
-                    <div className={styles.amigo}><img src="/patricio.png" /> Patricio</div>
-                </div>
+  function logOut() { router.replace("../") }
 
-                <button className={styles.agregarButton}>AGREGAR</button>
-            </div>
-
-            <div className={styles.menuJuego}>
-                <h1>KEY KEYS</h1>
-                <button className={`${styles.mainButton} ${styles.join}`}>Unirse a una sala</button>
-                <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
-                <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
-            </div>
+  return (
+    <div className={styles.container}>
+      <div className={styles.menuLateral}>
+        <div className={styles.userSection}>
+          <img
+            src={image !== "data:image/png;base64," ? image : "/sesion.png"}
+            className={styles.userImage}
+            alt="Usuario"
+          />
+          <h3 className={styles.userName}>{nombreUsuario}</h3>
+          <button className={styles.logoutButton} onClick={logOut}>
+            CERRAR SESIÓN
+          </button>
         </div>
-    )
+
+        <h3>Amigos</h3>
+        <div className={styles.menuAmigos}>
+          {amigos ? amigos.map((amigo, index) => {
+            return (
+              <div key={index}><div className={styles.amigo}><img src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"} />{amigo.nombre}</div></div>
+            )
+          }) : <p>No tiene amigos aún</p>}
+        </div>
+
+        <button className={styles.agregarButton} onClick={() => openModalInput("Ingrese el nombre del amigo que desea agregar")}>AGREGAR</button>
+      </div>
+
+      <div className={styles.menuJuego}>
+        <h1>KEY KEYS</h1>
+        <button className={`${styles.mainButton} ${styles.join}`}>Unirse a una sala</button>
+        <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
+        <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
+      </div>
+      <ModalInput isOpen={isModalInputOpen} onClose={closeModalInput} mensaje={modalInputMessage} value={amigo} onChange={handleChangeAmigo} onClickAgregarAmigo={fetchInsertarSolicitud} />
+    </div>
+  )
 }

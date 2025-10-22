@@ -22,7 +22,7 @@ export async function infoUsuario(id) {
 }
 
 export async function traerTodosLosUsuarios() {
-    return fetch(`http://localhost:4000/traerTodosLosUsuarios`)
+    return fetch(`http://localhost:4000/traerTodosUsuarios`)
         .then(response => response.json())
         .then(result => {
             return result;
@@ -51,7 +51,7 @@ export async function registrarUsuario(formData) {
 
     return fetch(`http://localhost:4000/insertarUsuario`, {
         method: "POST",
-        body: formData //No se necesitan headers porque el formData ya los incluye
+        body: formData //No se necesitan headers porque el formData ya los incluye, o por lo menos no necesita los headers de json
     }
     )
 

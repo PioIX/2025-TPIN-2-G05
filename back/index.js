@@ -102,7 +102,6 @@ app.get("/traerDatosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -121,7 +120,6 @@ app.get("/traerTodosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -202,7 +200,6 @@ app.get('/traerAmigos', async function (req, res) {
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
-                usuarioskey.mail
                 UsuariosKey.foto
             FROM Relaciones
             INNER JOIN UsuariosKey 
@@ -243,7 +240,7 @@ app.get('/traerSolicitudes', async function (req, res) {
 
         let respuesta = await realizarQuery(`
             SELECT 
-                solicitudes.id_solicitud,
+                Solicitudes.id_solicitud,
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
                 UsuariosKey.foto
