@@ -4,9 +4,10 @@ import Button from '@/Components/Button'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ImagenClick from '@/Components/ImagenClick'
-import { infoUsuario, traerFotoUsuario, traerAmigos } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerPartidasActivas } from '@/API/fetch'
 import styles from './home.module.css'
 import Person from '@/Components/Person'
+import Modal from '@/Components/Modal'
 
 export default function Home() {
     const [nombreUsuario, setNombreUsuario] = useState("")
@@ -14,6 +15,9 @@ export default function Home() {
     const [image, setImage] = useState("")
     const router = useRouter()
     const [amigos, setAmigos] = useState([])
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMessage, setModalMessage] = useState("")
+    const [partidas, setPartidas] = useState([])
 
     useEffect(() => {
         let id = localStorage.getItem("idUser")
@@ -63,6 +67,38 @@ export default function Home() {
 
     function logOut() { router.replace("../") }
 
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    async function mostrarPartidas() {
+        const partidasData = await traerPartidasActivas(idUser);
+        setPartidas(partidasData.result || []);
+        setModalMessage(
+            <div className={styles.partidasList}>
+                {partidasData.result && partidasData.result.length > 0 ? (
+                    
+                    partidasData.result.map((partida) => (
+                        <div key={partida.id_partida} className={styles.partidaItem}>
+                            <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
+
+                            <Button 
+                                onClick={() => {
+                                    console.log("Te toca Mati");
+                            }}
+                            text="Unirse"
+                            className="joinGameButton"
+                        />
+                        </div>
+                    ))
+                ) : (
+                    <span className={styles.noPartidas}>No hay partidas activas</span>
+                )}
+            </div>
+        );
+        setIsModalOpen(true);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.menuLateral}>
@@ -109,10 +145,15 @@ export default function Home() {
 
             <div className={styles.menuJuego}>
                 <h1>KEY KEYS</h1>
-                <button className={`${styles.mainButton} ${styles.join}`}>Unirse a una sala</button>
+                <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
                 <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
                 <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                mensaje={modalMessage}
+            />
         </div>
     )
 }

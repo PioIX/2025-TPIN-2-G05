@@ -16,8 +16,10 @@ function Modal({ isOpen, onClose, mensaje ,action}){
       <div className={styles.overlay} onClick={onClose}></div>
       <div className={styles.modal}>
         <div className={styles.modalContent}>
-          <p>{mensaje}</p>
-          <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
+          <div className={styles.messageContainer}>
+            {mensaje}
+          </div>
+          <Button onClick={handleClose} className="buttonModal" text="Close Modal" />
         </div>
       </div>
     </>
