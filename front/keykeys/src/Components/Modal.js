@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import styles from "./Modal.module.css";
 import Button from "@/Components/Button";
+import Input from "@/Components/Input";
 
-function Modal({ isOpen, onClose, mensaje ,action}){
+
+function Modal({ isOpen, onClose, mensaje ,action,  aceptarSolicitud,estado,  eleccion,enviarSolicitudes,aceptarSolicitudes,  input,onClickAgregar,value,onChange}){
   if (!isOpen) return null; // Don't render the modal if it's not open
   function handleClose(){
     onClose();  // Cerrar el modal
@@ -15,7 +17,33 @@ function Modal({ isOpen, onClose, mensaje ,action}){
     <>
       <div className={styles.overlay} onClick={onClose}></div>
       <div className={styles.modal}>
-        <div className={styles.modalContent}>
+      <div className={styles.modalContent}>
+        {aceptarSolicitud && ( 
+          estado.length > 0? estado.map((item, index) =>{
+            return(
+              <div className = {styles.solicitud}><p key = {index}> Solicitud de {item.nombre}</p>
+                <Button className text = {"Aceptar"}></Button>
+                <Button className = "button modal"text = {"Rechazar"}></Button>
+                </div>
+            )
+          }):<h1>No hay solicitudes que aceptar</h1>
+          )
+        }
+        {
+          eleccion && (
+          <>
+            <Button className="buttonModal" onClick = {aceptarSolicitudes} text="Aceptar Solicitudes"> </Button>
+            <Button onClick = {enviarSolicitudes} className = "buttonModal" text = "Enviar solicitudes"></Button>
+          </>
+          )
+        }
+        { input&&(
+          <>
+            <Input onChange = {onChange} value = {value} classNameInput={"inputModal"} classNameInputWrapper={"inputWrapperLogModal"}></Input>
+            <Button className = "buttonModal" onClick = {onClickAgregar} text = "Agregar amigo"></Button>
+          </>
+          )
+        }
           <p>{mensaje}</p>
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>

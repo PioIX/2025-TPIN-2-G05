@@ -28,3 +28,6 @@
 .modalContent {
   text-align: center;
 }
+.solicitud{
+    display:flex;
+}
