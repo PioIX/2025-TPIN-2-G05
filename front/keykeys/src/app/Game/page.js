@@ -148,6 +148,9 @@ export default function Game() {
   //poner esto si termina el timer
     // for (let i=0;i<jugadores.length;i++) {
     //   if (jugadores[i].id == id) {
+    //     if(jugadores[i].punto<10){
+    //        jugadores[i].punto=10
+    //      }
     //     jugadores[i].punto -= 10;
     //     break; // corta el bucle si ya lo encontró
     //   }
