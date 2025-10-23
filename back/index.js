@@ -202,7 +202,6 @@ app.get('/traerAmigos', async function (req, res) {
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
-                usuarioskey.mail
                 UsuariosKey.foto
             FROM Relaciones
             INNER JOIN UsuariosKey 
