@@ -8,6 +8,8 @@ import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, envi
 import styles from './home.module.css'
 import ModalInput from "@/Components/ModalInput"
 import Modal from "@/Components/Modal"
+import ModalEleccion from "@/Components/ModalEleccion"
+import ModalAceptarSolicitudes from "@/Components/ModalAceptarSolicitudes"
 
 export default function Home() {
   const [nombreUsuario, setNombreUsuario] = useState("")
@@ -19,6 +21,9 @@ export default function Home() {
   const [modalInputMessage, setModalInputMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
   const [amigo, setAmigo] = useState("")
+  const [solicitudes, setSolicitudes] = useState([])
+  const [isModalEleccionOpen, setIsModalEleccionOpen] = useState(false);
+  const [isModalAceptarSolicitudesOpen, setIsModalAceptarSolicitudesOpen] = useState(false);
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
@@ -29,15 +34,28 @@ export default function Home() {
     fetchAmigos(id)
   }, [])
 
+  useEffect(() =>{
+    console.log(solicitudes)
+  }, [solicitudes])
+
 
   const openModalInput = (mensaje) => {
     setModalInputMessage(mensaje);
     setIsModalInputOpen(true);       // Abre el modal
+    setIsModalEleccionOpen(false);
   };
 
   const closeModalInput = () => {
     setIsModalInputOpen(false);  // Cierra el modal
   };
+
+  const openModalEleccion = () => {
+    setIsModalEleccionOpen(true); 
+  }
+
+  const closeModalEleccion = () =>{
+    setIsModalEleccionOpen(false);  
+  }
 
   async function fetchFotoUsuario(id) {
     let respond = await traerFotoUsuario(id)
@@ -73,7 +91,7 @@ export default function Home() {
           setAmigo("")
           return;
         } else {
-          console.log("Se puede insertar la solicitud")
+          await enviarSolicitud(idUser, usuarioExiste[0].id_usuario)
         }
       }
     } else {
@@ -83,18 +101,26 @@ export default function Home() {
     }
   }
 
+  async function fetchTraerSolicitudes(){
+    let respond = await traerSolicitudes(idUser)
+    console.log(respond)
+    setSolicitudes(respond.result)
+  }
 
   async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
     setAmigos(respond.result)
   }
 
-  useEffect(() => {
-    console.log(amigos)
-  }, [amigos])
-
   const handleChangeAmigo = (event) => {
     setAmigo(event.target.value)
+  }
+
+  const openModalSolicitudes = () =>{
+    setIsModalAceptarSolicitudesOpen(true)
+    setIsModalEleccionOpen(false)
+    console.log("Solicitudes abiertas")
+    fetchTraerSolicitudes()
   }
 
   function logOut() { router.replace("../") }
@@ -123,7 +149,7 @@ export default function Home() {
           }) : <p>No tiene amigos aún</p>}
         </div>
 
-        <button className={styles.agregarButton} onClick={() => openModalInput("Ingrese el nombre del amigo que desea agregar")}>AGREGAR</button>
+        <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
       </div>
 
       <div className={styles.menuJuego}>
@@ -133,6 +159,8 @@ export default function Home() {
         <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
       </div>
       <ModalInput isOpen={isModalInputOpen} onClose={closeModalInput} mensaje={modalInputMessage} value={amigo} onChange={handleChangeAmigo} onClickAgregarAmigo={fetchInsertarSolicitud} />
+      <ModalEleccion isOpen = {isModalEleccionOpen} onClose = {closeModalEleccion} onClickAceptarSolicitudes={openModalSolicitudes} onClickEnviarSolicitudes = {() => openModalInput("Ingrese el nombre de un usuario para enviarle una solicitud")}></ModalEleccion>
+      <ModalAceptarSolicitudes isOpen={isModalAceptarSolicitudesOpen} onClose={() => setIsModalAceptarSolicitudesOpen(false)} estado={solicitudes}></ModalAceptarSolicitudes>
     </div>
   )
 }
