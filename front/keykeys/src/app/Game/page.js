@@ -18,7 +18,8 @@ export default function Game() {
   const [ronda, setRonda] = useState(undefined);
   const [activo, setActivo] = useState(undefined);
   const router = useRouter();
-  
+  const [contador, setContador] = useState(10)
+
   //codigo en eladmin y //hacer tema rondas
   useEffect(()=>{
     //id de persona setId(localstorage(idUser))
@@ -95,11 +96,30 @@ export default function Game() {
     setPalabra(event.target.value)
   }
 
-  useEffect(()=>{
-    // timer
-  },[])
+
+
+  //TIMER
+  useEffect(() => {
+    //Esto usa timers temporales de 1 segundo en vez de uno de 10. Cuando llega a 0 no se crean más timers.
+    if (contador > 0) {
+      const timer = setInterval(() => {
+        setContador(contadorPrevio => contadorPrevio - 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
+      }
+    }else{
+      alert("Pasaron 10 segundos.")//ESTO SE EJECUTA CUANDO PASAN 10 SEGUNDOS.
+    }
+  }, [contador]);
+  //TIMER
+
+
 
   return <>
     <Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
+    <p>{contador}</p>
+
   </>;
 }
