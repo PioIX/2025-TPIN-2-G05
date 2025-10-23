@@ -130,3 +130,10 @@ export async function eliminarSolicitud(id_solicitud){
     });
 }
 
+export async function traerSalasActivas(){
+    return fetch(`http://localhost:4000/traerSalasActivas`)
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}

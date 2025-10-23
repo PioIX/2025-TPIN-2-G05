@@ -287,3 +287,31 @@ app.post('/insertarSolicitud', async function (req, res) {
     }
 })
 
+app.get('/traerPartidasActivas', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+        let respuesta = await realizarQuery(`
+            SELECT 
+                p.id_partida,
+                p.codigo_entrada,
+                p.id_usuario_admin,
+                p.id_usuario_ganador
+            FROM Partidas p
+            INNER JOIN UsuariosEnPartida uep 
+                ON p.id_partida = uep.id_partida
+            WHERE uep.id_usuario = "${idUsuario}"
+                AND p.activa = 1
+        `);
+        
+        if (respuesta.length > 0) {
+            res.send(respuesta);
+        } else {
+            res.send([]);
+        }
+    } catch (error) {
+        res.send({ 
+            mensaje: "Error al obtener partidas activas", 
+            error: error.message 
+        });
+    }
+});
