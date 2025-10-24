@@ -15,7 +15,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color:#111;
+  background-color: #111;
   padding: 4rem;
   z-index: 1000;
   border-radius: 8px;
@@ -27,6 +27,18 @@
 /* Content within the modal */
 .modalContent {
   text-align: center;
+}
+
+.solicitud {
+  display: flex;
+  gap: 10px;
+  border: solid white;
+  align-items: center;
+  padding:1rem;
+}
+
+.subtitle{
+  margin-bottom:1rem
 }
 
 .tablaJugadores {

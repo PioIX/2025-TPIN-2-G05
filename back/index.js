@@ -102,7 +102,6 @@ app.get("/traerDatosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -121,7 +120,6 @@ app.get("/traerTodosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -202,7 +200,6 @@ app.get('/traerAmigos', async function (req, res) {
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
-                usuarioskey.mail
                 UsuariosKey.foto
             FROM Relaciones
             INNER JOIN UsuariosKey 
@@ -225,6 +222,8 @@ app.post('/insertarAmigos', async function (req, res) {
         if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
             await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
                 ("${req.body.id}", "${req.body.id2}")`); //Si no existe, inserta la solicitud
+            await realizarQuery(`DELETE FROM Solicitudes WHERE id_solicitud = "${req.body.id_solicitud}"
+        `); 
             res.send({ res: 1 })
         } else {
             res.send({ res: -1 }) //Si ya existe, devuelve -1
@@ -243,7 +242,7 @@ app.get('/traerSolicitudes', async function (req, res) {
 
         let respuesta = await realizarQuery(`
             SELECT 
-                solicitudes.id_solicitud,
+                Solicitudes.id_solicitud,
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
                 UsuariosKey.foto
@@ -264,8 +263,7 @@ app.delete('/eliminarSolicitud', async function (req, res) {
     try {
         const id_solicitud = req.body.id;
         await realizarQuery(`
-            DELETE FROM Solicitudes 
-            WHERE id_solicitud = "${id_solicitud}"
+            DELETE FROM Solicitudes WHERE id_solicitud = "${id_solicitud}"
         `);
         res.send({ mensaje: "Solicitud eliminada correctamente" });
     } catch (error) {
