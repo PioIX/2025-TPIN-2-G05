@@ -33,21 +33,3 @@ export default function Home() {
     </div>
   )
 }
-// return (
-//   <>
-//     <div className={styles.container}>
-//       <h1 className={styles.title}>Keykeys</h1>
-//       <h2 className={styles.subtitle}>Inicie sesión</h2 >
-//       <h3 className={styles.subtitle2}>Ingrese su nombre y contraseña</h3>
-//       <div className={styles.containerInputs}>
-//         <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper}> </Input>
-//         <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={styles.input} classNameInputWrapper={styles.inputWrapper} type="password"
-//         > </Input>
-//       </div>
-
-//       <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={styles.button}> </Button>
-//       <h4 className={styles.subtitle3}>¿No tiene cuenta? Registrarse ahora</h4>
-//       <Link href="/Registro" className={styles.irALaOtraPagina}>Registrarse</Link>
-//     </div>
-//   </>
-// );
