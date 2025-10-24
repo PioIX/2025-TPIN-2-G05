@@ -57,7 +57,6 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
       <div className={styles.overlay} onClick={onClose}></div>
       <div className={styles.modal}>
         <div className={styles.modalContent}>
-
           {aceptarSolicitud && (
             solicitudes.length > 0 ? (
               <>
@@ -97,8 +96,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             </>
           )
           }
-          <p>{mensaje}</p>
-
+          <div className={styles.messageContainer}>
+            <p>{mensaje}</p>
+          </div>
           {/*Tabla de jugadores, utilizado solo en game */}
           <div className={styles.tablaJugadores}>
             {jugadores.map((jugador, i) => (

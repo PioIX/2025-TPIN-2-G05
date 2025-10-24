@@ -131,3 +131,10 @@ export async function eliminarSolicitud(id_solicitud){
     });
 }
 
+export async function traerPartidasActivas(id){
+    return fetch(`http://localhost:4000/traerPartidasActivas?id=${id}`)
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}

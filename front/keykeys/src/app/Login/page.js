@@ -19,8 +19,8 @@ export default function Home() {
   const router = useRouter()
   const [modalMessage, setModalMessage] = useState("");  
   const [modalAction, setModalAction] = useState("");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
   function openModal(mensaje,action){
     setModalMessage(mensaje);  
     setModalAction(action)
