@@ -6,7 +6,7 @@ import Input from "@/Components/Input";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
 
@@ -98,6 +98,17 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
           )
           }
           <p>{mensaje}</p>
+
+          {/*Tabla de jugadores, utilizado solo en game */}
+          <div className={styles.tablaJugadores}>
+            {jugadores.map((jugador, i) => (
+              <div key={i} className={styles.filaJugador}>
+                <Person text={jugador.nombre} image={jugador.foto}></Person>
+                <p className={styles.puntosJugador}>{jugador.puntos} pts</p>
+              </div>
+
+            ))}
+          </div>
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>
       </div>
@@ -110,7 +121,12 @@ export default Modal;
 //Para usarlo tienen que:
 // añadir esto en el medio del return
 // {/* Modal Component */}
-// <Modal isOpen={isModalOpen} onClose={closeModal} mensaje={modalMessage}/>
+// <Modal
+//   isOpen={isModalOpen}
+//   onClose={closeModal}
+//   mensaje={modalMessage}
+//   action={modalAction || null} // Si modalAction está vacío, pasa null
+// />     
 // poner esto arriba
 // const [isModalOpen, setIsModalOpen] = useState(false);
 // const [modalMessage, setModalMessage] = useState("");  // Estado para almacenar el mensaje
