@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes} from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas } from '@/API/fetch'
 import styles from './home.module.css'
-
+import Person from '@/Components/Person'
 
 
 export default function Home() {
@@ -24,6 +24,7 @@ export default function Home() {
   const [isModalEnviarOpen, setIsModalEnviarOpen] = useState(false)
   const [amigo, setAmigo] = useState("")
   const [modalAction, setModalAction] = useState("")
+  const [partidas, setPartidas] = useState([])
   const socket = useSocket()
 
   function openModal(mensaje, action) {
@@ -36,10 +37,8 @@ export default function Home() {
     //Aca van a ir los cambios si recibe una invitacion a la partida
   },[socket])
 
-
   useEffect(() => {
     let id = localStorage.getItem("idUser")
-    console.log("holaa ", id)
     setIdUser(id)
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
@@ -126,16 +125,15 @@ function unirseASala(){
     const dataUrl = `data:image/png;base64,${base64}`
     setImage(dataUrl)
   }
-
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
-    console.log("chauu", respond)
     setNombreUsuario(respond[0].nombre)
   }
-
+  function logOut() {
+    router.replace("../")
+  }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
-    console.log("Estoy en la funcion")
     let usuarioExiste = respond.filter(res => res.nombre == amigo)
     if (usuarioExiste.length > 0) {
       let yaEsAmigo = amigos.find(friend => friend.nombre == amigo)
@@ -165,7 +163,37 @@ function unirseASala(){
       return;
     }
   }
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
+  async function mostrarPartidas() {
+    const partidasData = await traerPartidasActivas(idUser);
+    setPartidas(partidasData.result || []);
+    setModalMessage(
+      <div className={styles.partidasList}>
+        {partidasData.result && partidasData.result.length > 0 ? (
+
+          partidasData.result.map((partida) => (
+            <div key={partida.id_partida} className={styles.partidaItem}>
+              <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
+
+              <Button
+                onClick={() => {
+                  console.log("Te toca Mati");
+                }}
+                text="Unirse"
+                className="joinGameButton"
+              />
+            </div>
+          ))
+        ) : (
+          <span className={styles.noPartidas}>No hay partidas activas</span>
+        )}
+      </div>
+    );
+    setIsModalOpen(true);
+  }
   async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
     setAmigos(respond.result)
@@ -175,42 +203,56 @@ function unirseASala(){
     setAmigo(event.target.value)
   }
 
-  function logOut() { router.replace("../") }
-
   return (
-    <div className={styles.container}>
-      <div className={styles.menuLateral}>
-        <div className={styles.userSection}>
-          <img
-            src={image !== "data:image/png;base64," ? image : "/sesion.png"}
-            className={styles.userImage}
-            alt="Usuario"
-          />
-          <h3 className={styles.userName}>{nombreUsuario}</h3>
-          <button className={styles.logoutButton} onClick={logOut}>
-            CERRAR SESIÓN
-          </button>
+    <div>
+      <div className={styles.container}>
+        <div className={styles.menuLateral}>
+          <div className={styles.userSection}>
+            <img
+              src={
+                image && image.length > "data:image/png;base64,".length
+                  ? image
+                  : "/sesion.png"
+              }
+              className={styles.userImage}
+              alt="Usuario"
+            />
+            <h3 className={styles.userName}>{nombreUsuario}</h3>
+            <button className={styles.logoutButton} onClick={logOut}>
+              CERRAR SESIÓN
+            </button>
+          </div>
+
+          <h3>Amigos</h3>
+          <div className={styles.menuAmigos}>
+            {amigos ? amigos.map((amigo, index) => {
+              return (
+                <div key={index}>
+                  <Person
+                    text={amigo.nombre}
+                    src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"}
+                  />
+                </div>)
+            }) : <p>No tiene amigos aún</p>}
+          </div>
+          <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
         </div>
 
-        <h3>Amigos</h3>
-        <div className={styles.menuAmigos}>
-          {amigos ? amigos.map((amigo, index) => {
-            return (
-              <div key={index}><div className={styles.amigo}><img src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"} />{amigo.nombre}</div></div>
-            )
-          }) : <p>No tiene amigos aún</p>}
+
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          mensaje={modalMessage}
+        />
+        <div className={styles.menuJuego}>
+          <h1>KEY KEYS</h1>
+          <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
+          <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
+          <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
-
-        <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
+        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
       </div>
-
-      <div className={styles.menuJuego}>
-        <h1>KEY KEYS</h1>
-        <button className={`${styles.mainButton} ${styles.join}`}>Unirse a una sala</button>
-        <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
-        <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
-      </div>
-      <Modal onUpdate={() => {fetchAmigos(idUser)}} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
     </div>
+
   )
 }
