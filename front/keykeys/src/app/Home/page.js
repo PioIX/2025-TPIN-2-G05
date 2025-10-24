@@ -65,7 +65,9 @@ export default function Home() {
 
     }
 
-    function logOut() { router.replace("../") }
+    function logOut() { 
+        router.replace("../") 
+    }
 
     const closeModal = () => {
         setIsModalOpen(false);
