@@ -24,15 +24,28 @@
     margin-top: 3rem;
 }
 
-.buttonModalClose {
-  padding: 0.3rem 0.6rem;
-  position: absolute;
-  top: 8px;  
-  left: 8px; 
-  background-color: #851010; 
-  color: white;           
-  font-size: 1.2rem;
-  cursor: pointer;
+.buttonModalAceptar{
+    width: fit-content;
+    height: fit-content;
+    background-color: #12cf1b;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.7rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.buttonModalRechazar{
+    width: fit-content;
+    height: fit-content;
+    background-color: #d11f1f;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.7rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .button:hover,.buttonLog:hover,.buttonModal:hover, .buttonModalClose:hover {

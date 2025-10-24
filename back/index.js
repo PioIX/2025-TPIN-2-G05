@@ -222,6 +222,8 @@ app.post('/insertarAmigos', async function (req, res) {
         if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
             await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
                 ("${req.body.id}", "${req.body.id2}")`); //Si no existe, inserta la solicitud
+            await realizarQuery(`DELETE FROM Solicitudes WHERE id_solicitud = "${req.body.id_solicitud}"
+        `); 
             res.send({ res: 1 })
         } else {
             res.send({ res: -1 }) //Si ya existe, devuelve -1
@@ -261,8 +263,7 @@ app.delete('/eliminarSolicitud', async function (req, res) {
     try {
         const id_solicitud = req.body.id;
         await realizarQuery(`
-            DELETE FROM Solicitudes 
-            WHERE id_solicitud = "${id_solicitud}"
+            DELETE FROM Solicitudes WHERE id_solicitud = "${id_solicitud}"
         `);
         res.send({ mensaje: "Solicitud eliminada correctamente" });
     } catch (error) {

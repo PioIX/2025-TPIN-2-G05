@@ -63,7 +63,7 @@ export async function registrarUsuario(formData) {
         )
 }
 
-export async function agregarAmigo(id, id_envio){
+export async function agregarAmigo(id, id_envio, id_solicitud){
     return fetch(`http://localhost:4000/insertarAmigos`, {
         method: "POST",
         headers: {
@@ -71,7 +71,8 @@ export async function agregarAmigo(id, id_envio){
         },
         body: JSON.stringify({
             id: id,
-            id2: id_envio
+            id2: id_envio,
+            id_solicitud : id_solicitud
         })
     })
     .then((response) => response.json())
@@ -116,12 +117,12 @@ export async function enviarSolicitud(id, id_envio){
 
 export async function eliminarSolicitud(id_solicitud){
     return fetch(`http://localhost:4000/eliminarSolicitud`, {
-        method: "POST",
+        method: "DELETE",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            id_solicitud: id_solicitud
+            id: id_solicitud
         })
     })
     .then((response) => response.json())
