@@ -4,7 +4,7 @@ import Button from '@/Components/Button'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ImagenClick from '@/Components/ImagenClick'
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes,traerPartidasActivas} from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas } from '@/API/fetch'
 import styles from './home.module.css'
 import Modal from "@/Components/Modal"
 import Person from '@/Components/Person'
@@ -32,18 +32,9 @@ export default function Home() {
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
-    async function dataFetch(id) {
-            let datos = await traerAmigos(id)
-            console.log("amigoss", datos)
-            setAmigos(datos)
-            console.log("Datos de amigos recibidos:", datos)
-            setAmigos(datos.result)
-            console.log("Estado de amigos después de setear:", amigos)
-        }
-        dataFetch(id)
   }, [])
-  
-  
+
+
   const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
     setIsModalOpen(true)
@@ -67,33 +58,33 @@ export default function Home() {
   }
 
   async function fetchFotoUsuario(id) {
-        let respond = await traerFotoUsuario(id)
-        console.log("Respuesta foto usuario:", respond)
+    let respond = await traerFotoUsuario(id)
+    console.log("Respuesta foto usuario:", respond)
 
-        if (!respond || !respond.result) {
-            console.log("No hay datos de foto")
-            return
-        }
-
-        try {
-            let respond = await traerFotoUsuario(id)
-            const bytes = respond.result.foto[0].foto.data
-            const base64 = Buffer.from(bytes).toString("base64")
-            const dataUrl = `data:image/png;base64,${base64}`
-            setImage(dataUrl)   
-        } catch (error) {
-            console.error("Error procesando la foto:", error)
-            setImage("")
-        }
+    if (!respond || !respond.result) {
+      console.log("No hay datos de foto")
+      return
     }
+
+    try {
+      let respond = await traerFotoUsuario(id)
+      const bytes = respond.result.foto[0].foto.data
+      const base64 = Buffer.from(bytes).toString("base64")
+      const dataUrl = `data:image/png;base64,${base64}`
+      setImage(dataUrl)
+    } catch (error) {
+      console.error("Error procesando la foto:", error)
+      setImage("")
+    }
+  }
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
     console.log("chauu", respond)
     setNombreUsuario(respond[0].nombre)
   }
-    function logOut() { 
-        router.replace("../") 
-    }
+  function logOut() {
+    router.replace("../")
+  }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
     console.log("Estoy en la funcion")
@@ -126,38 +117,38 @@ export default function Home() {
       return;
     }
   }
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    async function mostrarPartidas() {
-        const partidasData = await traerPartidasActivas(idUser);
-        setPartidas(partidasData.result || []);
-        setModalMessage(
-            <div className={styles.partidasList}>
-                {partidasData.result && partidasData.result.length > 0 ? (
-                    
-                    partidasData.result.map((partida) => (
-                        <div key={partida.id_partida} className={styles.partidaItem}>
-                            <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
+  async function mostrarPartidas() {
+    const partidasData = await traerPartidasActivas(idUser);
+    setPartidas(partidasData.result || []);
+    setModalMessage(
+      <div className={styles.partidasList}>
+        {partidasData.result && partidasData.result.length > 0 ? (
 
-                            <Button 
-                                onClick={() => {
-                                    console.log("Te toca Mati");
-                            }}
-                            text="Unirse"
-                            className="joinGameButton"
-                        />
-                        </div>
-                    ))
-                ) : (
-                    <span className={styles.noPartidas}>No hay partidas activas</span>
-                )}
+          partidasData.result.map((partida) => (
+            <div key={partida.id_partida} className={styles.partidaItem}>
+              <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
+
+              <Button
+                onClick={() => {
+                  console.log("Te toca Mati");
+                }}
+                text="Unirse"
+                className="joinGameButton"
+              />
             </div>
-        );
-        setIsModalOpen(true);
-    }
-   async function fetchAmigos(id) {
+          ))
+        ) : (
+          <span className={styles.noPartidas}>No hay partidas activas</span>
+        )}
+      </div>
+    );
+    setIsModalOpen(true);
+  }
+  async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
     setAmigos(respond.result)
   }
@@ -166,57 +157,53 @@ export default function Home() {
     setAmigo(event.target.value)
   }
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.menuLateral}>
-                <div className={styles.userSection}>
-                              <img
-            			src={image !== "data:image/png;base64," ? image : "/sesion.png"}
-            			className={styles.userImage}
-            			alt="Usuario"
-          			/>
-                    <h3 className={styles.userName}>{nombreUsuario}</h3>
-                    <button className={styles.logoutButton} onClick={logOut}>
-                        CERRAR SESIÓN
-                    </button>
-                </div>
-
-                <h3>Amigos</h3>
-                <div className={styles.menuAmigos}>
-                    {amigos && amigos.length > 0 ? (
-                        amigos.map((amigo) => {
-                            console.log("Datos de amigo:", amigo)
-                            return (
-                                <Person
-                                    key={amigo.id_usuario}
-                                    nombre={amigo.nombre}
-                                    foto={amigo.foto}
-                                />
-                            )
-                        })
-                    ) : (
-                        <p>No hay amigos para mostrar</p>
-                    )}
-                </div>
-
-                <button className={styles.agregarButton}>AGREGAR</button>
-            </div>
-
-
-            <Modal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                mensaje={modalMessage}
+  return (
+    <div>
+      <div className={styles.container}>
+        <div className={styles.menuLateral}>
+          <div className={styles.userSection}>
+            <img
+              src={image !== "data:image/png;base64," ? image : "/sesion.png"}
+              className={styles.userImage}
+              alt="Usuario"
             />
-        <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
-      </div>
-      <div className={styles.menuJuego}>
+            <h3 className={styles.userName}>{nombreUsuario}</h3>
+            <button className={styles.logoutButton} onClick={logOut}>
+              CERRAR SESIÓN
+            </button>
+          </div>
+
+          <h3>Amigos</h3>
+          <div className={styles.menuAmigos}>
+              {amigos ? amigos.map((amigo, index) => {
+                return (
+                  <>
+                    <Person
+                      key={index}
+                      text={amigo.nombre}
+                      src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"}
+                    />
+                  </>)
+              }) : <p>No tiene amigos aún</p>}
+            </div>
+          <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
+        </div>
+
+
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          mensaje={modalMessage}
+        />
+        <div className={styles.menuJuego}>
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
+        </div>
+        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
       </div>
-      <Modal onUpdate={() => {fetchAmigos(idUser)}} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
     </div>
+
   )
 }

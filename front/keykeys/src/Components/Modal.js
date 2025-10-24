@@ -100,7 +100,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             <p>{mensaje}</p>
           </div>
           {/*Tabla de jugadores, utilizado solo en game */}
-          <div className={styles.tablaJugadores}>
+          {jugadores && <div className={styles.tablaJugadores}>
             {jugadores.map((jugador, i) => (
               <div key={i} className={styles.filaJugador}>
                 <Person text={jugador.nombre} image={jugador.foto}></Person>
@@ -109,6 +109,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
 
             ))}
           </div>
+          }
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>
       </div>
