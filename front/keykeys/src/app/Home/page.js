@@ -27,13 +27,11 @@ export default function Home() {
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
-    console.log("holaa ", id)
     setIdUser(id)
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
   }, [])
-
 
   const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
@@ -59,27 +57,13 @@ export default function Home() {
 
   async function fetchFotoUsuario(id) {
     let respond = await traerFotoUsuario(id)
-    console.log("Respuesta foto usuario:", respond)
-
-    if (!respond || !respond.result) {
-      console.log("No hay datos de foto")
-      return
-    }
-
-    try {
-      let respond = await traerFotoUsuario(id)
-      const bytes = respond.result.foto[0].foto.data
-      const base64 = Buffer.from(bytes).toString("base64")
-      const dataUrl = `data:image/png;base64,${base64}`
-      setImage(dataUrl)
-    } catch (error) {
-      console.error("Error procesando la foto:", error)
-      setImage("")
-    }
+    const bytes = respond.result.foto[0].foto.data
+    const base64 = Buffer.from(bytes).toString("base64")
+    const dataUrl = `data:image/png;base64,${base64}`
+    setImage(dataUrl)
   }
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
-    console.log("chauu", respond)
     setNombreUsuario(respond[0].nombre)
   }
   function logOut() {
@@ -87,7 +71,6 @@ export default function Home() {
   }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
-    console.log("Estoy en la funcion")
     let usuarioExiste = respond.filter(res => res.nombre == amigo)
     if (usuarioExiste.length > 0) {
       let yaEsAmigo = amigos.find(friend => friend.nombre == amigo)
@@ -163,7 +146,11 @@ export default function Home() {
         <div className={styles.menuLateral}>
           <div className={styles.userSection}>
             <img
-              src={image !== "data:image/png;base64," ? image : "/sesion.png"}
+              src={
+                image && image.length > "data:image/png;base64,".length
+                  ? image
+                  : "/sesion.png"
+              }
               className={styles.userImage}
               alt="Usuario"
             />
@@ -175,17 +162,16 @@ export default function Home() {
 
           <h3>Amigos</h3>
           <div className={styles.menuAmigos}>
-              {amigos ? amigos.map((amigo, index) => {
-                return (
-                  <>
-                    <Person
-                      key={index}
-                      text={amigo.nombre}
-                      src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"}
-                    />
-                  </>)
-              }) : <p>No tiene amigos aún</p>}
-            </div>
+            {amigos ? amigos.map((amigo, index) => {
+              return (
+                <div key={index}>
+                  <Person
+                    text={amigo.nombre}
+                    src={amigo.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"}
+                  />
+                </div>)
+            }) : <p>No tiene amigos aún</p>}
+          </div>
           <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
         </div>
 
