@@ -190,6 +190,7 @@
 
 .join:hover{
   background-color:#b22222 ;
+  color:white;
 }
 
 .create {
@@ -197,7 +198,17 @@
   color: #fff;
 }
 
+.create:hover{
+   background-color:#bcbcbc ;
+   color:black;
+}
+
 .config {
   background-color: #bcbcbc;
   color: #000;
+}
+
+.config:hover{
+   background-color:#b22222;
+   color:white;
 }
