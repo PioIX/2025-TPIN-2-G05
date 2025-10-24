@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
-import { useSocket } from "@/Hooks/useSocket";
+import { useSocket } from "@/hooks/useSocket";
 import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes} from '@/API/fetch'
 import styles from './home.module.css'
-import Modal from "@/Components/Modal"
 
 
 
@@ -39,17 +38,20 @@ export default function Home() {
 
 
   useEffect(() => {
-    let id = localStorage.getItem("idUser");
-    console.log("ID DEL USUARIO EN HOME: ", id);
-    setIdUser(id);
-    fetchFotoUsuario(id); // <-- le pasamos el id directamente
-  }, []);
+    let id = localStorage.getItem("idUser")
+    console.log("holaa ", id)
+    setIdUser(id)
+    fetchFotoUsuario(id)
+    fetchDatosUsuario(id)
+    fetchAmigos(id)
+  }, [])
 
   async function fetchFotoUsuario(id) {
     console.log(id);
     let respond = await traerFotoUsuario(id);
+    console.log(respond)
     const bytes = respond.result.foto[0].foto.data; // Array de bytes obtenido de la base de datos
-
+    console.log(bytes)
     // Se convierten los datos () a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
     const base64 = Buffer.from(bytes).toString("base64"); //Lo pasa a un string entendible para renderizarlo
 
@@ -94,6 +96,7 @@ function unirseASala(){
   function showSolicitudes() {
     console.log("Mostrando el modal las solicitudes de amistad"); //<---ACÁ SE MUESTRA EL MODAL
   }
+
  const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
     setIsModalOpen(true)
