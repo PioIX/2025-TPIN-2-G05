@@ -2,8 +2,8 @@
 
 
 //API API API API API API API API API API API API API API API API API
-export async function checkearPalabra(palabra){
-        return fetch(`https://rae-api.com/api/words/${palabra}`)
+export async function checkearPalabra(palabra) {
+    return fetch(`https://rae-api.com/api/words/${palabra}`)
         .then(response => response.json())
         .then(result => {
             return result.ok;
@@ -63,7 +63,7 @@ export async function registrarUsuario(formData) {
         )
 }
 
-export async function agregarAmigo(id, id_envio, id_solicitud){
+export async function agregarAmigo(id, id_envio, id_solicitud) {
     return fetch(`http://localhost:4000/insertarAmigos`, {
         method: "POST",
         headers: {
@@ -72,32 +72,32 @@ export async function agregarAmigo(id, id_envio, id_solicitud){
         body: JSON.stringify({
             id: id,
             id2: id_envio,
-            id_solicitud : id_solicitud
+            id_solicitud: id_solicitud
         })
     })
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
-}
-
-export async function traerAmigos(id){
-        return fetch(`http://localhost:4000/traerAmigos?id=${id}`)
         .then((response) => response.json())
         .then((result) => {
             return { result };
         });
 }
 
-export async function traerSolicitudes(id){
-    return fetch(`http://localhost:4000/traerSolicitudes?id=${id}`)
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+export async function traerAmigos(id) {
+    return fetch(`http://localhost:4000/traerAmigos?id=${id}`)
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
-export async function enviarSolicitud(id, id_envio){
+export async function traerSolicitudes(id) {
+    return fetch(`http://localhost:4000/traerSolicitudes?id=${id}`)
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
+export async function enviarSolicitud(id, id_envio) {
     return fetch(`http://localhost:4000/insertarSolicitud`, {
         method: "POST",
         headers: {
@@ -108,14 +108,14 @@ export async function enviarSolicitud(id, id_envio){
             id_envio: id_envio
         })
     })
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 
-export async function eliminarSolicitud(id_solicitud){
+export async function eliminarSolicitud(id_solicitud) {
     return fetch(`http://localhost:4000/eliminarSolicitud`, {
         method: "DELETE",
         headers: {
@@ -125,10 +125,10 @@ export async function eliminarSolicitud(id_solicitud){
             id: id_solicitud
         })
     })
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 
@@ -141,14 +141,18 @@ export async function crearPartida(id_usuario_admin) {
         body: JSON.stringify({
             id_usuario_admin: id_usuario_admin
         })
-    })
+    }).then((response) => response.json())
+        .then((result) => {
+            return { result };
+        })
+}
 
-export async function traerPartidasActivas(id){
+export async function traerPartidasActivas(id) {
     return fetch(`http://localhost:4000/traerPartidasActivas?id=${id}`)
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
@@ -162,16 +166,16 @@ export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
             id_usuario_ganador: id_usuario_ganador
         })
     })
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 export async function chequearUsuariosPartida(id_partida) {
     return fetch(`http://localhost:4000/ChequearUsuariosPartida?id=${id_partida}`)
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }

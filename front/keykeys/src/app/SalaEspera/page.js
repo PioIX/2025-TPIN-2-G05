@@ -35,9 +35,9 @@ export default function Game() {
     setIsModalOpen(false);
   };
 
+  //Lo que tenes que hacer es agarrar el array del socket y setear jugadores a eso
   async function fetchTraerDatosUsuario(id) {
     let respond = await infoUsuario(id)
-    console.log(respond)
     setJugadores(prevArray => [...prevArray, respond[0]])
   }
 
@@ -56,21 +56,31 @@ export default function Game() {
     if (id == localStorage.getItem('idAdmin')) {
       setIdAdmin(id)
     }
-    console.log(room)
-    console.log(id)
+  }, [id])
+
+  useEffect(()=>{
     if (!socket) return
     socket.emit('joinRoom', {room: room, user: id})
-  }, [id])
+  }, [id, socket, room])
 
   useEffect(() => {
     if (!socket) return
     socket.on('joined_OK_room', data => {
-      fetchTraerDatosUsuario(data.user)
+      console.log(data)
+      for (let i = 0; i < data.user.length; i++){
+        fetchTraerDatosUsuario(data.user[i])
+      }
     })
 
     if (!socket) return
     socket.on("newMessage", data =>{
       console.log(data)
+    })
+
+    if(!socket) return
+    socket.on("leftRoom", data =>{
+      console.log(data.message)
+      openModal("Has abandonado la partida", router.back())
     })
   }, [socket])
 
@@ -89,6 +99,9 @@ export default function Game() {
     socket.emit("sendMessage", {room: room, message: "Hola a todos"})
   }
 
+  function abandonarPartida(){
+    socket.emit("leaveRoom")
+  }
   function salirSala() {
     localStorage.setItem(`idAdmin`, -1)
     localStorage.setItem(`room`, -1)
@@ -103,7 +116,10 @@ export default function Game() {
     }
     {
       idAdmin == id ? (
+        <>
         <Button onClick={partidaInit} text={"Inicie partida"} />
+        <Button onClick ={abandonarPartida} text = {"Abandonar partida"} /* Este boton es para dejar la partida, pero esta puesto aca porque como no se pueden crear partidas todos son usuarios admin */></Button>
+        </>
       ) : (
         <h2 className={styles.subtitle}>No es tu turno</h2>
       )

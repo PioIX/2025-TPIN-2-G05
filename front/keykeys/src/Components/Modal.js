@@ -16,32 +16,19 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     fetchTraerSolicitudes(id)
   }, [])
 
-  useEffect(() => {
-    console.log(idUser)
-  }, [idUser])
-
-  
-  useEffect(() => {
-    console.log(solicitudes)
-  }, [solicitudes])
-
-
   async function fetchTraerSolicitudes(id) {
     let respond = await traerSolicitudes(id)
-    console.log(respond)
     setSolicitudes(respond.result)
   }
 
   async function onClickAceptar(item) {
-    let respond = await agregarAmigo(idUser, item.id_usuario, item.id_solicitud)
-    console.log(respond)
+    await agregarAmigo(idUser, item.id_usuario, item.id_solicitud)
     fetchTraerSolicitudes(idUser)
     onUpdate()
   }
 
   async function onClickRechazar(item) {
     let respond = await eliminarSolicitud(item.id_solicitud)
-    console.log(respond)
     fetchTraerSolicitudes(idUser)
   }
 

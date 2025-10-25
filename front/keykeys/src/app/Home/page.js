@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas, crearPartida } from '@/API/fetch'
 import styles from './home.module.css'
 import Person from '@/Components/Person'
 
@@ -46,11 +46,8 @@ export default function Home() {
   }, [])
 
   async function fetchFotoUsuario(id) {
-    console.log(id);
     let respond = await traerFotoUsuario(id);
-    console.log(respond)
     const bytes = respond.result.foto[0].foto.data; // Array de bytes obtenido de la base de datos
-    console.log(bytes)
     // Se convierten los datos () a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
     const base64 = Buffer.from(bytes).toString("base64"); //Lo pasa a un string entendible para renderizarlo
 
@@ -74,6 +71,8 @@ export default function Home() {
   }
 
   async function crearSala() {
+    //let id_partida = await crearPartida(idUser)     Esto es cuando ya tengamos cómo añadir usuarioa
+    //socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
     let id_partida = 1
     socket.emit("joinRoom", { room: id_partida, user: idUser })
     localStorage.setItem("idAdmin", idUser)
