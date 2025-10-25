@@ -25,7 +25,7 @@ export default function Home() {
   const [amigo, setAmigo] = useState("")
   const [modalAction, setModalAction] = useState("")
   const [partidas, setPartidas] = useState([])
-  const socket = useSocket()
+  const {socket, isConnected} = useSocket()
 
   function openModal(mensaje, action) {
     setModalMessage(mensaje);
@@ -33,9 +33,9 @@ export default function Home() {
     setIsModalOpen(true);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     //Aca van a ir los cambios si recibe una invitacion a la partida
-  },[socket])
+  }, [socket])
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
@@ -66,37 +66,26 @@ export default function Home() {
     router.replace("../");
   }
 
-function unirseASala(){
+  function unirseASala() {
+    let id_partida = 1
     socket.emit("joinRoom", { room: id_partida })
-    openModal("Uniendose a sala", router.replace({/*Aca va la funcion que te manda a la pagina de la sala*/} , { scroll: false }) )
+    openModal("Uniendose a sala",)
     //importante, el socket no va de una sala a otra
-}
-
-  async function showUnirseSala() {
-    //Tiene que abrirse una pagina que muestre todas las rooms, y cuando seleccione una que diga unirse a sala, que cada sala mostrada tenga un div con el id que lo obtiene del back y se ejecute esto de acá arriba
-    unirseASala()
   }
 
-  async function showCrearSala() {
-    //let id_partida = await funcionQueCreaLaPartida 
-    let id_partida
-    socket.emit("joinRoom", { room: id_partida })
-    openModal("Creando sala...", router.replace({/*Aca va la funcion que te manda a la pagina de la sala*/} , { scroll: false }))
+  async function crearSala() {
+    let id_partida = 1
+    socket.emit("joinRoom", { room: id_partida, user: idUser })
+    localStorage.setItem("idAdmin", idUser)
+    localStorage.setItem("room", id_partida)
+    openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
   }
 
   function showConfiguracion() {
     console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
   }
 
-  function showAgregarAmigos() {
-    console.log("Mostrando el modal de agregar amigos"); //<---ACÁ SE MUESTRA EL MODAL
-  }
-
-  function showSolicitudes() {
-    console.log("Mostrando el modal las solicitudes de amistad"); //<---ACÁ SE MUESTRA EL MODAL
-  }
-
- const openModalEleccion = () => {
+  const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
     setIsModalOpen(true)
   }
@@ -238,16 +227,10 @@ function unirseASala(){
           <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
         </div>
 
-
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          mensaje={modalMessage}
-        />
         <div className={styles.menuJuego}>
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
-          <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
+          <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
         <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
