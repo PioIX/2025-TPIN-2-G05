@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
 
 
     io.to(req.session.room).emit("joined_OK_room", {
-      user: req.session.user,
+      user: req.session.user.reverse(),
       room: req.session.room,
     });
     console.log("Este es el room ", req.session.room)
@@ -299,7 +299,7 @@ app.post('/insertarSolicitud', async function (req, res) {
   }
 })
 
-app.post('/CrearPartida', async function (req, res) {
+app.post('/crearPartida', async function (req, res) {
   try {
     const { id_usuario_admin } = req.body;
 
@@ -325,7 +325,7 @@ app.post('/CrearPartida', async function (req, res) {
 });
 
 //actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
-app.put('/ActualizarValoresPartida', async function (req, res) {
+app.put('/actualizarValoresPartida', async function (req, res) {
   try {
     const { id_partida, id_usuario_ganador } = req.body;
 
@@ -342,7 +342,7 @@ app.put('/ActualizarValoresPartida', async function (req, res) {
   }
 });
 
-app.get('/ChequearUsuariosPartida', async function (req, res) {
+app.get('/chequearUsuariosPartida', async function (req, res) {
   try {
     const idPartida = req.query.id;
 

@@ -133,7 +133,7 @@ export async function eliminarSolicitud(id_solicitud) {
 
 
 export async function crearPartida(id_usuario_admin) {
-    return fetch(`http://localhost:4000/CrearPartida`, {
+    return fetch(`http://localhost:4000/crearPartida`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -156,7 +156,7 @@ export async function traerPartidasActivas(id) {
 }
 
 export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
-    return fetch(`http://localhost:4000/ActualizarValoresPartida`, {
+    return fetch(`http://localhost:4000/actualizarValoresPartida`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
@@ -173,7 +173,7 @@ export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
 }
 
 export async function chequearUsuariosPartida(id_partida) {
-    return fetch(`http://localhost:4000/ChequearUsuariosPartida?id=${id_partida}`)
+    return fetch(`http://localhost:4000/chequearUsuariosPartida?id=${id_partida}`)
         .then((response) => response.json())
         .then((result) => {
             return { result };

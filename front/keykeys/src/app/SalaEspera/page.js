@@ -22,6 +22,7 @@ export default function Game() {
   const router = useRouter();
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
+  const [jugadoresId, setJugadoresId] = useState(0)
   const { socket } = useSocket()
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,22 +36,28 @@ export default function Game() {
     setIsModalOpen(false);
   };
 
-  //Lo que tenes que hacer es agarrar el array del socket y setear jugadores a eso
-  async function fetchTraerDatosUsuario(id) {
-    let respond = await infoUsuario(id)
-    setJugadores(prevArray => [...prevArray, respond[0]])
-  }
+  useEffect(() => {
+    if (!jugadoresId || jugadoresId.length === 0) return;
 
-  useEffect(()=>{
-    console.log(jugadores)
-  }, [jugadores])
-  
+    async function cargarJugadores() {
+      const respuestas = await Promise.all(  //Se debe usar promise.all porque cada fetchTraerDatosUsuario() hace una llamada asíncrona a infoUsuario(id), pero no espera a que se resuelva antes de pasar al siguiente con un for, en cambio Promise.all si.
+        jugadoresId.map(id => infoUsuario(id)) //Aquí espera a que se resuelva para cargar el siguiente y, por cada id de usuario, ejecuta la funcion infoUsuario. 
+      );
+
+      // Aquí utiliza la variable creada en cargarJugadores con los objetos ya creados. Cada respuesta es un array con un jugador en [0]
+      const jugadoresOrdenados = respuestas.map(respuesta => respuesta[0]);
+      //Por último, se carga el array en jugadoresOrdenados, no se utilizó el metodo de prevArray porque provocaba rerenders
+      setJugadores(jugadoresOrdenados);
+    }
+
+    cargarJugadores();
+  }, [jugadoresId]);
+
   useEffect(() => {
     setId(localStorage.getItem('idUser'))
     setRoom(localStorage.getItem("room"))
   }, [])
   //cada vez que te llega el evento de nuevo jugador en sala
-
 
   useEffect(() => {
     if (id == localStorage.getItem('idAdmin')) {
@@ -58,31 +65,28 @@ export default function Game() {
     }
   }, [id])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!socket) return
-    socket.emit('joinRoom', {room: room, user: id})
+    socket.emit('joinRoom', { room: room, user: id })
   }, [id, socket, room])
 
   useEffect(() => {
     if (!socket) return
     socket.on('joined_OK_room', data => {
+      setJugadoresId(data.user)
+    })
+
+
+    if (!socket) return
+    socket.on("newMessage", data => {
       console.log(data)
-      for (let i = 0; i < data.user.length; i++){
-        fetchTraerDatosUsuario(data.user[i])
-      }
     })
 
     if (!socket) return
-    socket.on("newMessage", data =>{
-      console.log(data)
-    })
-
-    if(!socket) return
-    socket.on("leftRoom", data =>{
-      console.log(data.message)
-      openModal("Has abandonado la partida", router.back())
-    })
-  }, [socket])
+    socket.on("leftRoom", data => {
+      openModal("Has abandonado la partida", router.push(`/Home`))
+    }), [socket]
+  })
 
   //   useEffect(()=>{
   //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
@@ -96,10 +100,10 @@ export default function Game() {
 
   //inicio de partida
   function partidaInit() {
-    socket.emit("sendMessage", {room: room, message: "Hola a todos"})
+    socket.emit("sendMessage", { room: room, message: "Hola a todos" })
   }
 
-  function abandonarPartida(){
+  function abandonarPartida() {
     socket.emit("leaveRoom")
   }
   function salirSala() {
@@ -109,16 +113,20 @@ export default function Game() {
     //salir de la sala
   }
   return <>
-    {
-      jugadores.map((jugador, index) => {
-        return(<Person key={index} text={jugador.nombre} src={jugador.foto ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}` : "/sesion.png"}></Person>)
-      })
-    }
+{
+  jugadores.map((jugador, index) => {
+    const src = jugador.foto
+      ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
+      : "/sesion.png";
+    console.log(index)
+    return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index==0?true:false} />;
+  })
+}
     {
       idAdmin == id ? (
         <>
-        <Button onClick={partidaInit} text={"Inicie partida"} />
-        <Button onClick ={abandonarPartida} text = {"Abandonar partida"} /* Este boton es para dejar la partida, pero esta puesto aca porque como no se pueden crear partidas todos son usuarios admin */></Button>
+          <Button onClick={partidaInit} text={"Inicie partida"} />
+          <Button onClick={abandonarPartida} text={"Abandonar partida"} /* Este boton es para dejar la partida, pero esta puesto aca porque como no se pueden crear partidas todos son usuarios admin */></Button>
         </>
       ) : (
         <h2 className={styles.subtitle}>No es tu turno</h2>
