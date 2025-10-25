@@ -104,6 +104,34 @@
   border: 1px solid #555;
 }
 
+/* Lista de partidas */
+.partidasList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 300px;
+}
+
+.partidaItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.codigoPartida {
+    color: white;
+    font-size: 1.1rem;
+}
+
+.noPartidas {
+    color: #888;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
 /* Botón de agregar */
 .agregarButton {
   background-color: #1b1b1b;
@@ -162,6 +190,7 @@
 
 .join:hover{
   background-color:#b22222 ;
+  color:white;
 }
 
 .create {
@@ -169,7 +198,17 @@
   color: #fff;
 }
 
+.create:hover{
+   background-color:#bcbcbc ;
+   color:black;
+}
+
 .config {
   background-color: #bcbcbc;
   color: #000;
+}
+
+.config:hover{
+   background-color:#b22222;
+   color:white;
 }
