@@ -333,3 +333,21 @@ app.put('/ActualizarValoresPartida', async function (req, res) {
     res.send({ mensaje: "Error al actualizar partida", error: error.message });
   }
 });
+
+app.get('/ChequearUsuariosPartida', async function (req, res) {
+  try {
+    const idPartida = req.query.id;
+
+    let respuesta = await realizarQuery(`
+      SELECT UsuariosKey.id_usuario, UsuariosKey.nombre, UsuariosKey.foto
+      FROM UsuariosKey
+      INNER JOIN UsuariosEnPartida
+      ON UsuariosKey.id_usuario = UsuariosEnPartida.id_usuario
+      WHERE UsuariosEnPartida.id_partida = "${idPartida}"
+    `);
+
+    res.send(respuesta);
+  } catch (error) {
+    res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
+  }
+});
