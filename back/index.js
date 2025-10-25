@@ -288,3 +288,31 @@ app.post('/insertarSolicitud', async function (req, res) {
     }
 })
 
+app.post('/CrearPartida', async function (req, res) {
+  try {
+    const { id_usuario_admin } = req.body;
+
+    // Generar un código random de 5 letras
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let codigo_entrada = '';
+    for (let i = 0; i < 5; i++) {
+      codigo_entrada += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+
+    // Crear la partida en la base de datos
+    let respuesta = await realizarQuery(`
+      INSERT INTO Partidas (activa, codigo_entrada, id_usuario_admin, id_usuario_ganador)
+      VALUES (1, "${codigo_entrada}", "${id_usuario_admin}", NULL)
+    `);
+
+    res.send({
+      mensaje: "Partida creada exitosamente",
+      partidaId: respuesta.insertId,
+      codigo: codigo_entrada
+    });
+
+  } catch (error) {
+    res.send({ mensaje: "Error al crear partida", error: error.message });
+  }
+});
+
