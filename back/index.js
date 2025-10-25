@@ -377,3 +377,24 @@ app.get('/traerPartidasActivas', async function (req, res) {
         });
     }
 });
+
+app.post('/AgregarUsuarioAPartida', async function (req, res) {
+    try {
+        const { id_partida, id_usuario } = req.body;
+
+        // Verificar si el usuario ya está en la partida
+        let check = await realizarQuery(`SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`);
+        if (check.length > 0) {
+            res.send({ mensaje: "El usuario ya está en la partida" });
+            return;
+        }
+        // Agregar el usuario a la partida
+        await realizarQuery(`
+            INSERT INTO UsuariosEnPartida (id_partida, id_usuario)
+            VALUES ("${id_partida}", "${id_usuario}")
+        `);
+        res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
+    } catch (error) {
+        res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
+    }
+});
