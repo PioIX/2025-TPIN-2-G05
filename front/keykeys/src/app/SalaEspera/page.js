@@ -38,8 +38,12 @@ export default function Game() {
   async function fetchTraerDatosUsuario(id) {
     let respond = await infoUsuario(id)
     console.log(respond)
-    return respond
+    setJugadores(prevArray => [...prevArray, respond[0]])
   }
+
+  useEffect(()=>{
+    console.log(jugadores)
+  }, [jugadores])
   
   useEffect(() => {
     setId(localStorage.getItem('idUser'))
@@ -61,8 +65,12 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.on('joined_OK_room', data => {
-      let usuario = fetchTraerDatosUsuario(data.user)
-      setJugadores(prevArray => [...prevArray, usuario])
+      fetchTraerDatosUsuario(data.user)
+    })
+
+    if (!socket) return
+    socket.on("newMessage", data =>{
+      console.log(data)
     })
   }, [socket])
 
@@ -78,7 +86,7 @@ export default function Game() {
 
   //inicio de partida
   function partidaInit() {
-    //mandar socket en rondas letrasProhibidas admin idUser room
+    socket.emit("sendMessage", {room: room, message: "Hola a todos"})
   }
 
   function salirSala() {
@@ -90,7 +98,7 @@ export default function Game() {
   return <>
     {
       jugadores.map((jugador, index) => {
-        <Person key={index} text={jugador.nombre} src={jugador.foto ? `data:image/png;base64,${Buffer.from(amigo.foto.data).toString("base64")}` : "/sesion.png"}></Person>
+        return(<Person key={index} text={jugador.nombre} src={jugador.foto ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}` : "/sesion.png"}></Person>)
       })
     }
     {
