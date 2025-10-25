@@ -316,3 +316,20 @@ app.post('/CrearPartida', async function (req, res) {
   }
 });
 
+//actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
+app.put('/ActualizarValoresPartida', async function (req, res) {
+  try {
+    const { id_partida, id_usuario_ganador } = req.body;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE Partidas
+      SET activa = 0, id_usuario_ganador = "${id_usuario_ganador}"
+      WHERE id_partida = "${id_partida}"
+    `);
+
+    res.send({ mensaje: "Partida actualizada exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al actualizar partida", error: error.message });
+  }
+});
