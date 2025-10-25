@@ -131,8 +131,45 @@ export async function eliminarSolicitud(id_solicitud){
     });
 }
 
+
+export async function crearPartida(id_usuario_admin) {
+    return fetch(`http://localhost:4000/CrearPartida`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_usuario_admin: id_usuario_admin
+        })
+    })
+
 export async function traerPartidasActivas(id){
     return fetch(`http://localhost:4000/traerPartidasActivas?id=${id}`)
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}
+
+export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
+    return fetch(`http://localhost:4000/ActualizarValoresPartida`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_partida: id_partida,
+            id_usuario_ganador: id_usuario_ganador
+        })
+    })
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}
+
+export async function chequearUsuariosPartida(id_partida) {
+    return fetch(`http://localhost:4000/ChequearUsuariosPartida?id=${id_partida}`)
     .then((response) => response.json())
     .then((result) => {
         return { result };

@@ -287,6 +287,69 @@ app.post('/insertarSolicitud', async function (req, res) {
     }
 })
 
+app.post('/CrearPartida', async function (req, res) {
+  try {
+    const { id_usuario_admin } = req.body;
+
+    // Generar un código random de 5 letras
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let codigo_entrada = '';
+    for (let i = 0; i < 5; i++) {
+      codigo_entrada += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+
+    // Crear la partida en la base de datos
+    let respuesta = await realizarQuery(`
+      INSERT INTO Partidas (activa, codigo_entrada, id_usuario_admin, id_usuario_ganador)
+      VALUES (1, "${codigo_entrada}", "${id_usuario_admin}", NULL)
+    `);
+
+    res.send({
+      mensaje: "Partida creada exitosamente",
+      partidaId: respuesta.insertId,
+      codigo: codigo_entrada
+    });
+
+  } catch (error) {
+    res.send({ mensaje: "Error al crear partida", error: error.message });
+  }
+});
+
+//actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
+app.put('/ActualizarValoresPartida', async function (req, res) {
+  try {
+    const { id_partida, id_usuario_ganador } = req.body;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE Partidas
+      SET activa = 0, id_usuario_ganador = "${id_usuario_ganador}"
+      WHERE id_partida = "${id_partida}"
+    `);
+
+    res.send({ mensaje: "Partida actualizada exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al actualizar partida", error: error.message });
+  }
+});
+
+app.get('/ChequearUsuariosPartida', async function (req, res) {
+  try {
+    const idPartida = req.query.id;
+
+    let respuesta = await realizarQuery(`
+      SELECT UsuariosKey.id_usuario, UsuariosKey.nombre, UsuariosKey.foto
+      FROM UsuariosKey
+      INNER JOIN UsuariosEnPartida
+      ON UsuariosKey.id_usuario = UsuariosEnPartida.id_usuario
+      WHERE UsuariosEnPartida.id_partida = "${idPartida}"
+    `);
+
+    res.send(respuesta);
+  } catch (error) {
+    res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
+  }
+});
 app.get('/traerPartidasActivas', async function (req, res) {
     try {
         const idUsuario = req.query.id;
