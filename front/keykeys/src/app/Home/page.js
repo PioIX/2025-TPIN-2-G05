@@ -19,6 +19,7 @@ export default function Home() {
   const [amigos, setAmigos] = useState([])
   const [isModalEleccionOpen, setIsModalEleccionOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [modalMessagePartidas, setModalMessagePartidas] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalSolicitudesOpen, setIsModalAceptarSolicitudesOpen] = useState(false);
   const [isModalEnviarOpen, setIsModalEnviarOpen] = useState(false)
@@ -64,9 +65,8 @@ export default function Home() {
   }
 
   function unirseASala() {
-    let id_partida = 1
-    socket.emit("joinRoom", { room: id_partida })
-    openModal("Uniendose a sala",)
+    
+    openModal("Uniendose a sala", )
     //importante, el socket no va de una sala a otra
   }
 
@@ -158,11 +158,11 @@ export default function Home() {
   async function mostrarPartidas() {
     const partidasData = await traerPartidasActivas(idUser);
     setPartidas(partidasData.result || []);
-    setModalMessage(
+    setModalMessagePartidas(
       <div className={styles.partidasList}>
-        {partidasData.result && partidasData.result.length > 0 ? (
+        {partidas.length != 0 ? (
 
-          partidasData.result.map((partida) => (
+          partidas.result.map((partida) => (
             <div key={partida.id_partida} className={styles.partidaItem}>
               <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
 
@@ -232,7 +232,7 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
-        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
+        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas = {modalMessagePartidas}/>
       </div>
     </div>
 

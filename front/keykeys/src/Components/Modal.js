@@ -6,7 +6,7 @@ import Input from "@/Components/Input";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
 
@@ -47,7 +47,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
           {aceptarSolicitud && (
             solicitudes.length > 0 ? (
               <>
-                <h3 className = {styles.subtitle}>Solicitudes</h3>
+                <h3 className={styles.subtitle}>Solicitudes</h3>
                 {solicitudes.map((solicitud, index) => (
                   <div className={styles.solicitud} key={index}>
                     <p>Solicitud de {solicitud.nombre}</p>
@@ -97,6 +97,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             ))}
           </div>
           }
+          {
+            mensajePartidas && mensajePartidas
+          }
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>
       </div>
@@ -114,7 +117,7 @@ export default Modal;
 //   onClose={closeModal}
 //   mensaje={modalMessage}
 //   action={modalAction || null} // Si modalAction está vacío, pasa null
-// />     
+// />
 // poner esto arriba
 // const [isModalOpen, setIsModalOpen] = useState(false);
 // const [modalMessage, setModalMessage] = useState("");  // Estado para almacenar el mensaje

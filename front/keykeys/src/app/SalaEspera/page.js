@@ -105,6 +105,7 @@ export default function Game() {
 
   function abandonarPartida() {
     socket.emit("leaveRoom")
+    router.push(`/Home`)
   }
   function salirSala() {
     localStorage.setItem(`idAdmin`, -1)
