@@ -1,6 +1,5 @@
 # Grupo-05---Trabajo-Final-Segundo-Cuatrimestre
 Grupo 05 - Trabajo Segundo Cuatrimestre
-# Trabajo Final – Segundo Cuatrimestre
 
 ## Título de la propuesta: Key Keys  
 **Grupo:** 05  
@@ -33,7 +32,8 @@ Se suma un Punto por cada letra de la palabra que escribiste bien (si la palabra
 
 ## Temática
 
-La temática del juego es
+Un juego de conocimiento sobre el lenguaje, tenés 10 segundos para pensar una palabra cada vez mas larga que la del rival. Tenes que demostrar que sos el hispanohablante definitivo?
+
 ---
 
 ## Alcance
