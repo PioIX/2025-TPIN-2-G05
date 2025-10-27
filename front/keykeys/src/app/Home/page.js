@@ -1,13 +1,15 @@
 "use client";
 
-import Button from '@/Components/Button'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import ImagenClick from '@/Components/ImagenClick'
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas } from '@/API/fetch'
+import Button from "@/Components/Button";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import ImagenClick from "@/Components/ImagenClick";
+import Modal from "@/Components/Modal";
+import { useSocket } from "@/hooks/useSocket";
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas, crearPartida } from '@/API/fetch'
 import styles from './home.module.css'
-import Modal from "@/Components/Modal"
 import Person from '@/Components/Person'
+
 
 export default function Home() {
   const [nombreUsuario, setNombreUsuario] = useState("")
@@ -17,13 +19,24 @@ export default function Home() {
   const [amigos, setAmigos] = useState([])
   const [isModalEleccionOpen, setIsModalEleccionOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [modalMessagePartidas, setModalMessagePartidas] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalSolicitudesOpen, setIsModalAceptarSolicitudesOpen] = useState(false);
   const [isModalEnviarOpen, setIsModalEnviarOpen] = useState(false)
   const [amigo, setAmigo] = useState("")
   const [modalAction, setModalAction] = useState("")
   const [partidas, setPartidas] = useState([])
+  const {socket, isConnected} = useSocket()
 
+  function openModal(mensaje, action) {
+    setModalMessage(mensaje);
+    setModalAction(action);
+    setIsModalOpen(true);
+  }
+
+  useEffect(() => {
+    //Aca van a ir los cambios si recibe una invitacion a la partida
+  }, [socket])
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
@@ -32,6 +45,44 @@ export default function Home() {
     fetchDatosUsuario(id)
     fetchAmigos(id)
   }, [])
+
+  async function fetchFotoUsuario(id) {
+    let respond = await traerFotoUsuario(id);
+    const bytes = respond.result.foto[0].foto.data; // Array de bytes obtenido de la base de datos
+    // Se convierten los datos () a base64 con el objeto Buffer para poder renderizar la imagen, son los numeros que representan la imagen
+    const base64 = Buffer.from(bytes).toString("base64"); //Lo pasa a un string entendible para renderizarlo
+
+    // Se crea la data URl, que es el formato que usa HTML para representar imágenes
+
+    const dataUrl = `data:image/png;base64,${base64}`; //Pense que el mymetype podia complicar las cosas al representar la imagen, pero no es el caso
+
+    // Guardar el data URL en el estado
+    setImage(dataUrl);
+  }
+
+  function logOut() {
+    router.replace("../");
+  }
+
+  function unirseASala() {
+    
+    openModal("Uniendose a sala", )
+    //importante, el socket no va de una sala a otra
+  }
+
+  async function crearSala() {
+    //let id_partida = await crearPartida(idUser)     Esto es cuando ya tengamos cómo añadir usuarioa
+    //socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
+    let id_partida = 1
+    socket.emit("joinRoom", { room: id_partida, user: idUser })
+    localStorage.setItem("idAdmin", idUser)
+    localStorage.setItem("room", id_partida)
+    openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
+  }
+
+  function showConfiguracion() {
+    console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
+  }
 
   const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
@@ -107,11 +158,11 @@ export default function Home() {
   async function mostrarPartidas() {
     const partidasData = await traerPartidasActivas(idUser);
     setPartidas(partidasData.result || []);
-    setModalMessage(
+    setModalMessagePartidas(
       <div className={styles.partidasList}>
-        {partidasData.result && partidasData.result.length > 0 ? (
+        {partidas.length != 0 ? (
 
-          partidasData.result.map((partida) => (
+          partidas.result.map((partida) => (
             <div key={partida.id_partida} className={styles.partidaItem}>
               <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
 
@@ -175,19 +226,13 @@ export default function Home() {
           <button className={styles.agregarButton} onClick={openModalEleccion}>AGREGAR</button>
         </div>
 
-
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          mensaje={modalMessage}
-        />
         <div className={styles.menuJuego}>
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
-          <button className={`${styles.mainButton} ${styles.create}`}>Crear una sala</button>
+          <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
-        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} />
+        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas = {modalMessagePartidas}/>
       </div>
     </div>
 

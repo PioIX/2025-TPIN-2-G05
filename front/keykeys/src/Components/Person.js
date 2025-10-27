@@ -9,7 +9,10 @@ export default function Person(props){
                 src={props.src} 
                 className={styles.image}
             />
-            <p className={styles.text}>{props.text}</p>        
+            <p className={styles.text}>{props.text}</p>
+            {
+                props.index && <p className = {styles.textAdmin}>Administrador de la partida</p>
+            }        
         </div>
     )
 }
