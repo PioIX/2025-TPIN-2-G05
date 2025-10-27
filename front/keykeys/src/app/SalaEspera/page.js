@@ -9,7 +9,8 @@ import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
 import { infoUsuario } from "@/API/fetch";
 import Modal from "@/Components/Modal";
-import styles from "./page.module.css"
+import styles from "@/app/page.module.css"
+import stylesSE from "@/app/SalaEspera/page.module.css"
 import Person from "@/Components/Person";
 
 export default function Game() {
@@ -114,6 +115,7 @@ export default function Game() {
     //salir de la sala
   }
   return <>
+<div className={stylesSE.jugadorescontainer}>
 {
   jugadores.map((jugador, index) => {
     const src = jugador.foto
@@ -123,17 +125,17 @@ export default function Game() {
     return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index==0?true:false} />;
   })
 }
+</div>
+
     {
-      idAdmin == id ? (
+      idAdmin == id && (
         <>
           <Button onClick={partidaInit} text={"Inicie partida"} />
-          <Button onClick={abandonarPartida} text={"Abandonar partida"} /* Este boton es para dejar la partida, pero esta puesto aca porque como no se pueden crear partidas todos son usuarios admin */></Button>
         </>
-      ) : (
-        <h2 className={styles.subtitle}>No es tu turno</h2>
       )
     }
     {/* Boton salirse de la sala */}
+    <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonModal"} />
     {/* Modal Component */}
     <Modal
       isOpen={isModalOpen}
