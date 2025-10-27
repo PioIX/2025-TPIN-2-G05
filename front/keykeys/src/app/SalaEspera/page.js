@@ -60,7 +60,7 @@ export default function Game() {
   //cada vez que te llega el evento de nuevo jugador en sala
 
   useEffect(() => {
-    if (id == localStorage.getItem('idAdmin')) {
+    if (id == localStorage.getItem('idAdmin') > 0) {
       setIdAdmin(id)
     }
   }, [id])
@@ -84,7 +84,8 @@ export default function Game() {
 
     if (!socket) return
     socket.on("leftRoom", data => {
-      openModal("Has abandonado la partida", router.push(`/Home`))
+      const action = router.push(`/Home`)
+      openModal("Has abandonado la partida", action)
     }), [socket]
   })
 
@@ -104,13 +105,12 @@ export default function Game() {
   }
 
   function abandonarPartida() {
+    salirSala()
     socket.emit("leaveRoom")
-    router.push(`/Home`)
   }
   function salirSala() {
     localStorage.setItem(`idAdmin`, -1)
     localStorage.setItem(`room`, -1)
-    openModal("Saliendo de la sala", router.replace('../Home', { scroll: false }))
     //salir de la sala
   }
   return <>
