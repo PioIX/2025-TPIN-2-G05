@@ -47,6 +47,7 @@ export default function Game() {
 
       // Aquí utiliza la variable creada en cargarJugadores con los objetos ya creados. Cada respuesta es un array con un jugador en [0]
       const jugadoresOrdenados = respuestas.map(respuesta => respuesta[0]);
+      console.log(jugadoresOrdenados)
       //Por último, se carga el array en jugadoresOrdenados, no se utilizó el metodo de prevArray porque provocaba rerenders
       setJugadores(jugadoresOrdenados);
     }
@@ -68,7 +69,9 @@ export default function Game() {
 
   useEffect(() => {
     if (!socket) return
-    socket.emit('joinRoom', { room: room, user: id })
+    socket.emit('joinRoom', { room: room, user: id },
+      console.log("me uno a la sala")
+    )
   }, [id, socket, room])
 
   useEffect(() => {
