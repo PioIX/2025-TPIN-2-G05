@@ -19,8 +19,8 @@ export default function Home() {
   const router = useRouter()
   const [modalMessage, setModalMessage] = useState("");  
   const [modalAction, setModalAction] = useState("");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
   function openModal(mensaje,action){
     setModalMessage(mensaje);  
     setModalAction(action)
@@ -57,7 +57,8 @@ export default function Home() {
           break
         default:
           localStorage.setItem("idUser", respond.result[0].id_usuario)
-          openModal("Ingresando...",router.replace('../Home', { scroll: false }))
+          const accion = () => {router.replace('../Home', { scroll: false })}; 
+          openModal("Ingresando...",{accion: accion})
           break
       }
     }

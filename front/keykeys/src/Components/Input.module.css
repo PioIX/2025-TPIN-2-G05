@@ -21,7 +21,7 @@
     transition: border 0.3s ease, box-shadow 0.3s ease;
     margin:2rem;
 }
-.inputWrapper:focus-within {
+.inputWrapper:focus-within,.inputWrapperLog:focus-within {
     border-color: red;
     box-shadow: 0 0 5px red;
 }
@@ -39,4 +39,36 @@
 .input::placeholder {
     color: white;
     text-align: center;
+}
+
+.inputModal {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.6rem;
+    font-size: 1rem;
+    color: white;
+    background: transparent;
+}
+
+.inputModal::placeholder {
+    color: white;
+    text-align: center;
+}
+
+.inputWrapperLogModal {
+    display: flex;
+    align-items: center;
+    width: 83%;
+    margin: 0.8rem 0;
+    background: rgb( rgb(148, 145, 145));
+    border: 1px solid #ccc;
+    padding: 0.6rem 1.4rem;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    margin:2rem;
+}
+
+.inputWrapper:focus-within,.inputWrapperLogModal:focus-within {
+    border-color: red;
+    box-shadow: 0 0 5px red;
 }

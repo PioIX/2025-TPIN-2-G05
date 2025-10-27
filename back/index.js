@@ -98,10 +98,10 @@ io.on("connection", (socket) => {
 
 app.get("/traerDatosUsuarios", async function (req, res) {
   try {
+    console.log(req.query)
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -120,7 +120,6 @@ app.get("/traerTodosUsuarios", async function (req, res) {
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey`
     );
-    console.log(respuesta);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -201,7 +200,6 @@ app.get('/traerAmigos', async function (req, res) {
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
-                usuarioskey.mail
                 UsuariosKey.foto
             FROM Relaciones
             INNER JOIN UsuariosKey 
@@ -217,6 +215,25 @@ app.get('/traerAmigos', async function (req, res) {
     }
 });
 
+
+app.post('/insertarAmigos', async function (req, res) {
+    try {
+        let check = await realizarQuery(`SELECT id_relacion FROM Relaciones WHERE (id_usuario1 = "${req.body.id}" AND id_usuario2 = "${req.body.id2}") OR (id_usuario1 = "${req.body.id2}" AND id_usuario2 = "${req.body.id}")`);
+        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
+            await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
+                ("${req.body.id}", "${req.body.id2}")`); //Si no existe, inserta la solicitud
+            await realizarQuery(`DELETE FROM Solicitudes WHERE id_solicitud = "${req.body.id_solicitud}"
+        `); 
+            res.send({ res: 1 })
+        } else {
+            res.send({ res: -1 }) //Si ya existe, devuelve -1
+        };
+    } catch (error) {
+        res.send({ mensaje: "Tuviste un error", error: error.message })
+    }
+})
+
+
 // SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
 
 app.get('/traerSolicitudes', async function (req, res) {
@@ -225,7 +242,7 @@ app.get('/traerSolicitudes', async function (req, res) {
 
         let respuesta = await realizarQuery(`
             SELECT 
-                solicitudes.id_solicitud,
+                Solicitudes.id_solicitud,
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
                 UsuariosKey.foto
@@ -246,8 +263,7 @@ app.delete('/eliminarSolicitud', async function (req, res) {
     try {
         const id_solicitud = req.body.id;
         await realizarQuery(`
-            DELETE FROM Solicitudes 
-            WHERE id_solicitud = "${id_solicitud}"
+            DELETE FROM Solicitudes WHERE id_solicitud = "${id_solicitud}"
         `);
         res.send({ mensaje: "Solicitud eliminada correctamente" });
     } catch (error) {
@@ -257,7 +273,7 @@ app.delete('/eliminarSolicitud', async function (req, res) {
 
 app.post('/insertarSolicitud', async function (req, res) {
     try {
-        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE id_solicitud = "${req.body.id}"`);
+        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE (id_usuario_envio = "${req.body.id}" AND id_usuario_recibo = "${req.body.id_envio}") OR (id_usuario_envio = "${req.body.id_envio}" AND id_usuario_recibo = "${req.body.id}")`);
         if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
             await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
                 ("${req.body.id}", "${req.body.id_envio}")`);  //Si no existe, inserta la solicitud
@@ -270,3 +286,115 @@ app.post('/insertarSolicitud', async function (req, res) {
     }
 })
 
+app.post('/CrearPartida', async function (req, res) {
+  try {
+    const { id_usuario_admin } = req.body;
+
+    // Generar un código random de 5 letras
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let codigo_entrada = '';
+    for (let i = 0; i < 5; i++) {
+      codigo_entrada += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+
+    // Crear la partida en la base de datos
+    let respuesta = await realizarQuery(`
+      INSERT INTO Partidas (activa, codigo_entrada, id_usuario_admin, id_usuario_ganador)
+      VALUES (1, "${codigo_entrada}", "${id_usuario_admin}", NULL)
+    `);
+
+    res.send({
+      mensaje: "Partida creada exitosamente",
+      partidaId: respuesta.insertId,
+      codigo: codigo_entrada
+    });
+
+  } catch (error) {
+    res.send({ mensaje: "Error al crear partida", error: error.message });
+  }
+});
+
+//actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
+app.put('/ActualizarValoresPartida', async function (req, res) {
+  try {
+    const { id_partida, id_usuario_ganador } = req.body;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE Partidas
+      SET activa = 0, id_usuario_ganador = "${id_usuario_ganador}"
+      WHERE id_partida = "${id_partida}"
+    `);
+
+    res.send({ mensaje: "Partida actualizada exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al actualizar partida", error: error.message });
+  }
+});
+
+app.get('/ChequearUsuariosPartida', async function (req, res) {
+  try {
+    const idPartida = req.query.id;
+
+    let respuesta = await realizarQuery(`
+      SELECT UsuariosKey.id_usuario, UsuariosKey.nombre, UsuariosKey.foto
+      FROM UsuariosKey
+      INNER JOIN UsuariosEnPartida
+      ON UsuariosKey.id_usuario = UsuariosEnPartida.id_usuario
+      WHERE UsuariosEnPartida.id_partida = "${idPartida}"
+    `);
+
+    res.send(respuesta);
+  } catch (error) {
+    res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
+  }
+});
+app.get('/traerPartidasActivas', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+        let respuesta = await realizarQuery(`
+            SELECT 
+                p.id_partida,
+                p.codigo_entrada,
+                p.id_usuario_admin,
+                p.id_usuario_ganador
+            FROM Partidas p
+            INNER JOIN UsuariosEnPartida uep 
+                ON p.id_partida = uep.id_partida
+            WHERE uep.id_usuario = "${idUsuario}"
+                AND p.activa = 1
+        `);
+        
+        if (respuesta.length > 0) {
+            res.send(respuesta);
+        } else {
+            res.send([]);
+        }
+    } catch (error) {
+        res.send({ 
+            mensaje: "Error al obtener partidas activas", 
+            error: error.message 
+        });
+    }
+});
+
+app.post('/AgregarUsuarioAPartida', async function (req, res) {
+    try {
+        const { id_partida, id_usuario } = req.body;
+
+        // Verificar si el usuario ya está en la partida
+        let check = await realizarQuery(`SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`);
+        if (check.length > 0) {
+            res.send({ mensaje: "El usuario ya está en la partida" });
+            return;
+        }
+        // Agregar el usuario a la partida
+        await realizarQuery(`
+            INSERT INTO UsuariosEnPartida (id_partida, id_usuario)
+            VALUES ("${id_partida}", "${id_usuario}")
+        `);
+        res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
+    } catch (error) {
+        res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
+    }
+});
