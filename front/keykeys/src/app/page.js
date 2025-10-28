@@ -7,17 +7,13 @@ import styles from "./page.module.css"
 
 export default function Home() {
   const router = useRouter()
-  //si les paso, por ej onClick=router(ruta) en ImagenClick, se ejecuta solo al iniciar la pag. por eso hago 3 distintos
-  function home() {
-    router.push("/Home")
-  }
+
   function creditos() {
     router.push("/Creditos")
   }
   function iniciarSesion() {
     router.push("/Login")
   }
-
 
   return (
     <div className = {styles.container}>
@@ -27,8 +23,8 @@ export default function Home() {
       <p className={styles.rest}>¿Podrás demostrar que sos el hispanohablante definitivo?</p>
       <div className={styles.center}>
         {/* <ImagenClick onClick={home} src={"/next.png"} /> Que vaya al home?? */}
-        <ImagenClick onClick={creditos} src={"/creditos.png"} />
-        <ImagenClick onClick={iniciarSesion} src={"/sesion.png"} />
+        <ImagenClick onClick={creditos} src={"/creditos.png"}/>
+        <ImagenClick onClick={iniciarSesion} src={"/next.png"}/>
       </div>
     </div>
   )
