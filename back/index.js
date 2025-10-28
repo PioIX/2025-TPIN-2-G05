@@ -82,6 +82,35 @@ io.on("connection", (socket) => {
     console.log("Se esta iniciando la partida")
   })
 
+  socket.on("iniciarDentroDeLaPartida", (data) => {
+    io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
+      jugadores: data.jugadores
+    })
+    console.log("Se esta iniciando la partida desde dentro")
+  })
+
+  socket.on("terminarPartida", (data) =>{
+    io.to(req.session.room).emit("terminarPartida", {
+
+    })
+    console.log("La partida ha terminado")
+  })
+
+  socket.on("cambioRonda", (data) =>{
+    io.to(req.session.room).emit("cambioRonda", {
+      jugadores: data
+    })
+  })
+
+  socket.on("cambioTurno", (data) => {
+    data.index = data.index + 1
+    io.to(req.session.room).emit("cambioTurno", {
+      jugadores: data.jugadores,
+      palabra: data.palabra,
+      index: data.index
+    })
+  })
+
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
     io.emit("pingAll", { event: "Ping to all", message: data });

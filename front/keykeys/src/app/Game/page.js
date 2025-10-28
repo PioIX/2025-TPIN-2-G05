@@ -5,10 +5,11 @@ import styles from "./page.module.css";
 import UserPoint from "@/Components/UserPoint"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
 import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
+import { useSocket } from "@/hooks/useSocket";
 
 export default function Game() {
   const [jugadores, setJugadores] = useState([]);
@@ -22,6 +23,7 @@ export default function Game() {
   const [ronda, setRonda] = useState(undefined);
   const [activo, setActivo] = useState(undefined);
   const router = useRouter();
+  const { socket, isConnected } = useSocket()
 
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
@@ -45,8 +47,8 @@ export default function Game() {
   useEffect(() => {
     setRoom(localStorage.getItem(`room`))
     setId(localStorage.getItem(`idUser`))
-    socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser")},
-          console.log("Se hizo el joinRoom")
+    socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
+      console.log("Se hizo el joinRoom")
     )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
@@ -54,16 +56,20 @@ export default function Game() {
       if (ronda == undefined) {
         setRonda(0)
       }
-//sockert rondas
+      socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
 
   //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
+    if(!socket) return;
+    socket.on("cambioRonda", data => {
+      setJugadores(data.jugadores)
+    })
     if (id == localStorage(idAdmin)) {
       if (ronda > rondas) {
-        //evento de socket //termina la partida 
+        socket.emit("terminarPartida",{data: jugadores })
       } else {
         setRonda(ronda + 1)
         setLetrasprohibidas([])
@@ -81,16 +87,31 @@ export default function Game() {
 
   //terminar partida
   useEffect(() => {
-    const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-    openModal("Partida Finalizada", { accion: accion })
-    //Modal de fin de partida + resultados
-    //boton de ir a sala de espera
-  }, socketTerminarPartida)
+    if (!socket) return;
+    socket.on("terminarPartida", data => {
+      setJugadores(data.jugadores)
+      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
+      openModal("Partida Finalizada", { accion: accion })
+      //Modal de fin de partida + resultados
+      //boton de ir a sala de espera
+      //El siguiente codigo se ejecuta al iniciar la partida
+      if(!socket) return
+      socket.on("iniciarDentroDeLaPartida", data =>{
+        setJugadores(data.jugadores)
+      })
+    })
+  }, [socket])
 
 
-  //cada vez que te llega el evento de cambio de turno
+  //useEffect(()=>{
+  //  if (!socket) return;
+  // socket.on("cambioTurno", data =>{
+  //  setJugadores(data.jugadores),
+  //  setPrevPalabra(data.palabra),
+  //  let index = data.index}
+  //)
   //lOS SOCKET MANDAN
-  //jugadores (array) contiene: objeto con (punto; foto; id;nombre)
+  //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
   //prevPalabra (string)
   //idTurno de quien vaya (se puede poner nombre tambien)
   //ronda por la que se vaya
@@ -118,10 +139,10 @@ export default function Game() {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
             jugadores[i].punto += palabra.length;
+            socket.emit("cambioTurno", { jugadores: jugadores, palabra: palabra, index: i })	
             break; // corta el bucle si ya lo encontró
           }
         }
-        //mensaje socket de cambio de ronda
       } else {
         //palabra invalida
       }
@@ -151,7 +172,7 @@ export default function Game() {
   //     break; // corta el bucle si ya lo encontró
   //   }
   // }
-  // socket de terminar partida
+  //socket.emit("cambioRonda", {data:jugadores})
 
   useEffect(() => {
     // timer
