@@ -45,6 +45,8 @@ io.use((socket, next) => {
 */
 
 let contador = 0; // Movido fuera del evento connection
+let jugadores = []
+
 
 io.on("connection", (socket) => {
   // Enviar el valor actual del contador al nuevo cliente
@@ -53,21 +55,24 @@ io.on("connection", (socket) => {
   const req = socket.request;
 
   socket.on("joinRoom", (data) => {
+    if (!jugadores.includes(data.user)) {
+      jugadores.push(data.user);
+    }
+    req.session.user = jugadores
+    console.log("Este es req.user ", req.session.user)
     console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
     if (req.session.room != undefined && req.session.room.length > 0)
       socket.leave(req.session.room);
     req.session.room = data.room;
     socket.join(req.session.room);
 
-    socket.on("chat-messages", (data) => {
-      console.log("Usuario unido a sala:", data.room);
-      setCurrentRoom(data.room);
-    });
 
-    io.to(req.session.room).emit("chat-messages", {
-      user: req.session.user,
+    io.to(req.session.room).emit("joined_OK_room", {
+      user: req.session.user.reverse(),
       room: req.session.room,
     });
+    console.log("Este es el room ", req.session.room)
+    console.log("Este es el user ", req.session.user)
   });
 
   socket.on("pingAll", (data) => {
@@ -81,6 +86,14 @@ io.on("connection", (socket) => {
       message: data,
     });
   });
+
+  socket.on('leaveRoom', (data) => {
+    io.to(req.session.room).emit("leftRoom", {
+      message: "Has abandonado la partida"
+    })
+    socket.leave(req.session.room);
+    jugadores = []
+  })
 });
 
 // ---------------------------------------------------
@@ -286,7 +299,7 @@ app.post('/insertarSolicitud', async function (req, res) {
   }
 })
 
-app.post('/CrearPartida', async function (req, res) {
+app.post('/crearPartida', async function (req, res) {
   try {
     const { id_usuario_admin } = req.body;
 
@@ -298,16 +311,13 @@ app.post('/CrearPartida', async function (req, res) {
     }
 
     // Crear la partida en la base de datos
-    let respuesta = await realizarQuery(`
+    await realizarQuery(`
       INSERT INTO Partidas (activa, codigo_entrada, id_usuario_admin, id_usuario_ganador)
       VALUES (1, "${codigo_entrada}", "${id_usuario_admin}", NULL)
     `);
 
-    res.send({
-      mensaje: "Partida creada exitosamente",
-      partidaId: respuesta.insertId,
-      codigo: codigo_entrada
-    });
+    let respuesta = await realizarQuery(`SELECT MAX(id_partida) AS id_partida FROM Partidas`)
+    res.send({ id_partida: respuesta });
 
   } catch (error) {
     res.send({ mensaje: "Error al crear partida", error: error.message });
@@ -315,7 +325,7 @@ app.post('/CrearPartida', async function (req, res) {
 });
 
 //actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
-app.put('/ActualizarValoresPartida', async function (req, res) {
+app.put('/actualizarValoresPartida', async function (req, res) {
   try {
     const { id_partida, id_usuario_ganador } = req.body;
 
@@ -332,7 +342,7 @@ app.put('/ActualizarValoresPartida', async function (req, res) {
   }
 });
 
-app.get('/ChequearUsuariosPartida', async function (req, res) {
+app.get('/chequearUsuariosPartida', async function (req, res) {
   try {
     const idPartida = req.query.id;
 

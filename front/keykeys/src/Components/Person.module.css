@@ -21,3 +21,10 @@
   font-weight: bold;
   letter-spacing: 1px;
 }
+
+.textAdmin{
+  margin-left: 2%;
+  color: #ff0000;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
