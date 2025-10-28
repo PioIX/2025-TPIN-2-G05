@@ -147,13 +147,13 @@ export async function crearPartida(id_usuario_admin) {
         })
 }
 
-export async function traerPartidasActivas(id) {
-    return fetch(`http://localhost:4000/traerPartidasActivas?id=${id}`)
-        .then((response) => response.json())
-        .then((result) => {
-            return { result };
-        });
-}
+// export async function traerPartidasActivas(id){
+//     return fetch(`http://localhost:4000/traerPartidasActivas?id=${id}`)
+//     .then((response) => response.json())
+//     .then((result) => {
+//         return { result };
+//     });
+// }
 
 export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
     return fetch(`http://localhost:4000/actualizarValoresPartida`, {
@@ -192,8 +192,33 @@ export async function agregarUsuarioAPartida(id_partida, id_usuario) {
             id_usuario: id_usuario
         })
     })
-        .then((response) => response.json())
-        .then((result) => {
-            return { result };
-        });
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}
+
+export async function traerPartidaPorCodigo(id_partida) {
+    return fetch(`http://localhost:4000/TraerPartidaPorCodigo?id=${id_partida}`)
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
+}
+
+export async function traerPartidasActivasAmigos(id_partida, id_usuario) {
+    return fetch(`http://localhost:4000/TraerPartidasActivasAmigos`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_partida: id_partida,
+            id_usuario: id_usuario
+        })
+    })
+    .then((response) => response.json())
+    .then((result) => {
+        return { result };
+    });
 }

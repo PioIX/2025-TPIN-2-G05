@@ -21,3 +21,18 @@ html, body{
   width: fit-content; /* Ajusta al contenido */
   margin: 0 auto; /* Centra horizontalmente */
 }
+.container {
+  display: block;
+  justify-content:center;
+  align-items: center;
+  margin: 0,25vw,0,25vw;
+
+  background-color: #111; /* Fondo negro suave */
+  border: 3px solid #333; /* Borde gris oscuro */
+  border-radius: 8px; /* Bordes ligeramente redondeados */
+  
+  padding: 1% 2%;
+  gap: 25%; /* Espacio entre jugadores */
+  width: fit-content; /* Ajusta al contenido */
+  margin: 0 auto; /* Centra horizontalmente */
+}

@@ -122,27 +122,28 @@ export default function Game() {
     //salir de la sala
   }
   return <>
-<div className={stylesSE.jugadorescontainer}>
-{
-  jugadores.map((jugador, index) => {
-    const src = jugador.foto
-      ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
-      : "/sesion.png";
-    console.log(index)
-    return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index==0?true:false} />;
-  })
-}
-</div>
-
-    {
-      idAdmin == id && (
-        <>
-          <Button onClick={partidaInit} text={"Inicie partida"} />
-        </>
-      )
-    }
-    {/* Boton salirse de la sala */}
-    <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonModal"} />
+  <div className={stylesSE.jugadorescontainer}>
+  {
+    jugadores.map((jugador, index) => {
+      const src = jugador.foto
+        ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
+        : "/sesion.png";
+      console.log(index)
+      return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index==0?true:false} />;
+    })
+  }
+  </div>
+  <div className={stylesSE.container}>
+      {
+        idAdmin == id && (
+          <>
+            <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+          </>
+        )
+      }
+      {/* Boton salirse de la sala */}
+      <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
+  </div>
     {/* Modal Component */}
     <Modal
       isOpen={isModalOpen}

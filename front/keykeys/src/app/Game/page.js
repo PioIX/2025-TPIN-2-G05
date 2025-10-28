@@ -1,5 +1,7 @@
 "use client";
 
+
+import clsx from "clsx";
 import styles from "./page.module.css";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
@@ -24,6 +26,8 @@ export default function Game() {
   const [activo, setActivo] = useState(undefined);
   const router = useRouter();
   const { socket, isConnected } = useSocket()
+  const [contador, setContador] = useState(10)
+
 
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
@@ -164,6 +168,33 @@ export default function Game() {
   function cambiarPalabra(event) {
     setPalabra(event.target.value)
   }
+
+
+
+  //TIMER
+  useEffect(() => {
+    //Esto usa timers temporales de 1 segundo en vez de uno de 10. Cuando llega a 0 no se crean más timers.
+    if (contador > 0) {
+      const timer = setInterval(() => {
+        setContador(contadorPrevio => contadorPrevio - 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
+      }
+    }else{
+      alert("Pasaron 10 segundos.")//ESTO SE EJECUTA CUANDO PASAN 10 SEGUNDOS.
+    }
+  }, [contador]);
+  //TIMER
+
+
+
+  return <>
+    <Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
+    <p>{contador}</p>
+
+  </>;
 
   //poner esto si termina el timer
   // for (let i=0;i<jugadores.length;i++) {

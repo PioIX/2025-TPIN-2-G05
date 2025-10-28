@@ -395,52 +395,127 @@ app.get('/chequearUsuariosPartida', async function (req, res) {
     res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
   }
 });
-app.get('/traerPartidasActivas', async function (req, res) {
+
+// app.get('/traerPartidasActivas', async function (req, res) {
+//     try {
+//         const idUsuario = req.query.id;
+//         let respuesta = await realizarQuery(`
+//             SELECT 
+//                 p.id_partida,
+//                 p.codigo_entrada,
+//                 p.id_usuario_admin,
+//                 p.id_usuario_ganador
+//             FROM Partidas p
+//             INNER JOIN UsuariosEnPartida uep 
+//                 ON p.id_partida = uep.id_partida
+//             WHERE uep.id_usuario = "${idUsuario}"
+//                 AND p.activa = 1
+//         `);
+
+//         if (respuesta.length > 0) {
+//             res.send(respuesta);
+//         } else {
+//             res.send([]);
+//         }
+//     } catch (error) {
+//         res.send({ 
+//             mensaje: "Error al obtener partidas activas", 
+//             error: error.message 
+//         });
+//     }
+// });
+
+
+app.post('/AgregarUsuarioAPartida', async function (req, res) {
+  try {
+    const { id_partida, id_usuario } = req.body;
+
+    // Verificar si el usuario ya está en la partida
+    let check = await realizarQuery(`SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`);
+    if (check.length > 0) {
+      res.send({ mensaje: "El usuario ya está en la partida" });
+      return;
+    }
+    // Agregar el usuario a la partida
+    await realizarQuery(`
+            INSERT INTO UsuariosEnPartida (id_partida, id_usuario)
+            VALUES ("${id_partida}", "${id_usuario}")
+        `);
+    res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
+  }
+});
+
+
+app.get('/traerPartidasActivasAmigos', async function (req, res) {
   try {
     const idUsuario = req.query.id;
-    let respuesta = await realizarQuery(`
-            SELECT 
-                p.id_partida,
-                p.codigo_entrada,
-                p.id_usuario_admin,
-                p.id_usuario_ganador
-            FROM Partidas p
-            INNER JOIN UsuariosEnPartida uep 
-                ON p.id_partida = uep.id_partida
-            WHERE uep.id_usuario = "${idUsuario}"
-                AND p.activa = 1
+
+    let amigos = [];
+    let partidasAmigosAdmin = [];
+
+    // Buscar relaciones del usuario
+    let rta1 = await realizarQuery(`
+            SELECT * 
+            FROM Relaciones 
+            WHERE id_usuario1 = "${idUsuario}" OR id_usuario2 = "${idUsuario}"
         `);
 
-    if (respuesta.length > 0) {
-      res.send(respuesta);
-    } else {
-      res.send([]);
+    // Obtener los IDs de amigos
+    for (let i = 0; i < rta1.length; i++) {
+      if (rta1[i].id_usuario1 == idUsuario) {
+        amigos.push(rta1[i].id_usuario2);
+      } else {
+        amigos.push(rta1[i].id_usuario1);
+      }
     }
+
+    //  Buscar partidas activas donde los amigos sean admin
+    for (let i = 0; i < amigos.length; i++) {
+      let rta2 = await realizarQuery(`
+                SELECT 
+                    Partidas.id_partida,
+                    Partidas.codigo_entrada,
+                    Partidas.id_usuario_admin,
+                    UsuariosKey.nombre AS admin_nombre,
+                    Partidas.id_usuario_ganador
+                FROM Partidas
+                INNER JOIN UsuariosKey 
+                    ON Partidas.id_usuario_admin = UsuariosKey.id_usuario
+                WHERE Partidas.id_usuario_admin = "${amigos[i]}" 
+                  AND Partidas.activa = 1
+            `);
+
+      if (rta2.length > 0) {
+        partidasAmigosAdmin.push(...rta2);
+      }
+    }
+
+    res.send(partidasAmigosAdmin);
+
   } catch (error) {
     res.send({
-      mensaje: "Error al obtener partidas activas",
+      mensaje: "Error al obtener partidas activas de amigos",
       error: error.message
     });
   }
 });
 
-app.post('/AgregarUsuarioAPartida', async function (req, res) {
-    try {
-        const { id_partida, id_usuario } = req.body;
-
-        // Verificar si el usuario ya está en la partida
-        let check = await realizarQuery(`SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`);
-        if (check.length > 0) {
-            res.send({ mensaje: "El usuario ya está en la partida" });
-            return;
-        }
-        // Agregar el usuario a la partida
-        await realizarQuery(`
-            INSERT INTO UsuariosEnPartida (id_partida, id_usuario)
-            VALUES ("${id_partida}", "${id_usuario}")
+app.get('/traerPartidaPorCodigo', async function (req, res) {
+  try {
+    let respuesta = await realizarQuery(`
+            SELECT * FROM Partidas WHERE codigo_entrada = "${req.query.codigo.toUpperCase()}" AND activa = 1
         `);
-        res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
-    } catch (error) {
-        res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta)
+    } else {
+      res.send({ mensaje: "No se encontró una partida activa con ese código" });
+      return;
     }
+  } catch (error) {
+    res.send({ mensaje: "Error al traer partida por código", error: error.message });
+  }
 });
+
