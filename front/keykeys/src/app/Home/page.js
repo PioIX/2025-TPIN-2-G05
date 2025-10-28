@@ -61,17 +61,22 @@ export default function Home() {
     setImage(dataUrl);
   }
 
-  function logOut() {
-    router.replace("../");
-  }
-
   async function crearSala() {
     //let id_partida = await crearPartida(idUser)     Esto es cuando ya tengamos cómo añadir usuarioa
     //socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
     socket.emit("joinRoom", { room: 1, user: idUser })
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", 1)
-    openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
+    const accion = () => {router.push(`/SalaEspera`, { scroll: false })}; 
+    openModal("Creando sala...", {accion: accion})
+  }
+
+  function logOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
+    const accion = () => {
+      localStorage.setItem("idUser", null)
+      router.push("..")
+    }; //AGREGAR BOTON DE NO CERRAR SESION
+    openModal("Estás seguro?", {accion: accion}, true)
   }
 
   function showConfiguracion() {
@@ -122,9 +127,6 @@ export default function Home() {
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
     setNombreUsuario(respond[0].nombre)
-  }
-  function logOut() {
-    router.replace("../")
   }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
@@ -247,6 +249,12 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
         <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas={modalMessagePartidas} />
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          mensaje={modalMessage}
+          action={modalAction || null} // Si modalAction está vacío, pasa null
+        />
       </div>
     </div>
 
