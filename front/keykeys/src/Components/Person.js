@@ -11,7 +11,7 @@ export default function Person(props){
             />
             <p className={styles.text}>{props.text}</p>
             {
-                props.index && <p className = {styles.textAdmin}>Administrador de la partida</p>
+                props.index && <p className = {styles.textAdmin}>👑</p>
             }        
         </div>
     )
