@@ -349,34 +349,36 @@ app.get('/ChequearUsuariosPartida', async function (req, res) {
     res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
   }
 });
-app.get('/traerPartidasActivas', async function (req, res) {
-    try {
-        const idUsuario = req.query.id;
-        let respuesta = await realizarQuery(`
-            SELECT 
-                p.id_partida,
-                p.codigo_entrada,
-                p.id_usuario_admin,
-                p.id_usuario_ganador
-            FROM Partidas p
-            INNER JOIN UsuariosEnPartida uep 
-                ON p.id_partida = uep.id_partida
-            WHERE uep.id_usuario = "${idUsuario}"
-                AND p.activa = 1
-        `);
+
+// app.get('/traerPartidasActivas', async function (req, res) {
+//     try {
+//         const idUsuario = req.query.id;
+//         let respuesta = await realizarQuery(`
+//             SELECT 
+//                 p.id_partida,
+//                 p.codigo_entrada,
+//                 p.id_usuario_admin,
+//                 p.id_usuario_ganador
+//             FROM Partidas p
+//             INNER JOIN UsuariosEnPartida uep 
+//                 ON p.id_partida = uep.id_partida
+//             WHERE uep.id_usuario = "${idUsuario}"
+//                 AND p.activa = 1
+//         `);
         
-        if (respuesta.length > 0) {
-            res.send(respuesta);
-        } else {
-            res.send([]);
-        }
-    } catch (error) {
-        res.send({ 
-            mensaje: "Error al obtener partidas activas", 
-            error: error.message 
-        });
-    }
-});
+//         if (respuesta.length > 0) {
+//             res.send(respuesta);
+//         } else {
+//             res.send([]);
+//         }
+//     } catch (error) {
+//         res.send({ 
+//             mensaje: "Error al obtener partidas activas", 
+//             error: error.message 
+//         });
+//     }
+// });
+
 
 app.post('/AgregarUsuarioAPartida', async function (req, res) {
     try {
@@ -398,3 +400,44 @@ app.post('/AgregarUsuarioAPartida', async function (req, res) {
         res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
     }
 });
+
+
+app.get('/traerPartidasActivasAmigos', async function (req, res) {
+    try {
+        const idUsuario = req.query.id;
+        let respuesta = await realizarQuery(`
+            SELECT
+                Partidas.id_partida,
+                Partidas.codigo_entrada,
+                Partidas.id_usuario_admin,
+                UsuariosKey.nombre as admin_nombre,
+                Partidas.id_usuario_ganador
+            FROM Partidas
+            INNER JOIN UsuariosKey ON Partidas.id_usuario_admin = UsuariosKey.id_usuario
+            INNER JOIN Relaciones ON 
+                (Relaciones.id_usuario1 = "${idUsuario}" AND Relaciones.id_usuario2 = Partidas.id_usuario_admin)
+                OR 
+                (Relaciones.id_usuario2 = "${idUsuario}" AND Relaciones.id_usuario1 = Partidas.id_usuario_admin)
+            WHERE Partidas.activa = 1
+                AND Partidas.id_usuario_admin != "${idUsuario}"
+        `);
+    } catch (error) {
+        res.send({ 
+            mensaje: "Error al obtener partidas activas de amigos", 
+            error: error.message 
+        });
+    }
+});
+
+app.get('traerPartidaPorCodigo', async function (req, res) {
+    try {
+        const { codigo_entrada } = req.query; 
+        let respuesta = await realizarQuery(`
+            SELECT * FROM Partidas WHERE codigo_entrada = "${codigo_entrada}" AND activa = 1
+        `);
+        res.send(respuesta);
+    } catch (error) {
+        res.send({ mensaje: "Error al traer partida por código", error: error.message });
+    }
+});
+
