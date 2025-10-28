@@ -94,14 +94,18 @@ export default function Game() {
   })
 
   //   useEffect(()=>{
-  //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+  //  if (!socket) return;
+  //  socket.on("partidaInit", data =>{
+      // localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
   //     localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
   //     localStorage.setItem(`idAdmin`, idAdmin)
   //     localStorage.setItem(`idUser`, id)
   //     localStorage.setItem(`room`, room)
   //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
   //     router.replace('../Game', { scroll: false })
-  // },[socketPlay])
+  //  })
+
+  // },[socket])
 
   //inicio de partida
   function partidaInit() {

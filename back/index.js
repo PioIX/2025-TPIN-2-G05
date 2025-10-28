@@ -75,6 +75,13 @@ io.on("connection", (socket) => {
     console.log("Este es el user ", req.session.user)
   });
 
+  socket.on("partidaInit", (data) => {
+    io.to(req.session.room).emit("partidaInit", {
+ 
+    })
+    console.log("Se esta iniciando la partida")
+  })
+
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
     io.emit("pingAll", { event: "Ping to all", message: data });
