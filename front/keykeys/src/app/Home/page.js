@@ -68,10 +68,9 @@ export default function Home() {
   async function crearSala() {
     //let id_partida = await crearPartida(idUser)     Esto es cuando ya tengamos cómo añadir usuarioa
     //socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
-    let id_partida = await crearPartida(idUser)
-    socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
+    socket.emit("joinRoom", { room: 1, user: idUser })
     localStorage.setItem("idAdmin", idUser)
-    localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
+    localStorage.setItem("room", 1)
     openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
   }
 
