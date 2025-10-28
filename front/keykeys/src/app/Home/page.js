@@ -1,12 +1,13 @@
 "use client";
 
 import Button from "@/Components/Button";
+import Input from "@/Components/Input"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas, crearPartida } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivasAmigos, crearPartida } from '@/API/fetch'
 import styles from './home.module.css'
 import Person from '@/Components/Person'
 
@@ -25,6 +26,7 @@ export default function Home() {
   const [isModalEnviarOpen, setIsModalEnviarOpen] = useState(false)
   const [amigo, setAmigo] = useState("")
   const [modalAction, setModalAction] = useState("")
+  const [isModalPartidasOpen, setIsModalPartidasOpen] = useState(false)
   const [partidas, setPartidas] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
@@ -66,11 +68,12 @@ export default function Home() {
   }
 
   async function crearSala() {
-    //let id_partida = await crearPartida(idUser)     Esto es cuando ya tengamos cómo añadir usuarioa
-    //socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
-    socket.emit("joinRoom", { room: 1, user: idUser })
+    let id_partida = await crearPartida(idUser)
+    console.log(id_partida.result.id_partida[0].id_partida)
+    socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
     localStorage.setItem("idAdmin", idUser)
-    localStorage.setItem("room", 1)
+    localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
+    setIsModalPartidasOpen(false)
     openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
   }
 
@@ -80,6 +83,7 @@ export default function Home() {
 
   const openModalEleccion = () => {
     setIsModalEleccionOpen(true)
+    setIsModalPartidasOpen(false)
     setIsModalOpen(true)
   }
 
@@ -88,28 +92,19 @@ export default function Home() {
     setIsModalOpen(false);
     setIsModalAceptarSolicitudesOpen(false)
     setIsModalEnviarOpen(false)
+    setIsModalPartidasOpen(false)
   };
 
   const openModalSolicitudes = () => {
     setIsModalAceptarSolicitudesOpen(true)
+    setIsModalPartidasOpen(false)
     setIsModalEleccionOpen(false)
   }
 
   const openModalEnviar = () => {
+    setIsModalPartidasOpen(false)
     setIsModalEnviarOpen(true)
     setIsModalEleccionOpen(false)
-  }
-
-  const handleCodigoEntrada = (event) => {
-    setCodigoEntrada(event.target.value)
-  }
-
-  const checkCodigoEntrada = () => {
-    //  let puedeEntrar = await checkearCodigoEntrada(codigoEntrada)
-    if (puedeEntrar.result[0].id_partida.length > 0) {
-      // localStorage.setItem("room", puedeEntrar.result[0].id_partida)
-      // openModal("Uniendose a la sala...", router.push(`/SalaEspera`, { scroll: false }))
-    }
   }
 
   async function fetchFotoUsuario(id) {
@@ -161,40 +156,17 @@ export default function Home() {
     setIsModalOpen(false);
   };
 
+  useEffect(()=>{
+    console.log(partidas)
+    console.log(partidas.length > 0)
+  }, [partidas])
+
   async function mostrarPartidas() {
-    const partidasData = await traerPartidasActivas(idUser);
+    const partidasData = await traerPartidasActivasAmigos(idUser);
+    console.log(partidasData)
     setPartidas(partidasData.result || []);
-    setModalMessagePartidas(
-      <div className={styles.partidasList}>
-        {partidas.length != 0 ? <>
-
-          {partidas.result.map((partida) => (
-            <div key={partida.id_partida} className={styles.partidaItem}>
-              <span className={styles.codigoPartida}> Partida {partida.id_partida} Usuario Admin: {partida.id_usuario_admin.nombre}</span>
-
-              <Button
-                onClick={() => {
-                  // localStorage.setItem("room", partida.id_partida);
-                  // const accion = router.push(`/SalaEspera`, { scroll: false });
-                  // openModal("Uniendose a la sala...", accion)
-                }}
-                text="Unirse"
-                className="joinGameButton"
-              />
-            </div>
-
-          ))}
-          <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-          <Button onClick={checkCodigoEntrada}></Button></> : (
-          <>
-            <span className={styles.noPartidas}>No hay partidas activas de tus amigos</span>
-            <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-            <Button onClick={checkCodigoEntrada}></Button>
-          </>
-        )}
-      </div>
-    );
     setIsModalOpen(true);
+    setIsModalPartidasOpen(true)
   }
   async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
@@ -246,7 +218,7 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
-        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas={modalMessagePartidas} />
+        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas={partidas} esModalPartidas={isModalPartidasOpen} />
       </div>
     </div>
 

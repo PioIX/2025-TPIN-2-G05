@@ -3,12 +3,15 @@ import React, { useState, useEffect } from "react";
 import styles from "./Modal.module.css";
 import Button from "@/Components/Button";
 import Input from "@/Components/Input";
-import { agregarAmigo, eliminarSolicitud, traerSolicitudes } from "@/API/fetch";
+import { useRouter } from "next/navigation";
+import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
+  const [codigoEntrada, setCodigoEntrada] = useState("")
+  const router = useRouter()
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
@@ -16,10 +19,31 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     fetchTraerSolicitudes(id)
   }, [])
 
+  useEffect(() => {
+    console.log(mensajePartidas)
+  }, [mensajePartidas])
+
   async function fetchTraerSolicitudes(id) {
     let respond = await traerSolicitudes(id)
     setSolicitudes(respond.result)
   }
+
+  const handleCodigoEntrada = (event) => {
+    setCodigoEntrada(event.target.value)
+  }
+
+  async function checkCodigoEntrada() {
+    let puedeEntrar = await traerPartidaPorCodigo(codigoEntrada)
+    console.log(puedeEntrar.result)
+    if (puedeEntrar.result.length > 0) {
+      console.log("Puede entrar a la partida")
+      localStorage.setItem("room", puedeEntrar.result[0].id_partida)
+      router.push(`/SalaEspera`, { scroll: false })
+    } else {
+      alert("El código es incorrecto, no puede ingresar a la partida")
+    }
+  }
+
 
   async function onClickAceptar(item) {
     await agregarAmigo(idUser, item.id_usuario, item.id_solicitud)
@@ -97,9 +121,30 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             ))}
           </div>
           }
-          {
-            mensajePartidas && mensajePartidas
-          }
+          {Array.isArray(mensajePartidas) && esModalPartidas && (
+            <>
+              {mensajePartidas.length > 0 ? (
+                <>
+                  {mensajePartidas.map((partida) => (
+                    <div key={partida.id_partida} className={styles.partidaItem}>
+                      <span className={styles.codigoPartida}>
+                        Partida {partida.id_partida} Usuario Admin: {partida.admin_nombre}
+                      </span>
+                      <Button onClick={() => { }} text="Unirse" />
+                    </div>
+                  ))}
+                  <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
+                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
+                </>
+              ) : (
+                <>
+                  <span>No hay partidas activas de tus amigos</span>
+                  <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
+                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
+                </>
+              )}
+            </>
+          )}
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
         </div>
       </div>

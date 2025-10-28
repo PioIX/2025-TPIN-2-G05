@@ -149,7 +149,8 @@ export default function Game() {
       isOpen={isModalOpen}
       onClose={closeModal}
       mensaje={modalMessage}
-      action={modalAction || null} // Si modalAction está vacío, pasa null
+      action={modalAction || null}
+      mensajePartidas={""} // Si modalAction está vacío, pasa null
     />
   </>;
 }

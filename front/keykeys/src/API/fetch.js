@@ -198,25 +198,16 @@ export async function agregarUsuarioAPartida(id_partida, id_usuario) {
     });
 }
 
-export async function traerPartidaPorCodigo(id_partida) {
-    return fetch(`http://localhost:4000/TraerPartidaPorCodigo?id=${id_partida}`)
+export async function traerPartidaPorCodigo(codigo) {
+    return fetch(`http://localhost:4000/TraerPartidaPorCodigo?codigo=${codigo}`)
     .then((response) => response.json())
     .then((result) => {
         return { result };
     });
 }
 
-export async function traerPartidasActivasAmigos(id_partida, id_usuario) {
-    return fetch(`http://localhost:4000/TraerPartidasActivasAmigos`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id_partida: id_partida,
-            id_usuario: id_usuario
-        })
-    })
+export async function traerPartidasActivasAmigos(id_usuario) {
+    return fetch(`http://localhost:4000/TraerPartidasActivasAmigos?id=${id_usuario}`)
     .then((response) => response.json())
     .then((result) => {
         return { result };
