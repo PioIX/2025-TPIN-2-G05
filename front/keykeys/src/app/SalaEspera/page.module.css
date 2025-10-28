@@ -1,0 +1,23 @@
+html, body{
+    background-color: #0e0e0e;
+}
+
+.subtitle{
+    color:white
+}
+
+.jugadorescontainer {
+  display: flex;
+  flex-wrap: wrap; /* Para que los jugadores se acomoden en filas si hay muchos */
+  justify-content: flex-start;
+  align-items: center;
+
+  background-color: #111; /* Fondo negro suave */
+  border: 3px solid #333; /* Borde gris oscuro */
+  border-radius: 8px; /* Bordes ligeramente redondeados */
+  
+  padding: 10px 20px;
+  gap: 15px; /* Espacio entre jugadores */
+  width: fit-content; /* Ajusta al contenido */
+  margin: 0 auto; /* Centra horizontalmente */
+}
