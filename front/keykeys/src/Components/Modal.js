@@ -6,7 +6,7 @@ import Input from "@/Components/Input";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, cancelar, textoBoton }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
 
@@ -39,6 +39,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
       action.accion();  // Ejecutar la acción si existe
     }
   };
+  function modalCancel(){
+    onClose();  // Cerrar el modal
+  }
   return (
     <>
       <div className={styles.overlay} onClick={onClose}></div>
@@ -100,7 +103,14 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
           {
             mensajePartidas && mensajePartidas
           }
-          <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
+          {textoBoton ? (<Button onClick={handleClose} className="buttonModal" text={textoBoton}> </Button>):
+                        (<Button onClick={handleClose} className="buttonModal" text={"Close Modal"}> </Button>)
+          }
+          
+          {cancelar && (
+            <Button onClick={modalCancel} className="buttonModal" text="Cancelar"> </Button>
+            )
+          }
         </div>
       </div>
     </>
