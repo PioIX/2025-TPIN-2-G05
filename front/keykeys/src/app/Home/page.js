@@ -28,10 +28,12 @@ export default function Home() {
   const [partidas, setPartidas] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
+  const [modalCancelar, setModalCancelar] = useState(false)
 
-  function openModal(mensaje, action) {
+  function openModal(mensaje, action, cancelarModal) {
     setModalMessage(mensaje);
     setModalAction(action);
+    setModalCancelar(cancelarModal)
     setIsModalOpen(true);
   }
 
@@ -71,6 +73,19 @@ export default function Home() {
     openModal("Creando sala...", {accion: accion})
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   function logOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
     const accion = () => {
       localStorage.setItem("idUser", null)
@@ -78,6 +93,19 @@ export default function Home() {
     }; //AGREGAR BOTON DE NO CERRAR SESION
     openModal("Estás seguro?", {accion: accion}, true)
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   function showConfiguracion() {
     console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
@@ -254,6 +282,8 @@ export default function Home() {
           onClose={closeModal}
           mensaje={modalMessage}
           action={modalAction || null} // Si modalAction está vacío, pasa null
+          cancelar={modalCancelar}
+          textoBoton="Cerrar Sesión"
         />
       </div>
     </div>
