@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
-import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivas, crearPartida } from '@/API/fetch'
+import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivasAmigos, crearPartida } from '@/API/fetch'
 import styles from './home.module.css'
 import Person from '@/Components/Person'
 
@@ -192,7 +192,7 @@ export default function Home() {
   };
 
   async function mostrarPartidas() {
-    const partidasData = await traerPartidasActivas(idUser);
+    const partidasData = await traerPartidasActivasAmigos(idUser);
     setPartidas(partidasData.result || []);
     setModalMessagePartidas(
       <div className={styles.partidasList}>
