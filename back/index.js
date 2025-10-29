@@ -45,30 +45,23 @@ io.use((socket, next) => {
 */
 
 let contador = 0; // Movido fuera del evento connection
-let jugadores = []
-
 
 io.on("connection", (socket) => {
-  // Enviar el valor actual del contador al nuevo cliente
-  socket.emit("respuestaPersonalizada", { contador });
 
   const req = socket.request;
 
   socket.on("joinRoom", (data) => {
-    if (!jugadores.includes(data.user)) {
-      jugadores.push(data.user);
-    }
-    req.session.user = jugadores
+    req.session.user = data.user;
     console.log("Este es req.user ", req.session.user)
     console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
-    if (req.session.room != undefined && req.session.room.length > 0)
+    if (req.session.room != undefined)
       socket.leave(req.session.room);
     req.session.room = data.room;
     socket.join(req.session.room);
 
 
-    io.to(req.session.room).emit("joined_OK_room", {
-      user: req.session.user.reverse(),
+    io.to(req.session.room).emit("mensaje", {
+      user: req.session.user,
       room: req.session.room,
     });
     console.log("Este es el room ", req.session.room)
@@ -77,7 +70,7 @@ io.on("connection", (socket) => {
 
   socket.on("partidaInit", (data) => {
     io.to(req.session.room).emit("partidaInit", {
- 
+
     })
     console.log("Se esta iniciando la partida")
   })
@@ -89,14 +82,14 @@ io.on("connection", (socket) => {
     console.log("Se esta iniciando la partida desde dentro")
   })
 
-  socket.on("terminarPartida", (data) =>{
+  socket.on("terminarPartida", (data) => {
     io.to(req.session.room).emit("terminarPartida", {
 
     })
     console.log("La partida ha terminado")
   })
 
-  socket.on("cambioRonda", (data) =>{
+  socket.on("cambioRonda", (data) => {
     io.to(req.session.room).emit("cambioRonda", {
       jugadores: data
     })
@@ -116,19 +109,20 @@ io.on("connection", (socket) => {
     io.emit("pingAll", { event: "Ping to all", message: data });
   });
 
-  socket.on("sendMessage", (data) => {
-    io.to(req.session.room).emit("newMessage", {
-      room: req.session.room,
-      message: data,
-    });
-  });
-
   socket.on('leaveRoom', (data) => {
     io.to(req.session.room).emit("leftRoom", {
       message: "Has abandonado la partida"
     })
     socket.leave(req.session.room);
     jugadores = []
+  })
+
+  socket.on("sendMessage", (data) => {
+    io.to(req.session.room).emit("newMessage", {
+      message: data.message,
+      room: data.room,
+    });
+    console.log("Mensaje: ", data.room, data.message)
   })
 });
 

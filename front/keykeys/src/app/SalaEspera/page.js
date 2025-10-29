@@ -23,7 +23,7 @@ export default function Game() {
   const router = useRouter();
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
-  const [jugadoresId, setJugadoresId] = useState(0)
+  const [jugadoresId, setJugadoresId] = useState([]);
   const { socket } = useSocket()
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,18 +38,20 @@ export default function Game() {
   };
 
   useEffect(() => {
+    console.log(jugadoresId)
     if (!jugadoresId || jugadoresId.length === 0) return;
 
     async function cargarJugadores() {
-      const respuestas = await Promise.all(  //Se debe usar promise.all porque cada fetchTraerDatosUsuario() hace una llamada asíncrona a infoUsuario(id), pero no espera a que se resuelva antes de pasar al siguiente con un for, en cambio Promise.all si.
-        jugadoresId.map(id => infoUsuario(id)) //Aquí espera a que se resuelva para cargar el siguiente y, por cada id de usuario, ejecuta la funcion infoUsuario. 
-      );
+      let respuestas = []
+      for (let i = 0; i < jugadoresId.length; i++) {
+        respuestas.push(await infoUsuario(jugadoresId[i])) ;
+        console.log("respuesta jugador", respuestas[i][0])
+      }
+      console.log(respuestas)
 
-      // Aquí utiliza la variable creada en cargarJugadores con los objetos ya creados. Cada respuesta es un array con un jugador en [0]
-      const jugadoresOrdenados = respuestas.map(respuesta => respuesta[0]);
-      console.log(jugadoresOrdenados)
+      // Aquí utiliza la variable creada en cargarJugadores con los objetos ya creados. Cada respuesta es un array con un jugador en [0])
       //Por último, se carga el array en jugadoresOrdenados, no se utilizó el metodo de prevArray porque provocaba rerenders
-      setJugadores(jugadoresOrdenados);
+      setJugadores(respuestas);
     }
 
     cargarJugadores();
@@ -76,14 +78,29 @@ export default function Game() {
 
   useEffect(() => {
     if (!socket) return
-    socket.on('joined_OK_room', data => {
-      setJugadoresId(data.user)
+    socket.on('mensaje', data => {
+      jugadoresId.map(jugador => {
+        console.log("jugador", jugador)
+        console.log("data.user", data.user)
+        if (jugador.id_usuario == data.user) {
+          console.log("ya esta en la sala")
+          return;
+        }
+      })
+      console.log(room, data)
+      console.log("data.user", data.user)
+      socket.emit("sendMessage", { room: room, message: `hola ${data.user}`  })
+      console.log("jugadores", jugadoresId)
+      setJugadoresId(
+        prevArray => [...prevArray, data.user]
+      )
+      return
     })
 
 
     if (!socket) return
     socket.on("newMessage", data => {
-      console.log(data)
+      console.log(data.message)
     })
 
     if (!socket) return
