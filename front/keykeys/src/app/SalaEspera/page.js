@@ -38,21 +38,29 @@ export default function Game() {
   };
 
   useEffect(() => {
-    console.log(jugadoresId)
     if (!jugadoresId || jugadoresId.length === 0) return;
+
     async function cargarJugadores() {
-      let respuestas = []
+      const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
-        respuestas.push(await infoUsuario(jugadoresId[i])) ;
-        console.log("respuesta jugador", respuestas[i])
+        respuestas.push(await infoUsuario(jugadoresId[i]));
+        console.log("respuesta jugador", respuestas[i]);
       }
-      // Aquí utiliza la variable creada en cargarJugadores con los objetos ya creados. Cada respuesta es un array con un jugador en [0])
-      //Por último, se carga el array en jugadoresOrdenados, no se utilizó el metodo de prevArray porque provocaba rerenders
-      setJugadores(respuestas)
+      setJugadores(respuestas);
     }
 
     cargarJugadores();
   }, [jugadoresId]);
+
+  useEffect(() => {
+    if (!socket) return;
+    console.log(Number(localStorage.getItem("idAdmin")) > 0)
+    console.log(jugadoresId.length > 0)
+  }, [jugadoresId, socket]);
+
+  useEffect(() => {
+    console.log("jugadores ", jugadores)
+  }, [jugadores])
 
   useEffect(() => {
     setId(localStorage.getItem('idUser'))
@@ -75,20 +83,20 @@ export default function Game() {
 
   useEffect(() => {
     if (!socket) return
-    socket.on('mensaje', data => {
-      console.log(room, data)
-      console.log("data.user", data.user)
-      socket.emit("sendMessage", { room: room, message: `hola ${data.user}`  })
+    socket.on('joined_OK_room', data => {
       setJugadoresId(prevArray => {
-        // Evita duplicados
         if (prevArray.includes(data.user)) return prevArray;
-        return [...prevArray, data.user];
+        const nuevo = [...prevArray, data.user];
+        if (Number(localStorage.getItem("idAdmin")) > 0) {
+          socket.emit("enviarIdsDeJugadores", { data: nuevo });
+        }
+        return nuevo;
       });
-    })
+    });
 
     if (!socket) return
     socket.on("newMessage", data => {
-      console.log(data.message)
+
     })
 
     if (!socket) return
@@ -97,18 +105,32 @@ export default function Game() {
       openModal("Has abandonado la partida", action)
     })
 
-  //   useEffect(()=>{
-  //  if (!socket) return;
-  //  socket.on("partidaInit", data =>{
-  // localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-  //     localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-  //     localStorage.setItem(`idAdmin`, idAdmin)
-  //     localStorage.setItem(`idUser`, id)
-  //     localStorage.setItem(`room`, room)
-  //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-  //     router.replace('../Game', { scroll: false })
-  //  })
-  },[socket])
+    if (!socket && Number(localStorage.getItem("idAdmin")) < 0) {
+      return
+    } else {
+      socket.on("recibirIdsDeJugadores", data => {
+        console.log("Toma que el idAdmin es menor a 0")
+        console.log(Number(localStorage.getItem("idAdmin")) < 0)
+        console.log(jugadoresId)
+        console.log(!jugadoresId || jugadoresId.length === 0)
+        console.log("Estos son los ids", data)
+        setJugadoresId(data.data.data)
+      }
+      )
+    }
+
+    //   useEffect(()=>{
+    //  if (!socket) return;
+    //  socket.on("partidaInit", data =>{
+    // localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+    //     localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
+    //     localStorage.setItem(`idAdmin`, idAdmin)
+    //     localStorage.setItem(`idUser`, id)
+    //     localStorage.setItem(`room`, room)
+    //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+    //     router.replace('../Game', { scroll: false })
+    //  })
+  }, [socket])
 
   //inicio de partida
   function partidaInit() {
@@ -125,17 +147,17 @@ export default function Game() {
     //salir de la sala
   }
   return <>
-  <div className={stylesSE.jugadorescontainer}>
-  {
-    jugadores.map((jugador, index) => {
-      const src = jugador[0].foto
-        ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
-        : "/sesion.png";
-      return <Person key={jugador[0].id ?? index} text={jugador[0].nombre} src={src} index={index==0?true:false} />;
-    })
-  }
-  </div>
-  <div className={stylesSE.container}>
+    <div className={stylesSE.jugadorescontainer}>
+      {
+        jugadores.map((jugador, index) => {
+          const src = jugador[0].foto
+            ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
+            : "/sesion.png";
+          return <Person key={jugador[0].id ?? index} text={jugador[0].nombre} src={src} index={index == 0 ? true : false} />;
+        })
+      }
+    </div>
+    <div className={stylesSE.container}>
       {
         idAdmin == id && (
           <>
@@ -145,7 +167,7 @@ export default function Game() {
       }
       {/* Boton salirse de la sala */}
       <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
-  </div>
+    </div>
     {/* Modal Component */}
     <Modal
       isOpen={isModalOpen}

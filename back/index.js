@@ -60,13 +60,20 @@ io.on("connection", (socket) => {
     socket.join(req.session.room);
 
 
-    io.to(req.session.room).emit("mensaje", {
+    io.to(req.session.room).emit("joined_OK_room", {
       user: req.session.user,
       room: req.session.room,
     });
     console.log("Este es el room ", req.session.room)
     console.log("Este es el user ", req.session.user)
   });
+
+  socket.on("enviarIdsDeJugadores", (data)=>{
+    console.log(data)
+    io.to(req.session.room).emit("recibirIdsDeJugadores", {
+      data: data
+    })
+  })
 
   socket.on("partidaInit", (data) => {
     io.to(req.session.room).emit("partidaInit", {
@@ -114,7 +121,6 @@ io.on("connection", (socket) => {
       message: "Has abandonado la partida"
     })
     socket.leave(req.session.room);
-    jugadores = []
   })
 
   socket.on("sendMessage", (data) => {
@@ -122,7 +128,6 @@ io.on("connection", (socket) => {
       message: data.message,
       room: data.room,
     });
-    console.log("Mensaje: ", data.room, data.message)
   })
 });
 
