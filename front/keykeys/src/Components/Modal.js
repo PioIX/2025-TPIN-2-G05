@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, cancelar, textoBoton }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -63,6 +63,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
       action.accion();  // Ejecutar la acción si existe
     }
   };
+  function modalCancel(){
+    onClose();  // Cerrar el modal
+  }
   return (
     <>
       <div className={styles.overlay} onClick={onClose}></div>
@@ -145,7 +148,13 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
               )}
             </>
           )}
+          
+          {cancelar && (
+            <Button onClick={modalCancel} className="buttonModal" text="Cancelar"> </Button>
+            )
+          }
           <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
+
         </div>
       </div>
     </>
