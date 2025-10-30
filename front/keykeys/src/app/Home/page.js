@@ -31,7 +31,7 @@ export default function Home() {
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
   const [modalCancelar, setModalCancelar] = useState(false)
-
+  const [admin, setAdmin] = useState(false)
   function openModal(mensaje, action, cancelarModal) {
     setModalMessage(mensaje);
     setModalAction(action);
@@ -49,6 +49,9 @@ export default function Home() {
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
+    if(id==30){
+      setAdmin(true)
+    }
   }, [])
 
   async function fetchFotoUsuario(id) {
@@ -204,7 +207,14 @@ export default function Home() {
   const handleChangeAmigo = (event) => {
     setAmigo(event.target.value)
   }
-
+  function modalAdministrarUsuarios(){
+    console.log("Se abrió el modalAdministrarUsuarios")
+    alert("Se abrió el modalAdministrarUsuarios")
+  }
+  function modalAdministrarBDD(){
+    console.log("Se abrió el modalAdministrarBDD")
+    alert("Se abrió el modalAdministrarBDD")
+  }
   return (
     <div>
       <div className={styles.container}>
@@ -246,6 +256,11 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
+        {admin && 
+        <div className={styles.menuJuego}> {/*MENU ADMIN*/}
+          <button className={`${styles.mainButton} ${styles.join}`} onClick={modalAdministrarUsuarios}>Administrar Usuarios</button>
+          <button className={`${styles.mainButton} ${styles.create}`} onClick={modalAdministrarBDD}>Administrar BDD</button>
+        </div>}
         <Modal 
             onUpdate={() => { fetchAmigos(idUser) }} 
             eleccion={isModalEleccionOpen} 
@@ -259,9 +274,9 @@ export default function Home() {
             input={isModalEnviarOpen} 
             onClickAgregar={fetchInsertarSolicitud} 
             mensajePartidas={partidas} 
-            esModalPartidas={isModalPartidasOpen 
+            esModalPartidas={isModalPartidasOpen}
             cancelar={modalCancelar}
-            textoBoton="Cerrar Sesión"}/>
+            textoBoton={"Cerrar Sesión"}/>
       </div>
     </div>
 
