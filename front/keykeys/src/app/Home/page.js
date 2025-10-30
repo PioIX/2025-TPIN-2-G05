@@ -30,10 +30,12 @@ export default function Home() {
   const [partidas, setPartidas] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
+  const [modalCancelar, setModalCancelar] = useState(false)
 
-  function openModal(mensaje, action) {
+  function openModal(mensaje, action, cancelarModal) {
     setModalMessage(mensaje);
     setModalAction(action);
+    setModalCancelar(cancelarModal)
     setIsModalOpen(true);
   }
 
@@ -63,10 +65,6 @@ export default function Home() {
     setImage(dataUrl);
   }
 
-  function logOut() {
-    router.replace("../");
-  }
-
   async function crearSala() {
     let id_partida = await crearPartida(idUser)
     console.log(id_partida.result.id_partida[0].id_partida)
@@ -76,6 +74,40 @@ export default function Home() {
     setIsModalPartidasOpen(false)
     openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  function logOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
+    const accion = () => {
+      localStorage.setItem("idUser", null)
+      router.push("..")
+    }; //AGREGAR BOTON DE NO CERRAR SESION
+    openModal("Estás seguro?", {accion: accion}, true)
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   function showConfiguracion() {
     console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
@@ -117,9 +149,6 @@ export default function Home() {
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
     setNombreUsuario(respond[0].nombre)
-  }
-  function logOut() {
-    router.replace("../")
   }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
@@ -163,7 +192,6 @@ export default function Home() {
 
   async function mostrarPartidas() {
     const partidasData = await traerPartidasActivasAmigos(idUser);
-    console.log(partidasData)
     setPartidas(partidasData.result || []);
     setIsModalOpen(true);
     setIsModalPartidasOpen(true)
@@ -218,7 +246,22 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
         </div>
-        <Modal onUpdate={() => { fetchAmigos(idUser) }} eleccion={isModalEleccionOpen} aceptarSolicitud={isModalSolicitudesOpen} isOpen={isModalOpen} onClose={closeModalEleccion} mensaje={modalMessage} value={amigo} onChange={handleChangeAmigo} aceptarSolicitudes={openModalSolicitudes} enviarSolicitudes={openModalEnviar} input={isModalEnviarOpen} onClickAgregar={fetchInsertarSolicitud} mensajePartidas={partidas} esModalPartidas={isModalPartidasOpen} />
+        <Modal 
+            onUpdate={() => { fetchAmigos(idUser) }} 
+            eleccion={isModalEleccionOpen} 
+            aceptarSolicitud={isModalSolicitudesOpen} 
+            isOpen={isModalOpen} 
+            onClose={closeModalEleccion} 
+            mensaje={modalMessage} 
+            value={amigo} onChange={handleChangeAmigo} 
+            aceptarSolicitudes={openModalSolicitudes} 
+            enviarSolicitudes={openModalEnviar} 
+            input={isModalEnviarOpen} 
+            onClickAgregar={fetchInsertarSolicitud} 
+            mensajePartidas={partidas} 
+            esModalPartidas={isModalPartidasOpen 
+            cancelar={modalCancelar}
+            textoBoton="Cerrar Sesión"}/>
       </div>
     </div>
 
