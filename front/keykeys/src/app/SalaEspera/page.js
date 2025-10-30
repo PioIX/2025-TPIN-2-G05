@@ -100,7 +100,7 @@ export default function Game() {
     })
 
     if (!socket) return
-    socket.on("leftRoom", data => {
+    socket.on("leftRoomAdmin", data => {
       const action = router.push(`/Home`)
       openModal("Has abandonado la partida", action)
     })
@@ -139,7 +139,7 @@ export default function Game() {
 
   function abandonarPartida() {
     salirSala()
-    socket.emit("leaveRoom")
+    socket.emit("leaveRoomAdmin")
   }
   function salirSala() {
     localStorage.setItem(`idAdmin`, -1)
@@ -162,11 +162,11 @@ export default function Game() {
         idAdmin == id && (
           <>
             <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+            <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
           </>
         )
       }
       {/* Boton salirse de la sala */}
-      <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
     </div>
     {/* Modal Component */}
     <Modal

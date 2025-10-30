@@ -116,11 +116,18 @@ io.on("connection", (socket) => {
     io.emit("pingAll", { event: "Ping to all", message: data });
   });
 
-  socket.on('leaveRoom', (data) => {
-    io.to(req.session.room).emit("leftRoom", {
+  socket.on('leaveRoomAdmin', (data) => {
+    io.to(req.session.room).emit("leftRoomAdmin", {
       message: "Has abandonado la partida"
     })
     socket.leave(req.session.room);
+  })
+
+  socket.on("leaveRoomPlayer", (data)=>{
+    io.to(req.session.room).emit("leftRoomPlayer",{
+      user: data
+    }
+    )
   })
 
   socket.on("sendMessage", (data) => {
