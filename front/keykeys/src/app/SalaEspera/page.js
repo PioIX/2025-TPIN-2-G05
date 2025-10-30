@@ -15,8 +15,8 @@ import Person from "@/Components/Person";
 
 export default function Game() {
   const [jugadores, setJugadores] = useState([]);
-  const [id, setId] = useState("");
-  const [idAdmin, setIdAdmin] = useState("");
+  const [id, setId] = useState(-1);
+  const [idAdmin, setIdAdmin] = useState(-1);
   const [room, setRoom] = useState(0)
   const [rondas, setRondas] = useState("");
   const [letrasProhibidas, setLetrasprohibidas] = useState("");
@@ -47,8 +47,8 @@ export default function Game() {
         console.log("respuesta jugador", respuestas[i]);
       }
       setJugadores(respuestas);
+      localStorage.setItem("Usuarios",respuestas)
     }
-
     cargarJugadores();
   }, [jugadoresId]);
 
@@ -69,7 +69,7 @@ export default function Game() {
   //cada vez que te llega el evento de nuevo jugador en sala
 
   useEffect(() => {
-    if (id == localStorage.getItem('idAdmin') > 0) {
+    if (id == localStorage.getItem('idAdmin')) {
       setIdAdmin(id)
     }
   }, [id])
@@ -77,7 +77,8 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit('joinRoom', { room: room, user: id },
-      console.log("me uno a la sala")
+      console.log("me uno a la sala"),
+      setJugadores(localStorage.getItem("Usuarios"))
     )
   }, [id, room])
 
@@ -86,7 +87,7 @@ export default function Game() {
     socket.on('joined_OK_room', data => {
       setJugadoresId(prevArray => {
         if (prevArray.includes(data.user)) return prevArray;
-        const nuevo = [...prevArray, data.user];
+          const nuevo = [...prevArray, data.user];
         if (Number(localStorage.getItem("idAdmin")) > 0) {
           socket.emit("enviarIdsDeJugadores", { data: nuevo });
         }
@@ -142,6 +143,7 @@ export default function Game() {
     socket.emit("leaveRoomAdmin")
   }
   function salirSala() {
+    localStorage.setItem("Usuarios",[])
     localStorage.setItem(`idAdmin`, -1)
     localStorage.setItem(`room`, -1)
     //salir de la sala
@@ -162,11 +164,12 @@ export default function Game() {
         idAdmin == id && (
           <>
             <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
-            <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
+            <Input></Input>
           </>
         )
       }
       {/* Boton salirse de la sala */}
+      <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
     </div>
     {/* Modal Component */}
     <Modal
