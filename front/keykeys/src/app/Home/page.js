@@ -259,11 +259,10 @@ export default function Home() {
             input={isModalEnviarOpen} 
             onClickAgregar={fetchInsertarSolicitud} 
             mensajePartidas={partidas} 
-            esModalPartidas={isModalPartidasOpen 
+            esModalPartidas={isModalPartidasOpen} 
             cancelar={modalCancelar}
-            textoBoton="Cerrar Sesión"}/>
+            textoBoton={"Cerrar Sesión"}/>
       </div>
     </div>
-
   )
 }
