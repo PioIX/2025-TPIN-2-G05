@@ -2,7 +2,8 @@
 
 
 import clsx from "clsx";
-import styles from "./page.module.css";
+import styles from "../page.module.css";
+import stylesG from "./game.module.css";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
 import Input from "@/Components/Input";
@@ -49,89 +50,95 @@ export default function Game() {
 
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
+      setJugadores([{point:9,src:"a"},{point:9,src:"a"}])
+      setLetrasprohibidas(["a","v"])
+      setActivo(true)
+      setRonda(1)
+      setRondas(2)
+      setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     setId(localStorage.getItem(`idUser`))
-    socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
-      console.log("Se hizo el joinRoom")
-    )
+    // socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
+    //   console.log("Se hizo el joinRoom")
+    // )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
       if (ronda == undefined) {
         setRonda(0)
       }
-      socket.emit("iniciarDentroDeLaPartida", { })
+      // socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
 
-  //cada vez que te llega el , evento de cambio de ronda + al inicio
-  useEffect(() => {
-    if(!socket) return;
-    socket.on("cambioRonda", data => {
-      setJugadores(data.jugadores)
-    })
-    if (id == localStorage(idAdmin)) {
-      if (ronda > rondas) {
-        socket.emit("terminarPartida",{data: jugadores })
-      } else {
-        setRonda(ronda + 1)
-        setLetrasprohibidas([])
-        setPrevPalabra("")
-        const letras = "abcdefghijklmnñopqrstuvwxyz"
-        for (let i = 0; i < cantidadLetras; i++) {
-          const indiceAleatorio = Math.floor(Math.random() * letras.length);
-          setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
-        }
-        setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-      }
-    }
-  }, [ronda, socketRonda])
+  // //cada vez que te llega el , evento de cambio de ronda + al inicio
+  // useEffect(() => {
+  //   if(!socket) return;
+  //   socket.on("cambioRonda", data => {
+  //     setJugadores(data.jugadores)
+  //   })
+  //   if (id == localStorage(idAdmin)) {
+  //     if (ronda > rondas) {
+  //       socket.emit("terminarPartida",{data: jugadores })
+  //     } else {
+  //       setRonda(ronda + 1)
+  //       setLetrasprohibidas([])
+  //       setPrevPalabra("")
+  //       const letras = "abcdefghijklmnñopqrstuvwxyz"
+  //       for (let i = 0; i < cantidadLetras; i++) {
+  //         const indiceAleatorio = Math.floor(Math.random() * letras.length);
+  //         setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+  //       }
+  //       setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+  //     }
+  //   }
+  // }, [ronda, socketRonda])
 
 
-  //terminar partida
-  useEffect(() => {
-    if (!socket) return;
-    socket.on("terminarPartida", data => {
-      setJugadores(data.jugadores)
-      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-      openModal("Partida Finalizada", { accion: accion })
-      //Modal de fin de partida + resultados
-      //boton de ir a sala de espera
-      //El siguiente codigo se ejecuta al iniciar la partida
-      if(!socket) return
-      socket.on("iniciarDentroDeLaPartida", data =>{
-        setJugadores(data.jugadores)
-      })
-    })
-  }, [socket])
+  // //terminar partida
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   socket.on("terminarPartida", data => {
+  //     setJugadores(data.jugadores)
+  //     const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
+  //     openModal("Partida Finalizada", { accion: accion })
+  //     //Modal de fin de partida + resultados
+  //     //boton de ir a sala de espera
+  //     //El siguiente codigo se ejecuta al iniciar la partida
+  //     if(!socket) return
+  //     socket.on("iniciarDentroDeLaPartida", data =>{
+  //       setJugadores(data.jugadores)
+  //     })
+  //   })
+  // }, [socket])
 
 
-  //useEffect(()=>{
-  //  if (!socket) return;
-  // socket.on("cambioTurno", data =>{
-  //  setJugadores(data.jugadores),
-  //  setPrevPalabra(data.palabra),
-  //  let index = data.index}
-  //)
-  //lOS SOCKET MANDAN
-  //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
-  //prevPalabra (string)
-  //idTurno de quien vaya (se puede poner nombre tambien)
-  //ronda por la que se vaya
-  //letras que estan prohibidas
-  useEffect(() => {
-    setJugadores(socket.jugadores)
-    setPrevPalabra(socket.prevpalabra)
-    if (id == socket.idTurno) {
-      setRonda(socket.ronda)
-      setPalabra("")
-      setLetrasprohibidas(socket.letras)
-      setActivo(true)
-    } else {
-      setActivo(false)
-    }
-  }, [socketTurno])
+  // //useEffect(()=>{
+  // //  if (!socket) return;
+  // // socket.on("cambioTurno", data =>{
+  // //  setJugadores(data.jugadores),
+  // //  setPrevPalabra(data.palabra),
+  // //  let index = data.index}
+  // //)
+  // //lOS SOCKET MANDAN
+  // //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
+  // //prevPalabra (string)
+  // //idTurno de quien vaya (se puede poner nombre tambien)
+  // //ronda por la que se vaya
+  // //letras que estan prohibidas
+  // useEffect(() => {
+  //   setJugadores(socket.jugadores)
+  //   setPrevPalabra(socket.prevpalabra)
+  //   if (id == socket.idTurno) {
+  //     setRonda(socket.ronda)
+  //     setPalabra("")
+  //     setLetrasprohibidas(socket.letras)
+  //     setActivo(true)
+  //   } else {
+  //     setActivo(false)
+  //   }
+  // }, [socketTurno])
 
 
 
@@ -183,65 +190,89 @@ export default function Game() {
         clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
       }
     }else{
-      alert("Pasaron 10 segundos.")//ESTO SE EJECUTA CUANDO PASAN 10 SEGUNDOS.
+        //TIMER
+      // for (let i=0;i<jugadores.length;i++) {
+      //   if (jugadores[i].id == id) {
+      //     jugadores[i].punto -= 10;
+      //     break; // corta el bucle si ya lo encontró
+      //   }
+      // }
+      // socket.emit("cambioRonda", {data:jugadores})
     }
   }, [contador]);
-  //TIMER
+return (
+  <>
+    <p className={stylesG.contador}>{contador}</p>
 
+    <div className={stylesG[activo]}>
+      <div className={stylesG.contenedorPrincipal}>
+        <h3 className={styles.subtitle}>Ronda {ronda}</h3>
 
+        <div className={stylesG.userPointContainer}>
+          {jugadores.map((jugador, index) => {
+            return (
+              <UserPoint
+                key={index}
+                point={jugador.puntos}
+                src={jugador.foto}
+              ></UserPoint>
+            );
+          })}
+        </div>
 
-  return <>
-    <Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
-    <p>{contador}</p>
+        <div className={stylesG.bloqueprohibidas}>
+          <h2>Letras Prohibidas...</h2>
+          <div className={stylesG.cajaprohibidas}>
+            {letrasprohibidas.map((letrasprohibida, index) => {
+              return (
+                <LetraProhibida
+                  key={index}
+                  letra={letrasprohibida}
+                ></LetraProhibida>
+              );
+            })}
+          </div>
+        </div>
 
-  </>;
+        <div className={stylesG.longitudYinput}>
+          <h2 className={styles.subtitle}>
+            Longitud {prevPalabra.length + 1} o más
+          </h2>
 
-  //poner esto si termina el timer
-  // for (let i=0;i<jugadores.length;i++) {
-  //   if (jugadores[i].id == id) {
-  //     jugadores[i].punto -= 10;
-  //     break; // corta el bucle si ya lo encontró
-  //   }
-  // }
-  //socket.emit("cambioRonda", {data:jugadores})
-
-  useEffect(() => {
-    // timer
-  }, [])
-
-  return (
-    <>
-      <div className={activo}>
-        {/* <></> Poner cosa del timer */}
-        <h3>Ronda {ronda}</h3>
-        {
-          jugadores.map((jugador, index) => {
-            <UserPoint key={index} point={jugador.puntos} src={jugador.foto}></UserPoint>
-          })
-        }
-        {
-          letrasprohibidas.map((letrasprohibida, index) => {
-            <LetraProhibida key={index} letra={letrasprohibida}></LetraProhibida>
-          })
-        }
-        <h2>Longitud {prevPalabra.length + 1} o mas </h2>
-        {
-          activo ?
-            (<><Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
-              <Button onClick={envioPalabra} text={"Enviar Palabra"}></Button></>)
-            :
-            (<h2 className={styles.subtitle}>No es tu turno</h2>      //opcional// setPlayerActive(socket.nameTurno)
-            )
-        }
-        {/* Modal Component */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          mensaje={modalMessage}
-          jugadores={jugadores}
-          action={modalAction || null} // Si modalAction está vacío, pasa null
-        />
+          <div className={stylesG.inputContainer}>
+            {activo==true ? (
+              <div className={stylesG.flex}>
+                <Input
+                  onKeyDown={checkLetra}
+                  onChange={cambiarPalabra}
+                  classNameInputWrapper={"inputWrapperGame"}
+                  classNameInput={"inputGame"}
+                  placeholder="Escribe aqui"
+                ></Input>
+                <Button
+                  onClick={envioPalabra}
+                  text={"Enviar"}
+                  className="buttonGame"
+                ></Button>
+              </div>
+            ) : (
+              <h2 className={styles.subtitle}>
+                No es tu turno
+              </h2>
+            )}
+          </div>
+        </div>
       </div>
-    </>
-  );
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        mensaje={modalMessage}
+        jugadores={jugadores}
+        action={modalAction || null}
+      />
+    </div>
+  </>
+);
+
 }

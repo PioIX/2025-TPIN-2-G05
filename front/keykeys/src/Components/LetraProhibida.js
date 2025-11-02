@@ -1,9 +1,9 @@
 "use client";
-import styles from "@Components/LetraProhibida.module.css"; 
+import styles from "@/Components/LetraProhibida.module.css"; 
 
 export default function LetraProhibida(props) {
   return (
-    <div className={styles[props.letraWrap]}>
+    <div className={styles.letraprohibida}>
       <h2>{props.letra}</h2>
     </div>
   );
