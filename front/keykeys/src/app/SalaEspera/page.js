@@ -44,9 +44,7 @@ export default function Game() {
       const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
         respuestas.push(await infoUsuario(jugadoresId[i]));
-        console.log("respuesta jugador", respuestas[i]);
       }
-      console.log(respuestas)
       setJugadores(respuestas);
     }
     cargarJugadores();
@@ -57,19 +55,12 @@ export default function Game() {
     setRoom(localStorage.getItem("room"))
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("Usuarios");
-      console.log("Esto es stored ", stored)
       if (stored) {
         setJugadores(JSON.parse(stored));
         localStorage.removeItem("Usuarios");
-        console.log("Se cargaron los jugadores desde localStorage");
       }
     }
   }, [])
-
-  useEffect(()=>{
-    console.log("Estos son los jugadores ", jugadores)
-  },[jugadores])
-  //cada vez que te llega el evento de nuevo jugador en sala
 
   useEffect(() => {
     if (id == localStorage.getItem('idAdmin')) {
@@ -87,7 +78,6 @@ export default function Game() {
   useEffect(() => {
     const handleBeforeUnload = () => {
       localStorage.setItem("Usuarios", JSON.stringify(jugadores));
-      console.log("Se guardaron los jugadores antes de recargar");
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -101,25 +91,39 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     if (jugadores.length == 0)
-    socket.on('joined_OK_room', data => {
-      setJugadoresId(prevArray => {
-        if (prevArray.includes(data.user)) return prevArray;
-        const nuevo = [...prevArray, data.user];
-        if (Number(localStorage.getItem("idAdmin")) > 0) {
-          socket.emit("enviarIdsDeJugadores", { data: nuevo });
-        }
-        console.log(nuevo)
-        return nuevo;
+      socket.on('joined_OK_room', data => {
+        console.log("Se ejecuto joinRoom")
+        setJugadoresId(prevArray => {
+          if (prevArray.includes(data.user)) return prevArray;
+          const nuevo = [...prevArray, data.user];
+          if (Number(localStorage.getItem("idAdmin")) > 0) {
+            socket.emit("enviarIdsDeJugadores", { data: nuevo });
+          }
+          return nuevo;
+        });
       });
-    });
 
     if (!socket) return
     socket.on("leftRoomPlayer", data => {
-      if (id == localStorage.getItem("id")){
-        salirSala()
-        console.log("Se ejecuto leftRoomPlayer ", data)
-      }
+      console.log("Se ejecuto leftRoomPlayer ", data.user.id)
 
+      setJugadores(prevJugadores => {
+        const nuevos = prevJugadores.filter(j => {
+          const jugador = j[0] || j; 
+          console.log("Este es el for ", jugador)
+          console.log(jugador.id_usuario)
+          if (jugador.id_usuario != data.user.id){
+            return jugador.id_usuario
+          }
+        });
+
+        return nuevos;
+      });
+      if (id == data.user.id) {
+        salirSala()
+        const action = router.push(`/Home`)
+        openModal("Has abandonado la partida", action)
+      }
     })
 
     if (!socket) return
@@ -132,11 +136,6 @@ export default function Game() {
       return
     } else {
       socket.on("recibirIdsDeJugadores", data => {
-        console.log("Toma que el idAdmin es menor a 0")
-        console.log(Number(localStorage.getItem("idAdmin")) < 0)
-        console.log(jugadoresId)
-        console.log(!jugadoresId || jugadoresId.length === 0)
-        console.log("Estos son los ids", data)
         setJugadoresId(data.data.data)
       }
       )
@@ -155,16 +154,24 @@ export default function Game() {
     //  })
   }, [socket])
 
+
+  useEffect(() => {
+    console.log("Estos son los jugadores ", jugadores)
+  }, [jugadores])
+
   //inicio de partida
   function partidaInit() {
     socket.emit("sendMessage", { room: room, message: "Hola a todos" })
   }
 
   function abandonarPartida() {
-    if (idAdmin > 0){
+    if (idAdmin > 0) {
       socket.emit("leaveRoomAdmin")
-    }else{
+      salirSala()
+    } else {
       socket.emit("leaveRoomPlayer", { id })
+      setJugadores([])
+      salirSala()
     }
   }
   function salirSala() {
