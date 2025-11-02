@@ -83,7 +83,7 @@
     margin-bottom: 3rem;
 }
 
-.buttonGame {
+/* .buttonGame {
     background-color: #555;
     color: #fff;
     font-size: 16px;
@@ -93,11 +93,12 @@
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
     margin-left: 5%;
-    height: 7vw;
-    width: 10vw;
+    height: 10vw;
+    width: 15vw;
+
 }
 
 .buttonGame:hover {
     background-color: #ff3c00;
     transform: scale(1.05);
-}
+} */

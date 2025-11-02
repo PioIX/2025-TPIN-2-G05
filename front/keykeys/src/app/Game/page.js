@@ -6,6 +6,7 @@ import styles from "../page.module.css";
 import stylesG from "./game.module.css";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
+import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
@@ -50,7 +51,7 @@ export default function Game() {
 
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
-      setJugadores([{point:9,src:"a"},{point:9,src:"a"}])
+      setJugadores([{puntos:9,src:"a"},{puntos: 17,src:"a"}])
       setLetrasprohibidas(["a","v"])
       setActivo(true)
       setRonda(1)
@@ -73,72 +74,72 @@ export default function Game() {
 
 
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
-  // useEffect(() => {
-  //   if(!socket) return;
-  //   socket.on("cambioRonda", data => {
-  //     setJugadores(data.jugadores)
-  //   })
-  //   if (id == localStorage(idAdmin)) {
-  //     if (ronda > rondas) {
-  //       socket.emit("terminarPartida",{data: jugadores })
-  //     } else {
-  //       setRonda(ronda + 1)
-  //       setLetrasprohibidas([])
-  //       setPrevPalabra("")
-  //       const letras = "abcdefghijklmnñopqrstuvwxyz"
-  //       for (let i = 0; i < cantidadLetras; i++) {
-  //         const indiceAleatorio = Math.floor(Math.random() * letras.length);
-  //         setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
-  //       }
-  //       setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-  //     }
-  //   }
-  // }, [ronda, socketRonda])
+  useEffect(() => {
+    if(!socket) return;
+    socket.on("cambioRonda", data => {
+      setJugadores(data.jugadores)
+    })
+    if (id == localStorage(idAdmin)) {
+      if (ronda > rondas) {
+        socket.emit("terminarPartida",{data: jugadores })
+      } else {
+        setRonda(ronda + 1)
+        setLetrasprohibidas([])
+        setPrevPalabra("")
+        const letras = "abcdefghijklmnñopqrstuvwxyz"
+        for (let i = 0; i < cantidadLetras; i++) {
+          const indiceAleatorio = Math.floor(Math.random() * letras.length);
+          setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+        }
+        setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+      }
+    }
+  }, [ronda, socketRonda])
 
 
   // //terminar partida
-  // useEffect(() => {
-  //   if (!socket) return;
-  //   socket.on("terminarPartida", data => {
-  //     setJugadores(data.jugadores)
-  //     const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-  //     openModal("Partida Finalizada", { accion: accion })
-  //     //Modal de fin de partida + resultados
-  //     //boton de ir a sala de espera
-  //     //El siguiente codigo se ejecuta al iniciar la partida
-  //     if(!socket) return
-  //     socket.on("iniciarDentroDeLaPartida", data =>{
-  //       setJugadores(data.jugadores)
-  //     })
-  //   })
-  // }, [socket])
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("terminarPartida", data => {
+      setJugadores(data.jugadores)
+      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
+      openModal("Partida Finalizada", { accion: accion })
+      //Modal de fin de partida + resultados
+      //boton de ir a sala de espera
+      //El siguiente codigo se ejecuta al iniciar la partida
+      if(!socket) return
+      socket.on("iniciarDentroDeLaPartida", data =>{
+        setJugadores(data.jugadores)
+      })
+    })
+  }, [socket])
 
 
   // //useEffect(()=>{
-  // //  if (!socket) return;
-  // // socket.on("cambioTurno", data =>{
-  // //  setJugadores(data.jugadores),
-  // //  setPrevPalabra(data.palabra),
-  // //  let index = data.index}
-  // //)
-  // //lOS SOCKET MANDAN
-  // //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
-  // //prevPalabra (string)
-  // //idTurno de quien vaya (se puede poner nombre tambien)
-  // //ronda por la que se vaya
-  // //letras que estan prohibidas
-  // useEffect(() => {
-  //   setJugadores(socket.jugadores)
-  //   setPrevPalabra(socket.prevpalabra)
-  //   if (id == socket.idTurno) {
-  //     setRonda(socket.ronda)
-  //     setPalabra("")
-  //     setLetrasprohibidas(socket.letras)
-  //     setActivo(true)
-  //   } else {
-  //     setActivo(false)
-  //   }
-  // }, [socketTurno])
+  //  if (!socket) return;
+  // socket.on("cambioTurno", data =>{
+  //  setJugadores(data.jugadores),
+  //  setPrevPalabra(data.palabra),
+  //  let index = data.index}
+  //)
+  //lOS SOCKET MANDAN
+  //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
+  //prevPalabra (string)
+  //idTurno de quien vaya (se puede poner nombre tambien)
+  //ronda por la que se vaya
+  //letras que estan prohibidas
+  useEffect(() => {
+    setJugadores(socket.jugadores)
+    setPrevPalabra(socket.prevpalabra)
+    if (id == socket.idTurno) {
+      setRonda(socket.ronda)
+      setPalabra("")
+      setLetrasprohibidas(socket.letras)
+      setActivo(true)
+    } else {
+      setActivo(false)
+    }
+  }, [socketTurno])
 
 
 
@@ -190,23 +191,24 @@ export default function Game() {
         clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
       }
     }else{
-        //TIMER
-      // for (let i=0;i<jugadores.length;i++) {
-      //   if (jugadores[i].id == id) {
-      //     jugadores[i].punto -= 10;
-      //     break; // corta el bucle si ya lo encontró
-      //   }
-      // }
-      // socket.emit("cambioRonda", {data:jugadores})
+      for (let i=0;i<jugadores.length;i++) {
+        if (jugadores[i].id == id) {
+          jugadores[i].punto -= 10;
+          break; // corta el bucle si ya lo encontró
+        }
+      }
+      socket.emit("cambioRonda", {data:jugadores})
     }
   }, [contador]);
 return (
   <>
-    <p className={stylesG.contador}>{contador}</p>
+    <p className={stylesG.contador}>{contador}'</p>
 
     <div className={stylesG[activo]}>
+        <div className={styles.top}>
+          <h3>Ronda {ronda}/{rondas}</h3>
+        </div>
       <div className={stylesG.contenedorPrincipal}>
-        <h3 className={styles.subtitle}>Ronda {ronda}</h3>
 
         <div className={stylesG.userPointContainer}>
           {jugadores.map((jugador, index) => {
@@ -221,13 +223,13 @@ return (
         </div>
 
         <div className={stylesG.bloqueprohibidas}>
-          <h2>Letras Prohibidas...</h2>
+          <h2 className={styles.subtitle2}>Letras Prohibidas...</h2>
           <div className={stylesG.cajaprohibidas}>
             {letrasprohibidas.map((letrasprohibida, index) => {
               return (
                 <LetraProhibida
                   key={index}
-                  letra={letrasprohibida}
+                  letra={letrasprohibida.toUpperCase()}
                 ></LetraProhibida>
               );
             })}
@@ -235,25 +237,24 @@ return (
         </div>
 
         <div className={stylesG.longitudYinput}>
-          <h2 className={styles.subtitle}>
+          <h2 className={styles.subtitle2}>
             Longitud {prevPalabra.length + 1} o más
           </h2>
 
           <div className={stylesG.inputContainer}>
             {activo==true ? (
-              <div className={stylesG.flex}>
+              <div className={styles.flex}>
                 <Input
                   onKeyDown={checkLetra}
                   onChange={cambiarPalabra}
                   classNameInputWrapper={"inputWrapperGame"}
                   classNameInput={"inputGame"}
-                  placeholder="Escribe aqui"
+                  placeholder="Escribir acá"
                 ></Input>
-                <Button
-                  onClick={envioPalabra}
-                  text={"Enviar"}
-                  className="buttonGame"
-                ></Button>
+                <div className={stylesG.aumentar}>
+                  <ImagenClick onClick={envioPalabra} src={"/next.png"}/>
+                </div>
+                
               </div>
             ) : (
               <h2 className={styles.subtitle}>
