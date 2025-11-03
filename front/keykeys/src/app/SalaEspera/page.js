@@ -109,10 +109,10 @@ export default function Game() {
 
       setJugadores(prevJugadores => {
         const nuevos = prevJugadores.filter(j => {
-          const jugador = j[0] || j; 
+          const jugador = j[0] || j;
           console.log("Este es el for ", jugador)
           console.log(jugador.id_usuario)
-          if (jugador.id_usuario != data.user.id){
+          if (jugador.id_usuario != data.user.id) {
             return jugador.id_usuario
           }
         });
@@ -140,20 +140,22 @@ export default function Game() {
       }
       )
     }
-
-    //   useEffect(()=>{
-    //  if (!socket) return;
-    //  socket.on("partidaInit", data =>{
-    // localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-    //     localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-    //     localStorage.setItem(`idAdmin`, idAdmin)
-    //     localStorage.setItem(`idUser`, id)
-    //     localStorage.setItem(`room`, room)
-    //     localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-    //     router.replace('../Game', { scroll: false })
-    //  })
   }, [socket])
 
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("partidaInitReceive", data => {
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
+      localStorage.setItem(`idAdmin`, idAdmin)
+      localStorage.setItem(`idUser`, id)
+      localStorage.setItem(`room`, room)
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      localStorage.setItem("Usuarios", jugadores)
+      router.replace('../Game', { scroll: false })
+    })
+  }, [socket])
 
   useEffect(() => {
     console.log("Estos son los jugadores ", jugadores)
@@ -161,7 +163,7 @@ export default function Game() {
 
   //inicio de partida
   function partidaInit() {
-    socket.emit("sendMessage", { room: room, message: "Hola a todos" })
+    socket.emit("partidaInitSend")
   }
 
   function abandonarPartida() {

@@ -2,7 +2,7 @@
 
 
 import clsx from "clsx";
-import styles from "./page.module.css";
+import styles from "./game.module.css";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
 import Input from "@/Components/Input";
@@ -51,6 +51,7 @@ export default function Game() {
   useEffect(() => {
     setRoom(localStorage.getItem(`room`))
     setId(localStorage.getItem(`idUser`))
+    setJugadores(localStorage.getItem("Usuarios"))
     socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
       console.log("Se hizo el joinRoom")
     )
@@ -99,11 +100,17 @@ export default function Game() {
       //Modal de fin de partida + resultados
       //boton de ir a sala de espera
       //El siguiente codigo se ejecuta al iniciar la partida
+      })
       if(!socket) return
-      socket.on("iniciarDentroDeLaPartida", data =>{
+      socket.on("iniciarDentroDeLaPartida", data =>{ //Creo que era para hacer un random del array de jugadores que le mandes
         setJugadores(data.jugadores)
       })
-    })
+
+
+      if (!socket) return 
+      socket.on("joined_OK_room", data =>{
+        console.log("El usuario ", data.user, " se unió a la partida ", data.room)
+      })
   }, [socket])
 
 
@@ -121,7 +128,6 @@ export default function Game() {
   //ronda por la que se vaya
   //letras que estan prohibidas
   useEffect(() => {
-    setJugadores(socket.jugadores)
     setPrevPalabra(socket.prevpalabra)
     if (id == socket.idTurno) {
       setRonda(socket.ronda)

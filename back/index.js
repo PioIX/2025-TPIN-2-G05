@@ -75,9 +75,9 @@ io.on("connection", (socket) => {
     })
   })
 
-  socket.on("partidaInit", (data) => {
-    io.to(req.session.room).emit("partidaInit", {
-
+  socket.on("partidaInitSend", (data) => {
+    io.to(req.session.room).emit("partidaInitReceive", {
+      message: "Se recibio el evento partidaInit"
     })
     console.log("Se esta iniciando la partida")
   })
