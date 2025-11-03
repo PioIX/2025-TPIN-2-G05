@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, cancelar, textoBoton }) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, modalLogout}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -57,15 +57,13 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
   }
 
   if (!isOpen) return null; // Don't render the modal if it's not open
-  function handleClose() {
+  function handleClose() { //NO SE EJECUTA EN LOGOUT
     onClose();  // Cerrar el modal
-    if (action) {
+    if (action && !modalLogout) {
+      console.log("ACCION MODAL")
       action.accion();  // Ejecutar la acción si existe
     }
   };
-  function modalCancel(){
-    onClose();  // Cerrar el modal
-  }
   return (
     <>
       <div className={styles.overlay} onClick={onClose}></div>
@@ -149,11 +147,11 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             </>
           )}
           
-          {cancelar && (
-            <Button onClick={modalCancel} className="buttonModal" text="Cancelar"> </Button>
+          {modalLogout && (
+            <Button onClick={action} className="buttonModal" text="Cerrar Sesión"> </Button>
             )
           }
-          <Button onClick={handleClose} className="buttonModal" text="Close Modal"> </Button>
+          <Button onClick={handleClose} className="buttonModal" text="Cerrar"> </Button>
 
         </div>
       </div>

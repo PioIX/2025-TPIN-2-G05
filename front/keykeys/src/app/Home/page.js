@@ -30,13 +30,15 @@ export default function Home() {
   const [partidas, setPartidas] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
-  const [modalCancelar, setModalCancelar] = useState(false)
   const [admin, setAdmin] = useState(false)
-  function openModal(mensaje, action, cancelarModal) {
+  const [cerrarSesion, setCerrarSesion] = useState(false)
+
+
+  function openModal(mensaje, action, cerrar){
     setModalMessage(mensaje);
     setModalAction(action);
-    setModalCancelar(cancelarModal)
     setIsModalOpen(true);
+    setCerrarSesion(cerrar);//ESTO BOOLEANO DICE SI HAY UN BOTON DE CANCELAR O NO LO HAY.
   }
 
   useEffect(() => {
@@ -81,33 +83,14 @@ export default function Home() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-  function logOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
+  function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
+    console.log("logout")
     const accion = () => {
       localStorage.setItem("idUser", null)
       router.push("..")
-    }; //AGREGAR BOTON DE NO CERRAR SESION
+    };
     openModal("Estás seguro?", {accion: accion}, true)
   }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -230,7 +213,7 @@ export default function Home() {
               alt="Usuario"
             />
             <h3 className={styles.userName}>{nombreUsuario}</h3>
-            <button className={styles.logoutButton} onClick={logOut}>
+            <button className={styles.logoutButton} onClick={openModalLogOut}>
               CERRAR SESIÓN
             </button>
           </div>
@@ -275,8 +258,8 @@ export default function Home() {
             onClickAgregar={fetchInsertarSolicitud} 
             mensajePartidas={partidas} 
             esModalPartidas={isModalPartidasOpen}
-            cancelar={modalCancelar}
-            textoBoton={"Cerrar Sesión"}/>
+            modalLogout={cerrarSesion}
+            />
       </div>
     </div>
 
