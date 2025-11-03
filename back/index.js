@@ -370,13 +370,11 @@ app.post('/crearPartida', async function (req, res) {
 //actualizar valores partida actualiara a false cuando termine la partida/se inicie la partida, para que nadie mas se una
 app.put('/actualizarValoresPartidaFalse', async function (req, res) {
   try {
-    const { id_partida, } = req.body;
-
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE Partidas
-      SET activa = 0,
-      WHERE id_partida = "${id_partida}"
+      SET activa = 0
+      WHERE id_partida = ${req.body.id_partida}
     `);
 
     res.send({ mensaje: "Partida actualizada exitosamente" });
