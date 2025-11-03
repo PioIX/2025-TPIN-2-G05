@@ -45,54 +45,96 @@ io.use((socket, next) => {
 */
 
 let contador = 0; // Movido fuera del evento connection
-let jugadores = []
-
 
 io.on("connection", (socket) => {
-  // Enviar el valor actual del contador al nuevo cliente
-  socket.emit("respuestaPersonalizada", { contador });
 
   const req = socket.request;
 
   socket.on("joinRoom", (data) => {
-    if (!jugadores.includes(data.user)) {
-      jugadores.push(data.user);
-    }
-    req.session.user = jugadores
+    req.session.user = data.user;
     console.log("Este es req.user ", req.session.user)
     console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
-    if (req.session.room != undefined && req.session.room.length > 0)
+    if (req.session.room != undefined)
       socket.leave(req.session.room);
     req.session.room = data.room;
     socket.join(req.session.room);
 
 
     io.to(req.session.room).emit("joined_OK_room", {
-      user: req.session.user.reverse(),
+      user: req.session.user,
       room: req.session.room,
     });
     console.log("Este es el room ", req.session.room)
     console.log("Este es el user ", req.session.user)
   });
 
+  socket.on("enviarIdsDeJugadores", (data)=>{
+    console.log(data)
+    io.to(req.session.room).emit("recibirIdsDeJugadores", {
+      data: data
+    })
+  })
+
+  socket.on("partidaInit", (data) => {
+    io.to(req.session.room).emit("partidaInit", {
+
+    })
+    console.log("Se esta iniciando la partida")
+  })
+
+  socket.on("iniciarDentroDeLaPartida", (data) => {
+    io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
+      jugadores: data.jugadores
+    })
+    console.log("Se esta iniciando la partida desde dentro")
+  })
+
+  socket.on("terminarPartida", (data) => {
+    io.to(req.session.room).emit("terminarPartida", {
+
+    })
+    console.log("La partida ha terminado")
+  })
+
+  socket.on("cambioRonda", (data) => {
+    io.to(req.session.room).emit("cambioRonda", {
+      jugadores: data
+    })
+  })
+
+  socket.on("cambioTurno", (data) => {
+    data.index = data.index + 1
+    io.to(req.session.room).emit("cambioTurno", {
+      jugadores: data.jugadores,
+      palabra: data.palabra,
+      index: data.index
+    })
+  })
+
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
     io.emit("pingAll", { event: "Ping to all", message: data });
   });
 
-  socket.on("sendMessage", (data) => {
-    io.to(req.session.room).emit("newMessage", {
-      room: req.session.room,
-      message: data,
-    });
-  });
-
-  socket.on('leaveRoom', (data) => {
-    io.to(req.session.room).emit("leftRoom", {
+  socket.on('leaveRoomAdmin', (data) => {
+    io.to(req.session.room).emit("leftRoomAdmin", {
       message: "Has abandonado la partida"
     })
     socket.leave(req.session.room);
-    jugadores = []
+  })
+
+  socket.on("leaveRoomPlayer", (data)=>{
+    io.to(req.session.room).emit("leftRoomPlayer",{
+      user: data
+    }
+    )
+  })
+
+  socket.on("sendMessage", (data) => {
+    io.to(req.session.room).emit("newMessage", {
+      message: data.message,
+      room: data.room,
+    });
   })
 });
 

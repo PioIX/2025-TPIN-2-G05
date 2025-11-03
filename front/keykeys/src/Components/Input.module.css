@@ -72,3 +72,31 @@
     border-color: red;
     box-shadow: 0 0 5px red;
 }
+.inputWrapperGame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.inputGame {
+    background-color: #7f7f7f;
+    color: #fff;
+    font-size: 1rem;
+    border: 0.5rem solid #a9a8a8;
+    padding: 3rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 3rem;
+    color: rgb(0, 0, 0);
+    font-weight: bolder;
+    width: 50vw;
+    height: 10vw;
+}
+
+.inputGame:focus {
+    border-color: #ff3c00;
+    box-shadow: 0 0 6px #ff3c00;
+    background-color: #a9a8a8;
+}

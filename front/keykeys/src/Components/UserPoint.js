@@ -25,7 +25,6 @@ export default function Person(props) {
             result.push(1);
             number -= 1;
         }
-        console.log(result)
         return result;
 
     }

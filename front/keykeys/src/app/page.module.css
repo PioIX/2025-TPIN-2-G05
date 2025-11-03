@@ -26,7 +26,21 @@ html, body {
   font-weight: bold;
 }
 
-.red {
+.subtitle {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  
+}
+.subtitle2 {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  font-size: 2.5rem;
+}
+.red{ 
   color: #d32f2f;
   margin: 1rem;
   font-weight: 500;
@@ -61,4 +75,13 @@ html, body {
   .irALaOtraPagina {
     font-size: 0.9rem;
   }
+}
+.flex {
+  display: flex;
+  margin-top: 5%;
+}
+.top{
+  top:20px;
+  margin-left: 47vw;
+  margin-top: 1vw;
 }
