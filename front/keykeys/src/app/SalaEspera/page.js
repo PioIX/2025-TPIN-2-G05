@@ -90,9 +90,10 @@ export default function Game() {
 
   useEffect(() => {
     if (!socket) return
-    if (jugadores.length == 0)
-      socket.on('joined_OK_room', data => {
+    if (jugadores.length <= 1)
+      socket.on('joined_OK_room', data => { 
         console.log("Se ejecuto joinRoom")
+        console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
           if (prevArray.includes(data.user)) return prevArray;
           const nuevo = [...prevArray, data.user];
@@ -159,7 +160,19 @@ export default function Game() {
 
   useEffect(() => {
     console.log("Estos son los jugadores ", jugadores)
+    if (jugadores.length != jugadoresId.length) {
+      let aux = []
+      for (let i = 0; i < jugadores.length; i++) {
+        const element = jugadores[i];
+        aux.push(element[0].id_usuario)
+      }
+      setJugadoresId(aux)
+    }
   }, [jugadores])
+
+  useEffect(() => {
+    console.log("Estos son los jugadores Id", jugadoresId)
+  }, [jugadoresId])
 
   //inicio de partida
   function partidaInit() {

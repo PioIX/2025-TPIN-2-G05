@@ -53,9 +53,10 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", (data) => {
     req.session.user = data.user;
     console.log("Este es req.user ", req.session.user)
-    console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
-    if (req.session.room != undefined)
+    console.log("🚀 ~ io.on ~ req.session.room:", data.room);
+    if (req.session.room != undefined){
       socket.leave(req.session.room);
+    }
     req.session.room = data.room;
     socket.join(req.session.room);
 
