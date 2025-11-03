@@ -11,7 +11,6 @@ import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
-import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -59,9 +58,10 @@ export default function Game() {
       setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     setId(localStorage.getItem(`idUser`))
-    // socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
-    //   console.log("Se hizo el joinRoom")
-    // )
+    setJugadores(localStorage.getItem("Usuarios"))
+    socket.emit("joinRoom", { room: localStorage.getItem("room"), id: localStorage.getItem("idUser") },
+      console.log("Se hizo el joinRoom")
+    )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
@@ -107,11 +107,17 @@ export default function Game() {
       //Modal de fin de partida + resultados
       //boton de ir a sala de espera
       //El siguiente codigo se ejecuta al iniciar la partida
+      })
       if(!socket) return
-      socket.on("iniciarDentroDeLaPartida", data =>{
+      socket.on("iniciarDentroDeLaPartida", data =>{ //Creo que era para hacer un random del array de jugadores que le mandes
         setJugadores(data.jugadores)
       })
-    })
+
+
+      if (!socket) return 
+      socket.on("joined_OK_room", data =>{
+        console.log("El usuario ", data.user, " se unió a la partida ", data.room)
+      })
   }, [socket])
 
 
@@ -129,7 +135,6 @@ export default function Game() {
   //ronda por la que se vaya
   //letras que estan prohibidas
   useEffect(() => {
-    setJugadores(socket.jugadores)
     setPrevPalabra(socket.prevpalabra)
     if (id == socket.idTurno) {
       setRonda(socket.ronda)

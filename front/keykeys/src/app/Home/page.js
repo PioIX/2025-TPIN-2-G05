@@ -264,6 +264,5 @@ export default function Home() {
             textoBoton="Cerrar Sesión"/>
       </div>
     </div>
-
   )
 }
