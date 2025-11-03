@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
-import { infoUsuario } from "@/API/fetch";
+import { infoUsuario, actualizarValoresPartidaFalse } from "@/API/fetch";
 import Modal from "@/Components/Modal";
 import styles from "@/app/page.module.css"
 import stylesSE from "@/app/SalaEspera/page.module.css"
@@ -153,10 +153,11 @@ export default function Game() {
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
       localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem("Usuarios", jugadores)
       router.replace('../Game', { scroll: false })
     })
   }, [socket])
+
+
 
   useEffect(() => {
     console.log("Estos son los jugadores ", jugadores)
@@ -175,7 +176,10 @@ export default function Game() {
   }, [jugadoresId])
 
   //inicio de partida
-  function partidaInit() {
+  async function partidaInit() {
+    localStorage.setItem("Usuarios", JSON.stringify(jugadores))
+    console.log("Este es el valor d ejugadores cuando se sube ", jugadores)
+    await actualizarValoresPartidaFalse(room)
     socket.emit("partidaInitSend")
   }
 
