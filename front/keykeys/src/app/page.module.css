@@ -21,7 +21,20 @@ html, body{
   text-transform: uppercase;
   text-align: center;
 }
-
+.subtitle {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  
+}
+.subtitle2 {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  font-size: 2.5rem;
+}
 .red{ 
   color: #d32f2f;
   margin:1rem;
@@ -44,4 +57,13 @@ html, body{
 
 .irALaOtraPagina:hover {
   color: #64b5f6;
+}
+.flex {
+  display: flex;
+  margin-top: 5%;
+}
+.top{
+  top:20px;
+  margin-left: 47vw;
+  margin-top: 1vw;
 }

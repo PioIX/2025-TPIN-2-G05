@@ -6,7 +6,7 @@ export default function Input(props) {
         <img 
             onClick={props.onClick} 
             src={props.src} 
-            className={clsx(props.className || styles.imagenClick)}
+            className={styles.imagenClick}
         />
     );
 
