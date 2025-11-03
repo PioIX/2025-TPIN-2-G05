@@ -216,7 +216,7 @@ export async function agregarUsuarioAPartida(id_partida, id_usuario) {
 }
 
 export async function traerPartidaPorCodigo(codigo) {
-    return fetch(`http://localhost:4000/TraerPartidaPorCodigo?codigo=${codigo}`)
+    return fetch(`http://localhost:4000/traerPartidaPorCodigo?codigo=${codigo}`)
     .then((response) => response.json())
     .then((result) => {
         return { result };
@@ -231,8 +231,8 @@ export async function traerPartidasActivasAmigos(id_usuario) {
     });
 }
 
-export async function traerPartidaPorCodigo(id_partida) {
-    return fetch(`http://localhost:4000/traerPartidaPorCodigo?id_partida=${id_partida}`)
+export async function traerCodigoPorPartida(id_partida) {
+    return fetch(`http://localhost:4000//traerCodigoPorPartida?id_partida=${id_partida}`)
         .then((response) => response.json())
         .then((result) => {
             return { result };
