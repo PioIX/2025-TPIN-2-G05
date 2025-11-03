@@ -2,9 +2,11 @@
 
 
 import clsx from "clsx";
-import styles from "./game.module.css";
-// import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+import styles from "../page.module.css";
+import stylesG from "./game.module.css";
+import {checkearPalabra  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
+import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
@@ -48,6 +50,12 @@ export default function Game() {
 
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
+      setJugadores([{puntos:9,src:"a"},{puntos: 17,src:"a"}])
+      setLetrasprohibidas(["a","v"])
+      setActivo(true)
+      setRonda(1)
+      setRondas(2)
+      setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     setId(localStorage.getItem(`idUser`))
     setJugadores(localStorage.getItem("Usuarios"))
@@ -60,12 +68,12 @@ export default function Game() {
       if (ronda == undefined) {
         setRonda(0)
       }
-      socket.emit("iniciarDentroDeLaPartida", { })
+      // socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
 
-  //cada vez que te llega el , evento de cambio de ronda + al inicio
+  // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if(!socket) return;
     socket.on("cambioRonda", data => {
@@ -89,7 +97,7 @@ export default function Game() {
   }, [ronda, socketRonda])
 
 
-  //terminar partida
+  // //terminar partida
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartida", data => {
@@ -113,7 +121,7 @@ export default function Game() {
   }, [socket])
 
 
-  //useEffect(()=>{
+  // //useEffect(()=>{
   //  if (!socket) return;
   // socket.on("cambioTurno", data =>{
   //  setJugadores(data.jugadores),
@@ -143,7 +151,7 @@ export default function Game() {
   //Esto va en el onchange del input
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
-      //let valid = fetch de palabras o comprobacion si la palabra existe-es valida
+      let valid = checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
       if (valid) {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
@@ -188,65 +196,89 @@ export default function Game() {
         clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
       }
     }else{
-      alert("Pasaron 10 segundos.")//ESTO SE EJECUTA CUANDO PASAN 10 SEGUNDOS.
+      for (let i=0;i<jugadores.length;i++) {
+        if (jugadores[i].id == id) {
+          jugadores[i].punto -= 10;
+          break; // corta el bucle si ya lo encontró
+        }
+      }
+      socket.emit("cambioRonda", {data:jugadores})
     }
   }, [contador]);
-  //TIMER
+return (
+  <>
+    <p className={stylesG.contador}>{contador}'</p>
 
+    <div className={stylesG[activo]}>
+        <div className={styles.top}>
+          <h3>Ronda {ronda}/{rondas}</h3>
+        </div>
+      <div className={stylesG.contenedorPrincipal}>
 
+        <div className={stylesG.userPointContainer}>
+          {jugadores.map((jugador, index) => {
+            return (
+              <UserPoint
+                key={index}
+                point={jugador.puntos}
+                src={jugador.foto}
+              ></UserPoint>
+            );
+          })}
+        </div>
 
-  return <>
-    <Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
-    <p>{contador}</p>
+        <div className={stylesG.bloqueprohibidas}>
+          <h2 className={styles.subtitle2}>Letras Prohibidas...</h2>
+          <div className={stylesG.cajaprohibidas}>
+            {letrasprohibidas.map((letrasprohibida, index) => {
+              return (
+                <LetraProhibida
+                  key={index}
+                  letra={letrasprohibida.toUpperCase()}
+                ></LetraProhibida>
+              );
+            })}
+          </div>
+        </div>
 
-  </>;
+        <div className={stylesG.longitudYinput}>
+          <h2 className={styles.subtitle2}>
+            Longitud {prevPalabra.length + 1} o más
+          </h2>
 
-  //poner esto si termina el timer
-  // for (let i=0;i<jugadores.length;i++) {
-  //   if (jugadores[i].id == id) {
-  //     jugadores[i].punto -= 10;
-  //     break; // corta el bucle si ya lo encontró
-  //   }
-  // }
-  //socket.emit("cambioRonda", {data:jugadores})
-
-  useEffect(() => {
-    // timer
-  }, [])
-
-  return (
-    <>
-      <div className={activo}>
-        {/* <></> Poner cosa del timer */}
-        <h3>Ronda {ronda}</h3>
-        {
-          jugadores.map((jugador, index) => {
-            <UserPoint key={index} point={jugador.puntos} src={jugador.foto}></UserPoint>
-          })
-        }
-        {
-          letrasprohibidas.map((letrasprohibida, index) => {
-            <LetraProhibida key={index} letra={letrasprohibida}></LetraProhibida>
-          })
-        }
-        <h2>Longitud {prevPalabra.length + 1} o mas </h2>
-        {
-          activo ?
-            (<><Input onClick={envioPalabra} onKeyDown={checkLetra} onChange={cambiarPalabra}></Input>
-              <Button onClick={envioPalabra} text={"Enviar Palabra"}></Button></>)
-            :
-            (<h2 className={styles.subtitle}>No es tu turno</h2>      //opcional// setPlayerActive(socket.nameTurno)
-            )
-        }
-        {/* Modal Component */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          mensaje={modalMessage}
-          jugadores={jugadores}
-          action={modalAction || null} // Si modalAction está vacío, pasa null
-        />
+          <div className={stylesG.inputContainer}>
+            {activo==true ? (
+              <div className={styles.flex}>
+                <Input
+                  onKeyDown={checkLetra}
+                  onChange={cambiarPalabra}
+                  classNameInputWrapper={"inputWrapperGame"}
+                  classNameInput={"inputGame"}
+                  placeholder="Escribir acá"
+                ></Input>
+                <div className={stylesG.aumentar}>
+                  <ImagenClick onClick={envioPalabra} src={"/next.png"}/>
+                </div>
+                
+              </div>
+            ) : (
+              <h2 className={styles.subtitle}>
+                No es tu turno
+              </h2>
+            )}
+          </div>
+        </div>
       </div>
-    </>
-  );
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        mensaje={modalMessage}
+        jugadores={jugadores}
+        action={modalAction || null}
+      />
+    </div>
+  </>
+);
+
 }

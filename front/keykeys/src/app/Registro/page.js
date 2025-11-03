@@ -92,8 +92,8 @@ export default function Home() {
         <div className={styles.card}>
         <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
           <h1 className={stylesR.title} >Keykeys</h1>
-          <h2 className={styles.subtitle}>Registro</h2>
-          <h3 className={styles.subtitle2}>Ingrese un nombre, una contraseña y una foto</h3>
+          <h2 className={styles.subtitle2}>Registro</h2>
+          <h3 className={styles.subtitle}>Ingrese un nombre, una contraseña y una foto</h3>
           <div className={styles.container}>
             <div className={stylesR.containerInputsYBoton}>
               <div className={stylesR.conatinerInputs}>
