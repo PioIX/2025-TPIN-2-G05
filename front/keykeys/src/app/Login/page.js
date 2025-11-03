@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <>
       <div className={styles.container}>
-        <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
+        <ImagenClick src = {"/volver.png"}  onClick={volver} className={"imagenClick"}></ImagenClick>
         <h1 className={styles.title}>Keykeys</h1>
         <h2 className={styles.subtitle2}>Inicie sesión</h2 >
         <h3 className={styles.subtitle}>Ingrese su nombre y contraseña</h3>

@@ -6,8 +6,7 @@ html, body {
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
+  display: block;
   justify-content: center;
   align-items: center;
   text-align: center;

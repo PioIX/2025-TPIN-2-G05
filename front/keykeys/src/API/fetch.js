@@ -231,8 +231,8 @@ export async function traerPartidasActivasAmigos(id_usuario) {
     });
 }
 
-export async function traerPartidaPorCodigo(id_partida) {
-    return fetch(`http://localhost:4000/traerPartidaPorCodigo?id_partida=${id_partida}`)
+export async function traerCodigo(id_partida) {
+    return fetch(`http://localhost:4000/traerCodigo?id_partida=${id_partida}`)
         .then((response) => response.json())
         .then((result) => {
             return { result };

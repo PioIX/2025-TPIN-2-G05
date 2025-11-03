@@ -90,7 +90,7 @@ export default function Home() {
     <>
       <div className={styles.container}>
         <div className={styles.card}>
-        <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
+        <ImagenClick src = {"/volver.png"} onClick={volver} className={"imagenClick"}></ImagenClick>
           <h1 className={stylesR.title} >Keykeys</h1>
           <h2 className={styles.subtitle2}>Registro</h2>
           <h3 className={styles.subtitle}>Ingrese un nombre, una contraseña y una foto</h3>

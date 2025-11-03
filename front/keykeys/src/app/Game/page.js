@@ -257,7 +257,7 @@ return (
                   placeholder="Escribir acá"
                 ></Input>
                 <div className={stylesG.aumentar}>
-                  <ImagenClick onClick={envioPalabra} src={"/next.png"}/>
+                  <ImagenClick onClick={envioPalabra} className={"imagenClickGame"} src={"/next.png"}/>
                 </div>
                 
               </div>

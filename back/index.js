@@ -543,7 +543,7 @@ app.get('/traerPartidaPorCodigo', async function (req, res) {
   }
 });
 
-app.get('/traerPartidaPorCodigo', async function (req, res) {
+app.get('/traerCodigo', async function (req, res) {
       const { id_partida} = req.body;
   try {
       let respuesta = await realizarQuery(`
