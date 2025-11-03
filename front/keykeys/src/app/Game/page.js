@@ -4,7 +4,7 @@
 import clsx from "clsx";
 import styles from "../page.module.css";
 import stylesG from "./game.module.css";
-// import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+import {checkearPalabra  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
 import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
@@ -146,7 +146,7 @@ export default function Game() {
   //Esto va en el onchange del input
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
-      //let valid = fetch de palabras o comprobacion si la palabra existe-es valida
+      let valid = checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
       if (valid) {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
