@@ -19,6 +19,7 @@ export default function Game() {
   const [jugadores, setJugadores] = useState([]);
   const [palabra, setPalabra] = useState("");
   const [id, setId] = useState("");
+  const [idAdmin, setIdAdmin] = useState("")
   const [prevPalabra, setPrevPalabra] = useState("");
   const [room, setRoom] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
@@ -85,7 +86,7 @@ export default function Game() {
     socket.on("cambioRondaReceive", data => {
       setJugadores(data.jugadores)
     })
-    if (id == localStorage(idAdmin)) {
+    if (id == localStorage.getItem("idAdmin")) {
       if (ronda > rondas) {
         socket.emit("terminarPartida", { data: jugadores })
       } else {
