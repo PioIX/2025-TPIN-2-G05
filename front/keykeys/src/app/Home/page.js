@@ -33,7 +33,7 @@ export default function Home() {
   const [admin, setAdmin] = useState(false)
   const [cerrarSesion, setCerrarSesion] = useState(false)
   const [booleanoLogout, setBooleanoLogout] = useState(false)
-
+  const [booleanoAdmin, setBooleanoAdmin] = useState(false)
   function openModal(mensaje, action){
     setModalMessage(mensaje);
     setModalAction(action);
@@ -88,20 +88,6 @@ export default function Home() {
     openModal("Estás seguro?", {accion: accionDeCierre})
     setBooleanoLogout(true)
   }
-
-  //hacer esto, no ta hecho
-  function openModalAdminBDD() { //ADMIN BDD - BASE DE DATOS - ADMINISTRADOR
-    console.log("openModalAdminBDD")
-    const accionDeCierre = () => {
-      localStorage.setItem("idUser", null)
-      router.push("..")
-    };
-    openModal("Estás seguro?", {accion: accionDeCierre})
-    setBooleanoLogout(true)
-  }
-
-
-
 
   function closeModalLogout(){
     setBooleanoLogout(false)
@@ -204,14 +190,37 @@ export default function Home() {
   const handleChangeAmigo = (event) => {
     setAmigo(event.target.value)
   }
-  function modalAdministrarUsuarios(){
+
+  function openModalAdmin(){
     console.log("Se abrió el modalAdministrarUsuarios")
-    alert("Se abrió el modalAdministrarUsuarios")
+        const accionDeCierre = () => {
+      localStorage.setItem("idUser", null)
+      router.push("..")
+    };
+    openModal("Estás seguro?", {accion: accionDeCierre})
+    setBooleanoAdmin(true)
+
   }
-  function modalAdministrarBDD(){
-    console.log("Se abrió el modalAdministrarBDD")
-    alert("Se abrió el modalAdministrarBDD")
+
+  function closeModalAdmin(){
+    setBooleanoAdmin(false)
+    setIsModalOpen(false);
+    setModalAction(null)
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   return (
     <div>
       <div className={styles.container}>
@@ -252,12 +261,9 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
+          {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openModalAdmin}>Administrar Usuarios</button>}
         </div>
-        {admin && 
-        <div className={styles.menuJuego}> {/*MENU ADMIN*/}
-          <button className={`${styles.mainButton} ${styles.admin}`} onClick={modalAdministrarUsuarios}>Administrar Usuarios</button>
-          <button className={`${styles.mainButton} ${styles.admin}`} onClick={modalAdministrarBDD}>Administrar BDD</button>
-        </div>}
+
         <Modal 
             onUpdate={() => { fetchAmigos(idUser) }} 
             eleccion={isModalEleccionOpen} 

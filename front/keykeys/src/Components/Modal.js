@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout}) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout, esAdmin}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -171,9 +171,17 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             <Button onClick={handleCloseLogout} className="buttonModal" text="Cerrar Sesión"> </Button>
             <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
             </>
-            
             ):
-          
+          <Button onClick={handleClose} className="buttonModal" text="Cerrar"> </Button>}
+
+          {esAdmin ? (
+            <>
+            {/*usar una variable menu que sea "eliminar", "modificar" o "home" para determinar que submodal se abre*/}
+            
+            <Button onClick={modalAdminEliminar} className="buttonModal" text="Eliminar Usuario"> </Button>
+            <Button onClick={modalAdminModificar} className="buttonModal" text="Modificar Usuario"> </Button>
+            </>
+            ):
           <Button onClick={handleClose} className="buttonModal" text="Cerrar"> </Button>}
 
         </div>
