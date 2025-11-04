@@ -182,6 +182,11 @@ export default function Home() {
     setIsModalOpen(true);
     setIsModalPartidasOpen(true)
   }
+
+  function configuracion() {
+    router.push("/Settings")
+  }
+  
   async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
     setAmigos(respond.result)
@@ -237,7 +242,7 @@ export default function Home() {
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
-          <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
+          <button className={`${styles.mainButton} ${styles.config}`} onClick={configuracion}>Configuración</button>
         </div>
         {admin && 
         <div className={styles.menuJuego}> {/*MENU ADMIN*/}

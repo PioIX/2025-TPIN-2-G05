@@ -561,3 +561,14 @@ app.get('/traerCodigo', async function (req, res) {
   }
 });
 
+app.put('/cambiarDatosUsuario', upload.single("foto"), async function (req, res) { // Con upload.single("foto") manejo la subida de la foto y la division de datos en req.body y req.file
+  try {
+    const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
+    await realizarQuery(
+      "UPDATE UsuariosKey SET nombre = ?, contraseña = ?, foto = ? WHERE id_usuario = ?",
+      [req.body.nombre, req.body.contraseña, foto, req.body.id_usuario]) //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
+          res.send({ res: 1 })
+  } catch (error) {
+    res.send({ mensaje: "Tuviste un error", error: error.message });
+  }
+});

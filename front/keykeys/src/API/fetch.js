@@ -238,3 +238,18 @@ export async function traerCodigo(id_partida) {
             return { result };
         });
 }
+
+export async function actualizarDatosUsuario(formData) {
+
+    return fetch(`http://localhost:4000/actualizarDatosUsuario`, {
+        method: "PUT",
+        body: formData //No se necesitan headers porque el formData ya los incluye, o por lo menos no necesita los headers de json
+    }
+    )
+        .then(response => response.json())
+        .then(result => {
+            console.log(result)
+            return { result }
+        }
+        )
+}
