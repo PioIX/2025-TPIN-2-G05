@@ -155,8 +155,25 @@ export async function crearPartida(id_usuario_admin) {
 //     });
 // }
 
-export async function actualizarValoresPartida(id_partida, id_usuario_ganador) {
-    return fetch(`http://localhost:4000/actualizarValoresPartida`, {
+export async function actualizarValoresPartidaTrue(id_partida, id_usuario_ganador) {
+    return fetch(`http://localhost:4000/actualizarValoresPartidaTrue`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_partida: id_partida,
+            id_usuario_ganador: id_usuario_ganador
+        })
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
+export async function actualizarValoresPartidaFalse(id_partida, id_usuario_ganador) {
+    return fetch(`http://localhost:4000/actualizarValoresPartidaFalse`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
@@ -212,4 +229,12 @@ export async function traerPartidasActivasAmigos(id_usuario) {
     .then((result) => {
         return { result };
     });
+}
+
+export async function traerCodigo(id_partida) {
+    return fetch(`http://localhost:4000/traerCodigo?id_partida=${id_partida}`)
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }

@@ -68,10 +68,10 @@ export default function Home() {
   return (
     <>
       <div className={styles.container}>
-        <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
+        <ImagenClick src = {"/volver.png"}  onClick={volver} className={"imagenClick"}></ImagenClick>
         <h1 className={styles.title}>Keykeys</h1>
-        <h2 className={styles.subtitle}>Inicie sesión</h2 >
-        <h3 className={styles.subtitle2}>Ingrese su nombre y contraseña</h3>
+        <h2 className={styles.subtitle2}>Inicie sesión</h2 >
+        <h3 className={styles.subtitle}>Ingrese su nombre y contraseña</h3>
         <div className={stylesL.containerInputs}>
           <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"}> </Input>
           <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"

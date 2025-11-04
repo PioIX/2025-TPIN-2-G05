@@ -32,6 +32,11 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     setCodigoEntrada(event.target.value)
   }
 
+  function unirseASala(item){
+    localStorage.setItem("room", item.id_partida)
+    router.push('/SalaEspera', {scroll:false})
+  }
+
   async function checkCodigoEntrada() {
     let puedeEntrar = await traerPartidaPorCodigo(codigoEntrada)
     console.log(puedeEntrar.result)
@@ -145,7 +150,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                       <span className={styles.codigoPartida}>
                         Partida {partida.id_partida} Usuario Admin: {partida.admin_nombre}
                       </span>
-                      <Button onClick={() => { }} text="Unirse" />
+                      <Button onClick={() => {unirseASala(partida)}} text="Unirse" />
                     </div>
                   ))}
                   <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>

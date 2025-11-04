@@ -53,9 +53,10 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", (data) => {
     req.session.user = data.user;
     console.log("Este es req.user ", req.session.user)
-    console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
-    if (req.session.room != undefined)
+    console.log("🚀 ~ io.on ~ req.session.room:", data.room);
+    if (req.session.room != undefined){
       socket.leave(req.session.room);
+    }
     req.session.room = data.room;
     socket.join(req.session.room);
 
@@ -75,9 +76,9 @@ io.on("connection", (socket) => {
     })
   })
 
-  socket.on("partidaInit", (data) => {
-    io.to(req.session.room).emit("partidaInit", {
-
+  socket.on("partidaInitSend", (data) => {
+    io.to(req.session.room).emit("partidaInitReceive", {
+      message: "Se recibio el evento partidaInit"
     })
     console.log("Se esta iniciando la partida")
   })
@@ -367,14 +368,31 @@ app.post('/crearPartida', async function (req, res) {
 });
 
 //actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
-app.put('/actualizarValoresPartida', async function (req, res) {
+app.put('/actualizarValoresPartidaFalse', async function (req, res) {
   try {
-    const { id_partida, id_usuario_ganador } = req.body;
+    const { id_partida, } = req.body;
 
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE Partidas
-      SET activa = 0, id_usuario_ganador = "${id_usuario_ganador}"
+      SET activa = 0,
+      WHERE id_partida = "${id_partida}"
+    `);
+
+    res.send({ mensaje: "Partida actualizada exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al actualizar partida", error: error.message });
+  }
+});
+
+app.put('/actualizarValoresPartidaTrue', async function (req, res) {
+  try {
+    const { id_partida, } = req.body;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE Partidas
+      SET activa = 1,
       WHERE id_partida = "${id_partida}"
     `);
 
@@ -518,6 +536,24 @@ app.get('/traerPartidaPorCodigo', async function (req, res) {
       res.send(respuesta)
     } else {
       res.send({ mensaje: "No se encontró una partida activa con ese código" });
+      return;
+    }
+  } catch (error) {
+    res.send({ mensaje: "Error al traer partida por código", error: error.message });
+  }
+});
+
+app.get('/traerCodigo', async function (req, res) {
+      const { id_partida} = req.body;
+  try {
+      let respuesta = await realizarQuery(`
+            SELECT codigo_entrada FROM Partidas WHERE id_partida = "${id_partida}" AND activa = 1
+        `);
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta)
+    } else {
+      res.send({ mensaje: "Error, no existe esa partida" });
       return;
     }
   } catch (error) {
