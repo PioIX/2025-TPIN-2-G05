@@ -79,9 +79,6 @@ export default function Home() {
     openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
   }
 
-
-
-
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
     console.log("openModalLogOut")
     const accionDeCierre = () => {
@@ -97,9 +94,7 @@ export default function Home() {
     setIsModalOpen(false);
     setModalAction(null)
   }
-
-
-
+  
   function showConfiguracion() {
     console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
   }
