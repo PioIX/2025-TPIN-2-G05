@@ -32,13 +32,12 @@ export default function Home() {
   const { socket, isConnected } = useSocket()
   const [admin, setAdmin] = useState(false)
   const [cerrarSesion, setCerrarSesion] = useState(false)
+  const [booleanoLogout, setBooleanoLogout] = useState(false)
 
-
-  function openModal(mensaje, action, cerrar){
+  function openModal(mensaje, action){
     setModalMessage(mensaje);
     setModalAction(action);
     setIsModalOpen(true);
-    setCerrarSesion(cerrar);//ESTO BOOLEANO DICE SI HAY UN BOTON DE CANCELAR O NO LO HAY.
   }
 
   useEffect(() => {
@@ -84,14 +83,20 @@ export default function Home() {
 
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
-    console.log("logout")
-    const accion = () => {
+    console.log("openModalLogOut")
+    const accionDeCierre = () => {
       localStorage.setItem("idUser", null)
       router.push("..")
     };
-    openModal("Estás seguro?", {accion: accion}, true)
+    openModal("Estás seguro?", {accion: accionDeCierre})
+    setBooleanoLogout(true)
   }
 
+  function closeModalLogout(){
+    setBooleanoLogout(false)
+    setIsModalOpen(false);
+    setModalAction(null)
+  }
 
 
 
@@ -249,7 +254,7 @@ export default function Home() {
             eleccion={isModalEleccionOpen} 
             aceptarSolicitud={isModalSolicitudesOpen} 
             isOpen={isModalOpen} 
-            onClose={closeModalEleccion} 
+            onClose={closeModalEleccion} //ACCIONES DEL CIERRE DE SESION
             mensaje={modalMessage} 
             value={amigo} onChange={handleChangeAmigo} 
             aceptarSolicitudes={openModalSolicitudes} 
@@ -258,7 +263,9 @@ export default function Home() {
             onClickAgregar={fetchInsertarSolicitud} 
             mensajePartidas={partidas} 
             esModalPartidas={isModalPartidasOpen}
-            modalLogout={cerrarSesion}
+            esLogout={booleanoLogout}
+            onCloseLogout={closeModalLogout}
+            action={modalAction}
             />
       </div>
     </div>
