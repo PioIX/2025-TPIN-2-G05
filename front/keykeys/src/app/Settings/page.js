@@ -7,12 +7,13 @@ import Input from "@/Components/Input";
 import { actualizarDatosUsuario } from "@/API/fetch";
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link"
 
 
 export default function Settings() {
 
+  const [id, setIdUser] = useState(0)
   const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [image, setImage] = useState("")
@@ -26,13 +27,7 @@ export default function Settings() {
   useEffect(() => {
     let id = localStorage.getItem("idUser")
     setIdUser(id)
-    fetchFotoUsuario(id)
-    fetchDatosUsuario(id)
-    fetchAmigos(id)
-    if (id == 30) {
-      setAdmin(true)
-    }
-  }, [])
+    }, [])
 
   function openModal(mensaje, action) {
     setModalMessage(mensaje);
@@ -45,21 +40,26 @@ export default function Settings() {
   };
   function cambiarNombre(event) {
     setNombre(event.target.value)
+    console.log(nombre)
   }
   function cambiarContraseña(event) {
     setContraseña(event.target.value)
   }
 
   function cambiarFoto(event) {
-
-
+    setImage(event.target.value)
   }
 
-  async function enviarDatos() {
-    let respond = await actualizarDatosUsuario(id, nombre, contraseña, image)
-    console.log(respond)
-    if (respond.result == 1) {
-      openModal("Datos actualizados correctamente", volver)
+  async function enviarDatos() {    
+    let formData = {
+      nombre: nombre,
+      contraseña: contraseña,
+      id_usuario: id,
+      foto: image
+    }
+    let respond = await actualizarDatosUsuario(formData)
+    if (respond.result.res == 1) {
+      openModal("Datos actualizados correctamente", "volver")
     } else {
       openModal("Error al actualizar los datos, intente nuevamente")
     }
