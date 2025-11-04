@@ -23,8 +23,8 @@ export default function Home() {
       <p className={styles.rest}>¿Podrás demostrar que sos el hispanohablante definitivo?</p>
       <div className={styles.center}>
         {/* <ImagenClick onClick={home} src={"/next.png"} /> Que vaya al home?? */}
-        <ImagenClick onClick={creditos} src={"/creditos.png"}/>
-        <ImagenClick onClick={iniciarSesion} src={"/next.png"}/>
+        <ImagenClick onClick={creditos} className={"imagenClick"} src={"/creditos.png"}/>
+        <ImagenClick onClick={iniciarSesion} className={"imagenClick"} src={"/next.png"}/>
       </div>
     </div>
   )

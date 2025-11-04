@@ -238,7 +238,6 @@ export default function Game() {
               );
             })}
           </div>
-
           <div className={stylesG.bloqueprohibidas}>
             <h2 className={styles.subtitle2}>Letras Prohibidas...</h2>
             <div className={stylesG.cajaprohibidas}>
@@ -271,8 +270,8 @@ export default function Game() {
                   <div className={stylesG.aumentar}>
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>
-
                 </div>
+              </div>
               ) : (
                 <h2 className={styles.subtitle}>
                   No es tu turno
