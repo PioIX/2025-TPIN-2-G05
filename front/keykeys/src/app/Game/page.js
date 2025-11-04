@@ -11,6 +11,7 @@ import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
+import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -271,7 +272,6 @@ export default function Game() {
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>
                 </div>
-              </div>
               ) : (
                 <h2 className={styles.subtitle}>
                   No es tu turno
