@@ -103,9 +103,9 @@ io.on("connection", (socket) => {
     })
   })
 
-  socket.on("cambioTurno", (data) => {
+  socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
-    io.to(req.session.room).emit("cambioTurno", {
+    io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
       index: data.index
@@ -367,16 +367,14 @@ app.post('/crearPartida', async function (req, res) {
   }
 });
 
-//actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
+//actualizar valores partida actualiara a false cuando termine la partida/se inicie la partida, para que nadie mas se una
 app.put('/actualizarValoresPartidaFalse', async function (req, res) {
   try {
-    const { id_partida, } = req.body;
-
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE Partidas
-      SET activa = 0,
-      WHERE id_partida = "${id_partida}"
+      SET activa = 0
+      WHERE id_partida = ${req.body.id_partida}
     `);
 
     res.send({ mensaje: "Partida actualizada exitosamente" });
@@ -544,6 +542,7 @@ app.get('/traerPartidaPorCodigo', async function (req, res) {
 });
 
 app.get('/traerCodigo', async function (req, res) {
+
       const { id_partida} = req.body;
   try {
       let respuesta = await realizarQuery(`
