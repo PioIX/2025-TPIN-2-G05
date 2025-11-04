@@ -62,6 +62,7 @@ export default function Game() {
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
+    console.log("Esto es elparse de stored ",JSON.parse(stored)[0] )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
@@ -72,6 +73,10 @@ export default function Game() {
     }
   }, [])
 
+
+  useEffect(()=>{
+    console.log("Estos son los jugadores ", jugadores)
+  },[jugadores])
 
   useEffect(() => {
     if (!socket) return

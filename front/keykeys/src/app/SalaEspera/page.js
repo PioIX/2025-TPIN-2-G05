@@ -150,12 +150,11 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-      localStorage.setItem(`idAdmin`, idAdmin)
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, data.rondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
+      localStorage.setItem(`idAdmin`, data.idAdmin)
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
       localStorage.setItem("Usuarios", JSON.stringify(refJugadores.current))
       router.replace('../Game', { scroll: false })
     })
@@ -181,7 +180,7 @@ export default function Game() {
   //inicio de partida
   async function partidaInit() {
     await actualizarValoresPartidaFalse(room)
-    socket.emit("partidaInitSend")
+    socket.emit("partidaInitSend", {rondas: rondas, letrasProhibidas:letrasProhibidas, idAdmin: idAdmin})
   }
 
   function abandonarPartida() {
