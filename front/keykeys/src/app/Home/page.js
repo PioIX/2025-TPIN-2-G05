@@ -89,6 +89,20 @@ export default function Home() {
     setBooleanoLogout(true)
   }
 
+  //hacer esto, no ta hecho
+  function openModalAdminBDD() { //ADMIN BDD - BASE DE DATOS - ADMINISTRADOR
+    console.log("openModalAdminBDD")
+    const accionDeCierre = () => {
+      localStorage.setItem("idUser", null)
+      router.push("..")
+    };
+    openModal("Estás seguro?", {accion: accionDeCierre})
+    setBooleanoLogout(true)
+  }
+
+
+
+
   function closeModalLogout(){
     setBooleanoLogout(false)
     setIsModalOpen(false);
@@ -235,14 +249,14 @@ export default function Home() {
 
         <div className={styles.menuJuego}>
           <h1>KEY KEYS</h1>
-          <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
-          <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
-          <button className={`${styles.mainButton} ${styles.config}`}>Configuración</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
+          <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
         </div>
         {admin && 
         <div className={styles.menuJuego}> {/*MENU ADMIN*/}
-          <button className={`${styles.mainButton} ${styles.join}`} onClick={modalAdministrarUsuarios}>Administrar Usuarios</button>
-          <button className={`${styles.mainButton} ${styles.create}`} onClick={modalAdministrarBDD}>Administrar BDD</button>
+          <button className={`${styles.mainButton} ${styles.admin}`} onClick={modalAdministrarUsuarios}>Administrar Usuarios</button>
+          <button className={`${styles.mainButton} ${styles.admin}`} onClick={modalAdministrarBDD}>Administrar BDD</button>
         </div>}
         <Modal 
             onUpdate={() => { fetchAmigos(idUser) }} 
