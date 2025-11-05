@@ -162,7 +162,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
     if (respuesta.length > 0) {
-      res.send(respuesta);
+      res.send(respuesta[0]);
     } else {
       res.send(-1);
     }

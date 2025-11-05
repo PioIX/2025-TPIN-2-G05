@@ -62,7 +62,7 @@ export default function Game() {
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
-    console.log("Esto es elparse de stored ",JSON.parse(stored)[0] )
+    console.log("Esto es elparse de stored ",JSON.parse(stored) )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
@@ -144,7 +144,7 @@ export default function Game() {
   //  let index = data.index}
   //)
   //lOS SOCKET MANDAN
-  //jugadores (array) contiene: objeto con (punto; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
+  //jugadores (array) contiene: objeto con (puntos; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
   //prevPalabra (string)
   //idTurno de quien vaya (se puede poner nombre tambien)
   //ronda por la que se vaya
@@ -174,7 +174,7 @@ export default function Game() {
       if (valid) {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
-            jugadores[i].punto += palabra.length;
+            jugadores[i].puntos += palabra.length;
             socket.emit("cambioTurno", { jugadores: jugadores, palabra: palabra, index: i })
             break; // corta el bucle si ya lo encontró
           }
@@ -217,7 +217,7 @@ export default function Game() {
     } else {
       for (let i = 0; i < jugadores.length; i++) {
         if (jugadores[i].id == id) {
-          jugadores[i].punto -= 10;
+          jugadores[i].puntos -= 10;
           break; // corta el bucle si ya lo encontró
         }
       }
@@ -236,11 +236,16 @@ export default function Game() {
 
           <div className={stylesG.userPointContainer}>
             {jugadores.map((jugador, index) => {
+              console.log("jugador en el map ", jugador)
+              console.log("jugador puntos ", jugador[0].puntos)
+              const src = jugador[0].foto
+            ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
+            : "/sesion.png";
               return (
                 <UserPoint
                   key={index}
-                  point={jugador.puntos}
-                  src={jugador.foto}
+                  point={jugador[0].puntos}
+                  src={src}
                 ></UserPoint>
               );
             })}

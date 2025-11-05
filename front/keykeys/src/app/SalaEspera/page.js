@@ -45,7 +45,9 @@ export default function Game() {
       const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
         respuestas.push(await infoUsuario(jugadoresId[i]));
+        respuestas[i].puntos = 0;
       }
+      console.log("Respuestas de cargar jugadores: ", respuestas);
       setJugadores(respuestas);
     }
     cargarJugadores();
