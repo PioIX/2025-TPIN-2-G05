@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./Modal.module.css";
 import Button from "@/Components/Button";
 import Input from "@/Components/Input";
+import Person from "./Person";
 import { useRouter } from "next/navigation";
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
