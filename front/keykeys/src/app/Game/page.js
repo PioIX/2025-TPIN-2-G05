@@ -53,10 +53,9 @@ export default function Game() {
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
     //setJugadores([{ puntos: 9, src: "a" }, { puntos: 17, src: "a" }])
-    setLetrasprohibidas(["a", "v"])
+    console.log(localStorage.getItem("idAdmin"),localStorage.getItem("idUser"),"admin" ,localStorage.getItem("idAdmin")==localStorage.getItem(`idUser`))
     setActivo(true)
-    setRonda(1)
-    setRondas(2)
+    console.log("rondas",localStorage.getItem(`rondasTotalesDeJuego${room}`),"letras",localStorage.getItem(`letrasProhibidasDeJuego${room}`))
     setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     const stored = localStorage.getItem("Usuarios");
@@ -107,14 +106,14 @@ export default function Game() {
   // //terminar partida
   useEffect(() => {
     if (!socket) return;
-    socket.on("terminarPartida", data => {
-      setJugadores(data.jugadores)
-      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-      openModal("Partida Finalizada", { accion: accion })
-      //Modal de fin de partida + resultados
-      //boton de ir a sala de espera
-      //El siguiente codigo se ejecuta al iniciar la partida
-    })
+    // socket.on("terminarPartida", data => {
+    //   setJugadores(data.jugadores)
+    //   const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
+    //   openModal("Partida Finalizada", { accion: accion })
+    //   //Modal de fin de partida + resultados
+    //   //boton de ir a sala de espera
+    //   //El siguiente codigo se ejecuta al iniciar la partida
+    // })
     if (!socket) return
     socket.on("iniciarDentroDeLaPartida", data => { //Creo que era para hacer un random del array de jugadores que le mandes
       setJugadores(data.jugadores)
@@ -248,7 +247,9 @@ export default function Game() {
           <div className={stylesG.bloqueprohibidas}>
             <h2 className={styles.subtitle2}>Letras Prohibidas...</h2>
             <div className={stylesG.cajaprohibidas}>
-              {letrasprohibidas.map((letrasprohibida, index) => {
+              {letrasprohibidas!=undefined&&
+              letrasprohibidas.map((letrasprohibida, index) => {
+                console.log(letrasprohibida)
                 return (
                   <LetraProhibida
                     key={index}
