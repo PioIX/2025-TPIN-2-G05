@@ -2,6 +2,7 @@
 import Modal from "@/Components/Modal";
 import ImagenClick from "@/Components/ImagenClick";
 import styles from "@/app/page.module.css";
+import settingsStyles from "./settings.module.css";
 import clsx from "clsx";
 import Input from "@/Components/Input";
 import { actualizarDatosUsuario } from "@/API/fetch";
@@ -47,6 +48,10 @@ export default function Settings() {
     setImage(event.target.value);
   }
 
+    function volver(){
+    router.push("/Home")
+  }
+
   async function enviarDatos() {
     const formData = new FormData()
     formData.set("nombre", nombre)
@@ -76,56 +81,61 @@ export default function Settings() {
   return (
     <>
       <div className={styles.container}>
-        <h1 className={styles.title}>Configuracion</h1>
-        <div>
-          <Input
-            placeholder="Modificar nombre"
-            id="nombre"
-            onChange={cambiarNombre}
-            classNameInput={"input"}
-            classNameInputWrapper={"inputWrapperLog"}
-          >
-            {" "}
-          </Input>
-          <Input
-            placeholder="Modificar contraseña..."
-            id="contraseña"
-            onChange={cambiarContraseña}
-            classNameInput={"input"}
-            classNameInputWrapper={"inputWrapperLog"}
-            type="password"
-          >
-            {" "}
-          </Input>
-          {image ? (
-            <>
-              <img
-                src={preview}
-                alt="Cargando..."
-                width={450}
-                height={700}
-                onClick={removeImageAndPreview}
-              ></img>
-            </>
-          ) : (
-            <>
-              <label htmlFor="file-input" className={styles.uploadButton}>
-                ...
-              </label>
-              <input
-                type="file"
-                id="file-input"
-                accept="image/*"
-                className={styles.fileInput}
-                onChange={handleChangeImage}
-              ></input>
-            </>
-          )}
+        <h1 className={settingsStyles.title}>Configuracion</h1>
+        <ImagenClick src = {"/volver.png"}  onClick={volver} className={"imagenClick"}></ImagenClick>
+        <div className={settingsStyles.containerInputsYBoton}>
+          <div className={settingsStyles.containerInputs}>
+            <Input
+              placeholder="Modificar nombre"
+              id="nombre"
+              onChange={cambiarNombre}
+              classNameInput={settingsStyles.input}
+              classNameInputWrapper={settingsStyles.inputWrapper}
+            />
+            <Input
+              placeholder="Modificar contraseña..."
+              id="contraseña"
+              onChange={cambiarContraseña}
+              classNameInput={settingsStyles.input}
+              classNameInputWrapper={settingsStyles.inputWrapper}
+              type="password"
+            />
+          </div>
+          
+          <div className={settingsStyles.uploadContainer}>
+            {image ? (
+              <>
+                <img
+                  src={preview}
+                  alt="Cargando..."
+                  width={450}
+                  height={700}
+                  onClick={removeImageAndPreview}
+                ></img>
+              </>
+            ) : (
+              <>
+                <label htmlFor="file-input" className={settingsStyles.uploadButton}>
+                  Subir imagen
+                </label>
+                <input
+                  type="file"
+                  id="file-input"
+                  accept="image/*"
+                  className={settingsStyles.fileInput}
+                  onChange={handleChangeImage}
+                ></input>
+              </>
+            )}
+          </div>
         </div>
 
-        <Button type="button" onClick={enviarDatos} text={"cambiar datos"}>
-          {" "}
-        </Button>
+        <Button 
+          type="button" 
+          onClick={enviarDatos} 
+          text={"Guardar cambios"} 
+          className={settingsStyles.button}
+        />
       </div>
       {/* Modal Component */}
       <Modal
