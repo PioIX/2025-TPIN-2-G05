@@ -11,6 +11,7 @@ import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
+import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -18,6 +19,7 @@ export default function Game() {
   const [jugadores, setJugadores] = useState([]);
   const [palabra, setPalabra] = useState("");
   const [id, setId] = useState("");
+  const [idAdmin, setIdAdmin] = useState("")
   const [prevPalabra, setPrevPalabra] = useState("");
   const [room, setRoom] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
@@ -60,6 +62,7 @@ export default function Game() {
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
+    console.log("Esto es elparse de stored ",JSON.parse(stored)[0] )
     if (id == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
@@ -70,6 +73,10 @@ export default function Game() {
     }
   }, [])
 
+
+  useEffect(()=>{
+    console.log("Estos son los jugadores ", jugadores)
+  },[jugadores])
 
   useEffect(() => {
     if (!socket) return
@@ -84,7 +91,7 @@ export default function Game() {
     socket.on("cambioRondaReceive", data => {
       setJugadores(data.jugadores)
     })
-    if (id == localStorage(idAdmin)) {
+    if (id == localStorage.getItem("idAdmin")) {
       if (ronda > rondas) {
         socket.emit("terminarPartida", { data: jugadores })
       } else {
@@ -271,7 +278,6 @@ export default function Game() {
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>
                 </div>
-              </div>
               ) : (
                 <h2 className={styles.subtitle}>
                   No es tu turno

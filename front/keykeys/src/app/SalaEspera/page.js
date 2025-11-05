@@ -4,7 +4,7 @@ import clsx from "clsx";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
 import { infoUsuario, actualizarValoresPartidaFalse } from "@/API/fetch";
@@ -25,6 +25,7 @@ export default function Game() {
   const [modalAction, setModalAction] = useState("");
   const [jugadoresId, setJugadoresId] = useState([]);
   const { socket } = useSocket()
+  const refJugadores = useRef(jugadores)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   function openModal(mensaje, action) {
@@ -89,9 +90,13 @@ export default function Game() {
 
 
   useEffect(() => {
+    refJugadores.current = jugadores;
+  }, [jugadores])
+
+  useEffect(() => {
     if (!socket) return
     if (jugadores.length <= 1)
-      socket.on('joined_OK_room', data => { 
+      socket.on('joined_OK_room', data => {
         console.log("Se ejecuto joinRoom")
         console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
@@ -111,8 +116,6 @@ export default function Game() {
       setJugadores(prevJugadores => {
         const nuevos = prevJugadores.filter(j => {
           const jugador = j[0] || j;
-          console.log("Este es el for ", jugador)
-          console.log(jugador.id_usuario)
           if (jugador.id_usuario != data.user.id) {
             return jugador.id_usuario
           }
@@ -147,12 +150,12 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-      localStorage.setItem(`idAdmin`, idAdmin)
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, data.rondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
+      localStorage.setItem(`idAdmin`, data.idAdmin)
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      localStorage.setItem("Usuarios", JSON.stringify(refJugadores.current))
       router.replace('../Game', { scroll: false })
     })
   }, [socket])
@@ -160,7 +163,6 @@ export default function Game() {
 
 
   useEffect(() => {
-    console.log("Estos son los jugadores ", jugadores)
     if (jugadores.length != jugadoresId.length) {
       let aux = []
       for (let i = 0; i < jugadores.length; i++) {
@@ -177,10 +179,8 @@ export default function Game() {
 
   //inicio de partida
   async function partidaInit() {
-    localStorage.setItem("Usuarios", JSON.stringify(jugadores))
-    console.log("Este es el valor d ejugadores cuando se sube ", jugadores)
     await actualizarValoresPartidaFalse(room)
-    socket.emit("partidaInitSend")
+    socket.emit("partidaInitSend", {rondas: rondas, letrasProhibidas:letrasProhibidas, idAdmin: idAdmin})
   }
 
   function abandonarPartida() {
