@@ -240,16 +240,10 @@ export async function traerCodigo(id_partida) {
 }
 
 export async function actualizarDatosUsuario(formData) {
-
-    console.log("FORM DATA EN FETCH", formData)
-    return fetch(`http://localhost:4000/cambiarDatosUsuario`, {
+    return fetch(`http://localhost:4000/cambiarDatosUsuario`,{
         method: "PUT",
-         headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData) //No se necesitan headers porque el formData ya los incluye, o por lo menos no necesita los headers de json
-    }
-    )
+        body: formData
+    })
         .then(response => response.json())
         .then(result => {
             console.log(result)
