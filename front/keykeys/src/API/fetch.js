@@ -3,10 +3,17 @@
 
 //API API API API API API API API API API API API API API API API API
 export async function checkearPalabra(palabra) {
-    return fetch(`https://rae-api.com/api/words/${palabra}`)
+
+    return fetch(`http://localhost:4000/checkearPalabra`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ palabra: palabra })
+    })
         .then(response => response.json())
         .then(result => {
-            return result.ok;
+            return result;
         });
 }
 //API API API API API API API API API API API API API API API API API
@@ -208,26 +215,26 @@ export async function agregarUsuarioAPartida(id_partida, id_usuario) {
             id_usuario: id_usuario
         })
     })
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 export async function traerPartidaPorCodigo(codigo) {
     return fetch(`http://localhost:4000/traerPartidaPorCodigo?codigo=${codigo}`)
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 export async function traerPartidasActivasAmigos(id_usuario) {
     return fetch(`http://localhost:4000/TraerPartidasActivasAmigos?id=${id_usuario}`)
-    .then((response) => response.json())
-    .then((result) => {
-        return { result };
-    });
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
 }
 
 export async function traerCodigo(id_partida) {

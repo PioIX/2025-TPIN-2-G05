@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
     req.session.user = data.user;
     console.log("Este es req.user ", req.session.user)
     console.log("🚀 ~ io.on ~ req.session.room:", data.room);
-    if (req.session.room != undefined){
+    if (req.session.room != undefined) {
       socket.leave(req.session.room);
     }
     req.session.room = data.room;
@@ -69,7 +69,7 @@ io.on("connection", (socket) => {
     console.log("Este es el user ", req.session.user)
   });
 
-  socket.on("enviarIdsDeJugadores", (data)=>{
+  socket.on("enviarIdsDeJugadores", (data) => {
     console.log(data)
     io.to(req.session.room).emit("recibirIdsDeJugadores", {
       data: data
@@ -127,8 +127,8 @@ io.on("connection", (socket) => {
     socket.leave(req.session.room);
   })
 
-  socket.on("leaveRoomPlayer", (data)=>{
-    io.to(req.session.room).emit("leftRoomPlayer",{
+  socket.on("leaveRoomPlayer", (data) => {
+    io.to(req.session.room).emit("leftRoomPlayer", {
       user: data
     }
     )
@@ -546,9 +546,9 @@ app.get('/traerPartidaPorCodigo', async function (req, res) {
 
 app.get('/traerCodigo', async function (req, res) {
 
-      const { id_partida} = req.body;
+  const { id_partida } = req.body;
   try {
-      let respuesta = await realizarQuery(`
+    let respuesta = await realizarQuery(`
             SELECT codigo_entrada FROM Partidas WHERE id_partida = "${id_partida}" AND activa = 1
         `);
     console.log(respuesta);
@@ -563,3 +563,10 @@ app.get('/traerCodigo', async function (req, res) {
   }
 });
 
+app.post('/checkearPalabra', async function (req, res) {
+  console.log("Esta es la palabra ", req.body.palabra)
+  let respuesta = await fetch(`https://rae-api.com/api/words/${req.body.palabra}`)
+  console.log(respuesta.ok)
+  res.send(respuesta.ok)
+})
+//Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back

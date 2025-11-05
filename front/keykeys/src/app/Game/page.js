@@ -90,8 +90,7 @@ export default function Game() {
     if (!socket) return;
     socket.on("cambioRondaReceive", data => {
       //setJugadores(data.jugadores)
-    })
-    if (id == localStorage.getItem("idAdmin")) {
+      if (id == localStorage.getItem("idAdmin")) {
       if (ronda > rondas) {
         socket.emit("terminarPartida", { data: jugadores })
       } else {
@@ -106,6 +105,7 @@ export default function Game() {
         setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
       }
     }
+    })
   }, [ronda, socket /**Aca iba socketRonda en vez de socket */])
 
 
@@ -175,7 +175,8 @@ export default function Game() {
   //Esto va en el onchange del input
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
-      let valid = checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      console.log(valid)
       if (valid) {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
