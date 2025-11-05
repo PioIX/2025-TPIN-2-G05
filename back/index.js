@@ -79,7 +79,7 @@ io.on("connection", (socket) => {
   socket.on("partidaInitSend", (data) => {
     io.to(req.session.room).emit("partidaInitReceive", {
       message: "Se recibio el evento partidaInit",
-      rondas: data.rondas,
+      cantidadRondas: data.cantidadRondas,
       letrasProhibidas: data.letrasProhibidas,
       idAdmin: data.idAdmin
     })

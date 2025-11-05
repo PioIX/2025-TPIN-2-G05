@@ -25,7 +25,7 @@ export default function Game() {
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
   const [cantidadLetras, setCantidadLetras] = useState("");
   const [rondas, setRondas] = useState("");
-  const [ronda, setRonda] = useState(undefined);
+  const [ronda, setRonda] = useState(0);
   const [activo, setActivo] = useState(undefined);
   const router = useRouter();
   const { socket } = useSocket()
@@ -52,19 +52,19 @@ export default function Game() {
 
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
-    //setJugadores([{ puntos: 9, src: "a" }, { puntos: 17, src: "a" }])
+    console.log(localStorage)
     console.log(localStorage.getItem("idAdmin"),localStorage.getItem("idUser"),"admin" ,localStorage.getItem("idAdmin")==localStorage.getItem(`idUser`))
     setActivo(true)
-    console.log("rondas",localStorage.getItem(`rondasTotalesDeJuego${room}`),"letras",localStorage.getItem(`letrasProhibidasDeJuego${room}`))
+    console.log("rondas",localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`),"letras",localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
     setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
     console.log("Esto es elparse de stored ",JSON.parse(stored) )
-    if (id == localStorage.getItem("idAdmin")) {
-      setRondas(localStorage.getItem(`rondasTotalesDeJuego${room}`))
-      setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${room}`))
+    if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
+      setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
+      setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
       if (ronda == undefined) {
         setRonda(0)
       }
@@ -100,7 +100,7 @@ export default function Game() {
         setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
       }
     }
-  }, [ronda, socket /**Aca iba socketRonda en vez de socket */])
+  }, [ socket /**Aca iba socketRonda en vez de socket */])
 
 
   // //terminar partida
@@ -209,8 +209,9 @@ export default function Game() {
         clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
       }
     } else {
+      console.log(jugadores)
       for (let i = 0; i < jugadores.length; i++) {
-        if (jugadores[i].id == id) {
+        if (jugadores[i].id_usuario == id) {
           jugadores[i].puntos -= 10;
           break; // corta el bucle si ya lo encontró
         }
@@ -238,7 +239,7 @@ export default function Game() {
               return (
                 <UserPoint
                   key={index}
-                  point={jugador.puntos}
+                  points={jugador.puntos}
                   src={src}
                 ></UserPoint>
               );

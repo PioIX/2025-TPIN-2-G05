@@ -18,7 +18,7 @@ export default function Game() {
   const [id, setId] = useState(-1);
   const [idAdmin, setIdAdmin] = useState(-1);
   const [room, setRoom] = useState(0)
-  const [letrasProhibidas, setLetrasprohibidas] = useState(2);
+  const [letrasProhibidas, setLetrasprohibidas] = useState(1);
   const router = useRouter();
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
@@ -37,15 +37,23 @@ export default function Game() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-    
+
   const handleCantidadRondasChange = (event) => {
-    console.log(event.target.value)
-    setCantidadRondas(event.target.value);
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setCantidadRondas(event.target.value);
+    }
   };
 
   const handleLetrasProhibidasChange = (event) => {
-    console.log(event.target.value)
-    setLetrasprohibidas(event.target.value);
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setLetrasprohibidas(event.target.value)
+    }
   };
   useEffect(() => {
     if (!jugadoresId || jugadoresId.length === 0) return;
@@ -161,16 +169,15 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      console.log("cantidadRondas",cantidadRondas,"letrasProhibidas",letrasProhibidas)
+      console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin);
+      console.log("Recibido de persona:", id,room,refJugadores.current);
       localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
       localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
       localStorage.setItem(`idAdmin`, data.idAdmin)
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
-      localStorage.setItem(`rondas`, id)
-      localStorage.setItem(`room`, room)
       localStorage.setItem("Usuarios", JSON.stringify(refJugadores.current))
-      // router.replace('../Game', { scroll: false })
+      router.replace('../Game', { scroll: false })
     })
   }, [socket])
 
@@ -193,8 +200,9 @@ export default function Game() {
 
   //inicio de partida
   async function partidaInit() {
+    console.log("Enviando al servidor:", cantidadRondas, letrasProhibidas, idAdmin);
     await actualizarValoresPartidaFalse(room)
-    socket.emit("partidaInitSend", {cantidadRondas: cantidadRondas, letrasProhibidas:letrasProhibidas, idAdmin: idAdmin})
+    socket.emit("partidaInitSend", { cantidadRondas: cantidadRondas, letrasProhibidas: letrasProhibidas, idAdmin: idAdmin })
   }
 
   function abandonarPartida() {
@@ -228,20 +236,21 @@ export default function Game() {
       {
         idAdmin == id && (
           <>
-            <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+
             <div>
-      <h2>Configuración de la partida</h2>
+              <h2>Configuración de la partida</h2>
 
-      {/* Desplegable de cantidad de rondas */}
-      <Input placeholder="Letras prohibidas..." id="contraseña" onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"> </Input>
+              {/* Desplegable de cantidad de rondas */}
+              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
 
-      {/* Desplegable de letras prohibidas */}
-      <Input placeholder="Letras prohibidas..." id="contraseña" onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"> </Input>
+              {/* Desplegable de letras prohibidas */}
+              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
 
-      {/* Mostrar valores seleccionados */}
-      <p>Rondas seleccionadas: {cantidadRondas}</p>
-      <p>Letras prohibidas: {letrasProhibidas}</p>
-    </div>
+              {/* Mostrar valores seleccionados */}
+              <p>Rondas seleccionadas: {cantidadRondas}</p>
+              <p>Letras prohibidas: {letrasProhibidas}</p>
+              <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+            </div>
           </>
         )
       }
