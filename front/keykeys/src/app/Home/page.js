@@ -28,11 +28,9 @@ export default function Home() {
   const [modalAction, setModalAction] = useState("")
   const [isModalPartidasOpen, setIsModalPartidasOpen] = useState(false)
   const [partidas, setPartidas] = useState([])
-  const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
   const [admin, setAdmin] = useState(false)
   const [booleanoLogout, setBooleanoLogout] = useState(false)
-  const [booleanoAdmin, setBooleanoAdmin] = useState(false)
   function openModal(mensaje, action){
     setModalMessage(mensaje);
     setModalAction(action);
@@ -49,7 +47,7 @@ export default function Home() {
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
-    if(id==30){
+    if(id==28){
       setAdmin(true)
     }
   }, [])
@@ -75,7 +73,7 @@ export default function Home() {
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
     setIsModalPartidasOpen(false)
-    openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
+    router.push(`/SalaEspera`, { scroll: false })
   }
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
@@ -104,7 +102,6 @@ export default function Home() {
     setIsModalAceptarSolicitudesOpen(false)
     setIsModalEnviarOpen(false)
     setIsModalPartidasOpen(false)
-    setBooleanoAdmin(false)
     setModalAction(null)
     setBooleanoLogout(false);
   };
@@ -184,15 +181,9 @@ export default function Home() {
     setAmigo(event.target.value)
   }
 
-  function openModalAdmin(){
-    console.log("Se abrió el modalAdministrarUsuarios")
-        const accionDeCierre = () => {
-      localStorage.setItem("idUser", null)
-      router.push("..")
-    };
-    openModal("Estás seguro?", {accion: accionDeCierre})
-    setBooleanoAdmin(true)
-
+  function openAdmin(){
+    localStorage.setItem("idUser", null)
+    router.push("Admin")
   }
 
 
@@ -248,7 +239,7 @@ export default function Home() {
           <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
-          {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openModalAdmin}>Administrar Usuarios</button>}
+          {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openAdmin}>Administrar Usuarios</button>}
         </div>
 
         <Modal 

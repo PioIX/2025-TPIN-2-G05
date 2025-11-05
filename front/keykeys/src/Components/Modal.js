@@ -95,7 +95,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                 <h3 className={styles.subtitle}>Solicitudes</h3>
                 {solicitudes.map((solicitud, index) => (
                   <div className={styles.solicitud} key={index}>
-                    <p>Solicitud de {solicitud.nombre}</p>
+                    <p>Solicitud de <strong>{solicitud.nombre}</strong></p>
                     <Button
                       className="buttonModalAceptar"
                       onClick={() => onClickAceptar(solicitud)}
@@ -155,13 +155,13 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                     </div>
                   ))}
                   <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
+                  <Button onClick={checkCodigoEntrada} className={"buttonModal"} text={"Unirse con código"}></Button>
                 </>
               ) : (
                 <>
                   <span>No hay partidas activas de tus amigos</span>
                   <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
+                  <Button onClick={checkCodigoEntrada} className={"buttonModal"} text={"Unirse con código"}></Button>
                 </>
               )}
             </>
