@@ -73,11 +73,6 @@ export default function Game() {
     }
   }, [])
 
-
-  useEffect(()=>{
-    console.log("Estos son los jugadores ", jugadores)
-  },[jugadores])
-
   useEffect(() => {
     if (!socket) return
     socket.emit("joinRoom", { room: room, id: id },
@@ -235,16 +230,16 @@ export default function Game() {
         <div className={stylesG.contenedorPrincipal}>
 
           <div className={stylesG.userPointContainer}>
-            {jugadores.map((jugador, index) => {
+            {jugadores != undefined&&
+            jugadores.map((jugador, index) => {
               console.log("jugador en el map ", jugador)
-              console.log("jugador puntos ", jugador[0].puntos)
-              const src = jugador[0].foto
-            ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
+              const src = jugador.foto
+            ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
             : "/sesion.png";
               return (
                 <UserPoint
                   key={index}
-                  point={jugador[0].puntos}
+                  point={jugador.puntos}
                   src={src}
                 ></UserPoint>
               );

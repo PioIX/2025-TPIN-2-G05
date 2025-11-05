@@ -205,10 +205,10 @@ export default function Game() {
     <div className={stylesSE.jugadorescontainer}>
       {
         jugadores.map((jugador, index) => {
-          const src = jugador[0].foto
-            ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
+          const src = jugador.foto
+            ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
             : "/sesion.png";
-          return <Person key={jugador[0].id ?? index} text={jugador[0].nombre} src={src} index={index == 0 ? true : false} />;
+          return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index == 0 ? true : false} />;
         })
       }
     </div>
