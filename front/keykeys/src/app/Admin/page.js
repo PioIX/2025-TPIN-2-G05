@@ -4,7 +4,7 @@ import styles from './home.module.css'
 import Input from "@/Components/Input";
 import { useState } from "react"
 import Button from "@/Components/Button";
-
+import { deleteUser } from "@/API/fetch";
 
 export default function Home() {
     const [username, setUsername] = useState("")
@@ -34,22 +34,26 @@ export default function Home() {
       alert("Usuario Modificado")
     }
 
-    function eliminarUsuario(){
-      //HACER EL FETCH DE ESTA THING
+    async function eliminarUsuario(){
+      deleteUser(username)
       alert("Usuario Eliminado")
+
     }
 
+    function volver(){
+      router.push("../")
+    }
   return (
 
     <div>
-      <h1>KEY KEYS</h1>
+      <h1>MENU ADMINISTRADOR</h1>
       <div>
           <Input onChange={handleUsername} value={username} placeHolder={"Ingrese Nombre de Usuario"}></Input>
-          <Button onClick={menuModificar} text={"Modificar"}></Button>
-          <Button onClick={menuEliminar} text={"Eliminar"}></Button> 
+          <Button onClick={menuModificar} text={"Modificar"} className={`${styles.mainButton} ${styles.game}`}></Button>
+          <Button onClick={menuEliminar} text={"Eliminar"} className={`${styles.mainButton} ${styles.game}`}></Button> 
           {(menu=="modificar" && check) &&
             <div>
-              <Button onClick={modificarUsuario} text={"Modificar el Nombre de Usuario"}></Button>
+              <Button onClick={modificarUsuario} text={"Modificar el Nombre de Usuario"} className={`${styles.mainButton} ${styles.game}`}></Button>
               <Input onChange={handleUsername} value={username} placeHolder={"Ingrese el Nuevo Nombre de Usuario"}></Input>
 
             </div>
@@ -62,6 +66,7 @@ export default function Home() {
               <Button onClick={eliminarUsuario} text={"Eliminar Usuario"}></Button>
             </div>
           }
+          <Button onClick={volver} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
       </div>
     </div>
   )
