@@ -87,21 +87,22 @@ export default function Game() {
     socket.on("cambioRondaReceive", data => {
       //setJugadores(data.jugadores)
       if (id == localStorage.getItem("idAdmin")) {
-      if (ronda > rondas) {
-        socket.emit("terminarPartida", { data: jugadores })
-      } else {
-        setRonda(ronda + 1)
-        setLetrasprohibidas([])
-        setPrevPalabra("")
-        const letras = "abcdefghijklmnñopqrstuvwxyz"
-        for (let i = 0; i < cantidadLetras; i++) {
-          const indiceAleatorio = Math.floor(Math.random() * letras.length);
-          setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+        if (ronda > rondas) {
+          socket.emit("terminarPartida", { data: jugadores })
+        } else {
+          setRonda(ronda + 1)
+          setLetrasprohibidas([])
+          setPrevPalabra("")
+          const letras = "abcdefghijklmnñopqrstuvwxyz"
+          for (let i = 0; i < cantidadLetras; i++) {
+            const indiceAleatorio = Math.floor(Math.random() * letras.length);
+            setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+          }
+          setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
         }
-        setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
       }
     }
-  }, [socket /**Aca iba socketRonda en vez de socket */])
+  )}, [socket /**Aca iba socketRonda en vez de socket */])
 
 
   useEffect(()=>{

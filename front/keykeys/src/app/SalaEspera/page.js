@@ -144,14 +144,14 @@ export default function Game() {
       });
       if (id == data.user.id) {
         salirSala()
-        const action = router.push(`/Home`)
+        const action = router.replace(`/Home`)
         openModal("Has abandonado la partida", action)
       }
     })
 
     if (!socket) return
     socket.on("leftRoomAdmin", data => {
-      const action = router.push(`/Home`)
+      const action = router.replace(`/Home`)
       openModal("Has abandonado la partida", action)
     })
 
