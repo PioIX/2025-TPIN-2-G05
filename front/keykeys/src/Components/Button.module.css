@@ -12,7 +12,7 @@
     margin-left: 6rem;
 }
 
-.buttonModal {
+.buttonModal,.buttonModalCode {
     width: fit-content;
     height: fit-content;
     background-color: #851010;
@@ -23,6 +23,9 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 3rem;
+}
+.buttonModalCode{
+    margin-top: 1.5rem;
 }
 
 .buttonModalAceptar {
@@ -53,7 +56,8 @@
 .buttonLog:hover,
 .buttonModal:hover,
 .buttonModalClose:hover,
-.buttonAbandonar:hover {
+.buttonAbandonar:hover,
+.chico:hover {
     background-color: red;
 }
 
@@ -102,3 +106,13 @@
     background-color: #ff3c00;
     transform: scale(1.05);
 } */
+ .chico{
+    width: fit-content;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 1rem;
+ }

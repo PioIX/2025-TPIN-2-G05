@@ -61,3 +61,13 @@
   font-weight: 500;
   color: #444;
 }
+.partidaItem{
+  margin-bottom: 4%;
+  margin-top: 4%;
+}
+.span{
+  color:#f3f3f3;
+  font-size: 1.5rem;
+  text-decoration: underline;
+  margin-bottom: 0.5rem;
+}
