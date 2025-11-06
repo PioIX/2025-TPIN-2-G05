@@ -70,7 +70,7 @@ export default function Game() {
       if (ronda == undefined) {
         setRonda(0)
       }
-      socket.emit("iniciarDentroDeLaPartida", { })
+      // socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
@@ -211,31 +211,26 @@ export default function Game() {
       const timer = setInterval(() => {
         setContador(contadorPrevio => contadorPrevio - 1);
       }, 1000);
-
       return () => {
         clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
       }
     } else {
       console.log(jugadores)
-      let jugadoresTemp = []
       for (let i = 0; i < jugadores.length; i++) {
-
-
         if (jugadores[i].id_usuario == id) {
-          jugadores[i].puntos -= 10;
+          jugadores[i].puntos += 10;
           setJugadores((prevArray) => [...prevArray, {}])
           setJugadores((prevArray) => prevArray.slice(0, -1))
-
           break; // corta el bucle si ya lo encontró
         }
-
-
       }
       socket.emit("cambioRondaSend", { data: jugadores })
     }
   }, [contador]);
   return (
     <>
+    <div className={stylesG.expandDiv}></div>
+    <div className={stylesG.expandDiv2}></div>
       <p className={stylesG.contador}>{contador}'</p>
 
       <div className={stylesG[activo]}>
@@ -286,12 +281,18 @@ export default function Game() {
               {activo == true ? (
                 <div className={styles.flex}>
                   <Input
-                    onKeyDown={checkLetra}
+                    onKeyDown={(e) => {
+                      checkLetra(e);
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        envioPalabra();
+                      }
+                    }}
                     onChange={cambiarPalabra}
-                    classNameInputWrapper={"inputWrapperGame"}
-                    classNameInput={"inputGame"}
+                    classNameInputWrapper="inputWrapperGame"
+                    classNameInput="inputGame"
                     placeholder="Escribir acá"
-                  ></Input>
+                  />
                   <div className={stylesG.aumentar}>
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>
