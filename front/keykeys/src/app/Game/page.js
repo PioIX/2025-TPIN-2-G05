@@ -11,6 +11,7 @@ import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, use } from "react";
 import Button from "@/Components/Button";
+import Person from "@/Components/Person";
 import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
@@ -52,6 +53,7 @@ export default function Game() {
 
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
+
     console.log(localStorage)
     console.log(localStorage.getItem("idAdmin"), localStorage.getItem("idUser"), "admin", localStorage.getItem("idAdmin") == localStorage.getItem(`idUser`))
     setActivo(true)
@@ -68,7 +70,7 @@ export default function Game() {
       if (ronda == undefined) {
         setRonda(0)
       }
-      // socket.emit("iniciarDentroDeLaPartida", { })
+      socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
@@ -83,9 +85,8 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("cambioRondaReceive", data => {
-      setJugadores(data.jugadores)
-    })
-    if (id == localStorage.getItem("idAdmin")) {
+      //setJugadores(data.jugadores)
+      if (id == localStorage.getItem("idAdmin")) {
       if (ronda > rondas) {
         socket.emit("terminarPartida", { data: jugadores })
       } else {
@@ -103,20 +104,28 @@ export default function Game() {
   }, [socket /**Aca iba socketRonda en vez de socket */])
 
 
+  useEffect(()=>{
+    console.log("Estas son las rondas ", rondas)
+  }, [rondas])
+
+  useEffect(()=>{
+    console.log(ronda)
+  }, [ronda])
+
   // //terminar partida
   useEffect(() => {
     if (!socket) return;
-    // socket.on("terminarPartida", data => {
-    //   setJugadores(data.jugadores)
-    //   const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-    //   openModal("Partida Finalizada", { accion: accion })
-    //   //Modal de fin de partida + resultados
-    //   //boton de ir a sala de espera
-    //   //El siguiente codigo se ejecuta al iniciar la partida
-    // })
+    socket.on("terminarPartida", data => {
+      //setJugadores(data.jugadores)
+      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
+      openModal("Partida Finalizada", { accion: accion })
+      //Modal de fin de partida + resultados
+      //boton de ir a sala de espera
+      //El siguiente codigo se ejecuta al iniciar la partida
+    })
     if (!socket) return
     socket.on("iniciarDentroDeLaPartida", data => { //Creo que era para hacer un random del array de jugadores que le mandes
-      setJugadores(data.jugadores)
+      //setJugadores(data.jugadores)
     })
 
 
@@ -125,10 +134,6 @@ export default function Game() {
       console.log("El usuario ", data.user, " se unió a la partida ", data.room)
     })
   }, [socket])
-
-  useEffect(() => {
-    console.log(jugadores)
-  }, [jugadores])
 
   // //useEffect(()=>{
   //  if (!socket) return;
@@ -164,7 +169,8 @@ export default function Game() {
   //Esto va en el onchange del input
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
-      let valid = checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      console.log(valid)
       if (valid) {
         for (let i = 0; i < jugadores.length; i++) {
           if (jugadores[i].id == id) {
@@ -238,6 +244,7 @@ export default function Game() {
         <div className={stylesG.contenedorPrincipal}>
 
           <div className={stylesG.userPointContainer}>
+
             {jugadores &&
               jugadores.map((jugador, index) => {
                 console.log("jugador en el map ", jugador)
