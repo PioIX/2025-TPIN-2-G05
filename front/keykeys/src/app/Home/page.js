@@ -134,7 +134,7 @@ export default function Home() {
   }
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
-    setNombreUsuario(respond[0].nombre)
+    setNombreUsuario(respond.nombre)
   }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
