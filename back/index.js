@@ -79,7 +79,7 @@ io.on("connection", (socket) => {
   socket.on("partidaInitSend", (data) => {
     io.to(req.session.room).emit("partidaInitReceive", {
       message: "Se recibio el evento partidaInit",
-      rondas: data.rondas,
+      cantidadRondas: data.cantidadRondas,
       letrasProhibidas: data.letrasProhibidas,
       idAdmin: data.idAdmin
     })
@@ -162,7 +162,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
     if (respuesta.length > 0) {
-      res.send(respuesta);
+      res.send(respuesta[0]);
     } else {
       res.send(-1);
     }
