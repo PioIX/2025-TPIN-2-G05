@@ -70,7 +70,7 @@ export default function Game() {
       if (ronda == undefined) {
         setRonda(0)
       }
-      socket.emit("iniciarDentroDeLaPartida", { })
+      // socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
@@ -218,7 +218,7 @@ export default function Game() {
       console.log(jugadores)
       for (let i = 0; i < jugadores.length; i++) {
         if (jugadores[i].id_usuario == id) {
-          jugadores[i].puntos -= 10;
+          jugadores[i].puntos += 10;
           setJugadores((prevArray) => [...prevArray, {}])
           setJugadores((prevArray) => prevArray.slice(0, -1))
           break; // corta el bucle si ya lo encontró
@@ -229,6 +229,8 @@ export default function Game() {
   }, [contador]);
   return (
     <>
+    <div className={stylesG.expandDiv}></div>
+    <div className={stylesG.expandDiv2}></div>
       <p className={stylesG.contador}>{contador}'</p>
 
       <div className={stylesG[activo]}>
