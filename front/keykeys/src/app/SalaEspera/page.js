@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
-import { infoUsuario, actualizarValoresPartidaFalse } from "@/API/fetch";
+import { infoUsuarioPartida, actualizarValoresPartidaFalse } from "@/API/fetch";
 import Modal from "@/Components/Modal";
 import styles from "@/app/page.module.css"
 import stylesSE from "@/app/SalaEspera/page.module.css"
@@ -61,7 +61,7 @@ export default function Game() {
     async function cargarJugadores() {
       const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
-        respuestas.push(await infoUsuario(jugadoresId[i]));
+        respuestas.push(await infoUsuarioPartida(jugadoresId[i]));
         respuestas[i].puntos = 0;
       }
       console.log("Respuestas de cargar jugadores: ", respuestas);
@@ -144,14 +144,14 @@ export default function Game() {
       });
       if (id == data.user.id) {
         salirSala()
-        const action = router.push(`/Home`)
+        const action = router.replace(`/Home`)
         openModal("Has abandonado la partida", action)
       }
     })
 
     if (!socket) return
     socket.on("leftRoomAdmin", data => {
-      const action = router.push(`/Home`)
+      const action = router.replace(`/Home`)
       openModal("Has abandonado la partida", action)
     })
 
@@ -237,14 +237,14 @@ export default function Game() {
         idAdmin == id && (
           <>
 
-            <div>
+            <div className={styles.center2}>
               <h2>Configuración de la partida</h2>
 
               {/* Desplegable de cantidad de rondas */}
-              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
+              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
 
               {/* Desplegable de letras prohibidas */}
-              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
+              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
 
               {/* Mostrar valores seleccionados */}
               <p>Rondas seleccionadas: {cantidadRondas}</p>

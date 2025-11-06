@@ -28,6 +28,14 @@ export async function infoUsuario(id) {
         });
 }
 
+export async function infoUsuarioPartida(id) {//trae todo del usuario menos contraseña
+    return fetch(`http://localhost:4000/traerDatosUsuariosParaJuego?id=${id}`)
+        .then(response => response.json())
+        .then(result => {
+            return result;
+        });
+}
+
 export async function traerTodosLosUsuarios() {
     return fetch(`http://localhost:4000/traerTodosUsuarios`)
         .then(response => response.json())

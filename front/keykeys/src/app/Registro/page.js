@@ -61,7 +61,7 @@ export default function Home() {
   }
 
     function volver(){
-    router.push("/")
+    router.replace("/")
   }
   
   async function checkRegister() {

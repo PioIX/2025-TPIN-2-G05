@@ -10,7 +10,7 @@
     margin: 2rem;
     margin-left: 6rem;
 }
-.inputWrapperLog {
+.inputWrapperLog,.inputWrapperSE {
     display: flex;
     align-items: center;
     width: 30%;
@@ -20,6 +20,9 @@
     padding: 0.6rem 1.4rem;
     transition: border 0.3s ease, box-shadow 0.3s ease;
     margin:2rem;
+}
+.inputWrapperSE{
+    width: 90%;
 }
 .inputWrapper:focus-within,.inputWrapperLog:focus-within {
     border-color: red;

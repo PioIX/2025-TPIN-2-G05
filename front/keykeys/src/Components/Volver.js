@@ -4,7 +4,7 @@ import {useRouter} from 'next/navigation'
 export default function Volver(){
     const router=useRouter()
     function volver(){
-        router.push("../")
+        router.replace("../")
     }
     return(<ImagenClick onClick={volver} src={"/volver.png"}/>)
 }
