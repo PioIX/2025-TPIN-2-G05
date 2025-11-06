@@ -54,6 +54,9 @@ html, body {
   display: flex;
   justify-content: center;
 }
+.center2 {
+  justify-content: center;
+}
 
 .irALaOtraPagina {
   color: #90caf9;

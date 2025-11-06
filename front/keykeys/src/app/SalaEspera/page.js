@@ -237,14 +237,14 @@ export default function Game() {
         idAdmin == id && (
           <>
 
-            <div>
+            <div className={styles.center2}>
               <h2>Configuración de la partida</h2>
 
               {/* Desplegable de cantidad de rondas */}
-              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
+              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
 
               {/* Desplegable de letras prohibidas */}
-              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="number" > </Input>
+              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
 
               {/* Mostrar valores seleccionados */}
               <p>Rondas seleccionadas: {cantidadRondas}</p>
