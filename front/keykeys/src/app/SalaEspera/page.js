@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
-import { infoUsuario, actualizarValoresPartidaFalse } from "@/API/fetch";
+import { infoUsuarioPartida, actualizarValoresPartidaFalse } from "@/API/fetch";
 import Modal from "@/Components/Modal";
 import styles from "@/app/page.module.css"
 import stylesSE from "@/app/SalaEspera/page.module.css"
@@ -61,7 +61,7 @@ export default function Game() {
     async function cargarJugadores() {
       const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
-        respuestas.push(await infoUsuario(jugadoresId[i]));
+        respuestas.push(await infoUsuarioPartida(jugadoresId[i]));
         respuestas[i].puntos = 0;
       }
       console.log("Respuestas de cargar jugadores: ", respuestas);
