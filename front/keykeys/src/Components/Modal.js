@@ -146,24 +146,29 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             <>
               {mensajePartidas.length > 0 ? (
                 <>
+                  <span className={styles.span}>
+                    Unirse a una partida
+                  </span>
                   {mensajePartidas.map((partida) => (
                     <div key={partida.id_partida} className={styles.partidaItem}>
                       <span className={styles.codigoPartida}>
-                        Partida {partida.id_partida} Usuario Admin: {partida.admin_nombre}
+                        PARTIDA {partida.id_partida}  ADMIN: {partida.admin_nombre}
                       </span>
-                      <Button onClick={() => {unirseASala(partida)}} text="Unirse" />
+                      <Button onClick={() => {unirseASala(partida)}} className="chico" text="Unirse" />
                     </div>
                   ))}
-                  <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
+                  <span className={styles.span}>
+                      Ingresar codigo de Partida
+                  </span>
+                  <Input onChange={handleCodigoEntrada} classNameInput="chico" classNameInputWrapper="wrapperChico" value={codigoEntrada}></Input>
                 </>
               ) : (
                 <>
                   <span>No hay partidas activas de tus amigos</span>
                   <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} text={"Unirse con código"}></Button>
                 </>
               )}
+              <Button onClick={checkCodigoEntrada} className={"buttonModalCode"} text={"Unirse con código"}></Button>
             </>
           )}
           
@@ -175,7 +180,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             
             ):
           
-          <Button onClick={handleClose} className="buttonModal" text="Cerrar"> </Button>}
+          <Button onClick={handleClose} className="buttonModalCode" text="Cerrar"> </Button>}
 
         </div>
       </div>
