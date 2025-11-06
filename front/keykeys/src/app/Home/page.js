@@ -76,14 +76,14 @@ export default function Home() {
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
     setIsModalPartidasOpen(false)
-    openModal("Creando sala...", router.push(`/SalaEspera`, { scroll: false }))
+    openModal("Creando sala...", router.replace(`/SalaEspera`, { scroll: false }))
   }
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
     console.log("openModalLogOut")
     const accionDeCierre = () => {
       localStorage.setItem("idUser", null)
-      router.push("..")
+      router.replace("..")
     };
     openModal("Estás seguro?", {accion: accionDeCierre})
     setBooleanoLogout(true)

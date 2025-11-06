@@ -9,10 +9,10 @@ export default function Home() {
   const router = useRouter()
 
   function creditos() {
-    router.push("/Creditos")
+    router.replace("/Creditos")
   }
   function iniciarSesion() {
-    router.push("/Login")
+    router.replace("/Login")
   }
 
   return (

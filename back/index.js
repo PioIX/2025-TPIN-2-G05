@@ -570,3 +570,21 @@ app.post('/checkearPalabra', async function (req, res) {
   res.send(respuesta.ok)
 })
 //Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back
+app.get("/traerDatosUsuariosParaJuego", async function (req, res) {
+  try {
+    console.log(req.query)
+    respuesta = await realizarQuery(
+      `SELECT id_usuario,nombre,foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+    );
+    if (respuesta.length > 0) {
+      res.send(respuesta[0]);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
+  }
+});
