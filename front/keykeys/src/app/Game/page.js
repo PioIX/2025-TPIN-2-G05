@@ -53,15 +53,15 @@ export default function Game() {
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
     console.log(localStorage)
-    console.log(localStorage.getItem("idAdmin"),localStorage.getItem("idUser"),"admin" ,localStorage.getItem("idAdmin")==localStorage.getItem(`idUser`))
+    console.log(localStorage.getItem("idAdmin"), localStorage.getItem("idUser"), "admin", localStorage.getItem("idAdmin") == localStorage.getItem(`idUser`))
     setActivo(true)
-    console.log("rondas",localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`),"letras",localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
+    console.log("rondas", localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`), "letras", localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
     setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
-    console.log("Esto es elparse de stored ",JSON.parse(stored) )
+    console.log("Esto es elparse de stored ", JSON.parse(stored))
     if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
@@ -100,7 +100,7 @@ export default function Game() {
         setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
       }
     }
-  }, [ socket /**Aca iba socketRonda en vez de socket */])
+  }, [socket /**Aca iba socketRonda en vez de socket */])
 
 
   // //terminar partida
@@ -126,7 +126,7 @@ export default function Game() {
     })
   }, [socket])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(jugadores)
   }, [jugadores])
 
@@ -145,9 +145,9 @@ export default function Game() {
   //letras que estan prohibidas
   useEffect(() => {
     if (!socket) return
-      socket.on("cambioTurnoReceive", (data) => {
-        console.log(data)
-      })
+    socket.on("cambioTurnoReceive", (data) => {
+      console.log(data)
+    })
     //setPrevPalabra(socket.prevpalabra)
     if (id == socket.idTurno) {
       //setRonda(socket.ronda)
@@ -210,11 +210,19 @@ export default function Game() {
       }
     } else {
       console.log(jugadores)
+      let jugadoresTemp = []
       for (let i = 0; i < jugadores.length; i++) {
+
+
         if (jugadores[i].id_usuario == id) {
           jugadores[i].puntos -= 10;
+          setJugadores((prevArray) => [...prevArray, {}])
+          setJugadores((prevArray) => prevArray.slice(0, -1))
+
           break; // corta el bucle si ya lo encontró
         }
+
+
       }
       socket.emit("cambioRondaSend", { data: jugadores })
     }
@@ -230,34 +238,34 @@ export default function Game() {
         <div className={stylesG.contenedorPrincipal}>
 
           <div className={stylesG.userPointContainer}>
-            {jugadores != undefined&&
-            jugadores.map((jugador, index) => {
-              console.log("jugador en el map ", jugador)
-              const src = jugador.foto
-            ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
-            : "/sesion.png";
-              return (
-                <UserPoint
-                  key={index}
-                  points={jugador.puntos}
-                  src={src}
-                ></UserPoint>
-              );
-            })}
+            {jugadores &&
+              jugadores.map((jugador, index) => {
+                console.log("jugador en el map ", jugador)
+                const src = jugador.foto
+                  ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
+                  : "/sesion.png";
+                return (
+                  <UserPoint
+                    key={index}
+                    points={jugador.puntos}
+                    src={src}
+                  ></UserPoint>
+                );
+              })}
           </div>
           <div className={stylesG.bloqueprohibidas}>
             <h2 className={styles.subtitle2}>Letras Prohibidas...</h2>
             <div className={stylesG.cajaprohibidas}>
-              {letrasprohibidas!=undefined&&
-              letrasprohibidas.map((letrasprohibida, index) => {
-                console.log(letrasprohibida)
-                return (
-                  <LetraProhibida
-                    key={index}
-                    letra={letrasprohibida.toUpperCase()}
-                  ></LetraProhibida>
-                );
-              })}
+              {letrasprohibidas != undefined &&
+                letrasprohibidas.map((letrasprohibida, index) => {
+                  console.log(letrasprohibida)
+                  return (
+                    <LetraProhibida
+                      key={index}
+                      letra={letrasprohibida.toUpperCase()}
+                    ></LetraProhibida>
+                  );
+                })}
             </div>
           </div>
 
