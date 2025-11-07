@@ -100,26 +100,22 @@ io.on("connection", (socket) => {
     console.log("La partida ha terminado")
   })
 
-  socket.emit("letrasProhibidasSend", (data)=>{
-    console.log("Se enviaron las letras prohibidas")
-    io.to(req.session.room).emit("letrasProhibidasReceive",{
-      letrasProhibidas: data.letrasProhibidas
-    })
-  })
-  socket.on("cambioRonda", (data) => {
-    io.to(req.session.room).emit("cambioRonda", {
-      jugadores: data
+  socket.on("cambioRondaSend", (data) => {
+    console.log("Se ejecuto cambioRonda")
+    io.to(req.session.room).emit("cambioRondaReceive", {
+      jugadores: data.jugadores
     })
   })
 
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
     console.log("Se emitio cambio turno")
-    console.log(data)
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
-      index: data.index
+      index: data.index,
+      letrasProhibidas: data.letrasProhibidas,
+      ronda: data.ronda
     })
   })
 
@@ -572,9 +568,7 @@ app.get('/traerCodigo', async function (req, res) {
 });
 
 app.post('/checkearPalabra', async function (req, res) {
-  console.log("Esta es la palabra ", req.body.palabra)
   let respuesta = await fetch(`https://rae-api.com/api/words/${req.body.palabra}`)
-  console.log(respuesta.ok)
   res.send(respuesta.ok)
 })
 //Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back

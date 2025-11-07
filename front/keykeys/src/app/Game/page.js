@@ -65,8 +65,8 @@ export default function Game() {
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
     console.log("Esto es elparse de stored ", JSON.parse(stored))
+    setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
     if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
-      setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
       setActivo(true)
       setContador(10)
@@ -83,31 +83,18 @@ export default function Game() {
     )
   }, [id, room])
 
-  useEffect(() => {
-    const letras = "abcdefghijklmnñopqrstuvwxyz"
-    for (let i = 0; i < cantidadLetras; i++) {
-      const indiceAleatorio = Math.floor(Math.random() * letras.length);
-      setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
-    }
-  }, [cantidadLetras])
-
-  function returnLetrasProhibidas(){
-    if (letrasprohibidas.length > 0){
-      return letrasprohibidas
-    }
-  }
-
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if (!socket) return;
     socket.on("cambioRondaReceive", data => {
       if (id == localStorage.getItem("idAdmin")) {
         if (ronda > rondas) {
-          socket.emit("terminarPartida", { data: jugadores })
+          socket.emit("terminarPartida", { data: data.jugadores })
         } else {
-          setRonda(ronda + 1)
+          setRonda(prev => prev + 1)
           setLetrasprohibidas([])
           setPrevPalabra("")
+          setJugadores(data.jugadores)
           const letras = "abcdefghijklmnñopqrstuvwxyz"
           for (let i = 0; i < cantidadLetras; i++) {
             const indiceAleatorio = Math.floor(Math.random() * letras.length);
@@ -117,18 +104,15 @@ export default function Game() {
             setActivo(true)
           }// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
         }
+        setContador(10)
       }
     }
     )
+    socket.emit("cambioRondaSend", {jugadores: jugadores})
   }, [socket /**Aca iba socketRonda en vez de socket */])
 
-
   useEffect(() => {
-    console.log("Estas son las rondas ", rondas)
-  }, [rondas])
-
-  useEffect(() => {
-    console.log(ronda)
+    console.log("Estas son las rondas, ", ronda)
   }, [ronda])
 
   // //terminar partida
@@ -176,13 +160,15 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
-      if (data.index > jugadores.length) {
-        socket.emit("cambioTurno")
+      console.log(data.index)
+      console.log(jugadores.length)
+      if (data.index >= jugadores.length) {
+        socket.emit("cambioRondaSend", {jugadores: jugadores})
       } else if (jugadores[data.index].id_usuario == id) {
         console.log("Soy el siguiente jugador y solo deberia aparecer en el siguiente jugador")
-        //setRonda(socket.ronda)
+        setRonda(data.ronda)
         setPalabra("")
-        //setLetrasprohibidas(socket.letras)
+        setLetrasprohibidas(data.letrasProhibidas)
         setActivo(true)
         setPrevPalabra(data.palabra)
         setJugadores(data.jugadores)
@@ -215,7 +201,7 @@ export default function Game() {
         }
         console.log("Este es index: ", index)
         //if (!socket) return;
-        socket.emit("cambioTurnoSend", { index: index, jugadores: jugadores, palabra: palabra })
+        socket.emit("cambioTurnoSend", { index: index, jugadores: jugadores, palabra: palabra, letrasProhibidas: letrasprohibidas, ronda: ronda })
         setActivo(false)
         console.log(jugadores)
       } else {
@@ -268,7 +254,7 @@ export default function Game() {
 
 
       }
-      //socket.emit("cambioRondaSend", { data: jugadores })
+      socket.emit("cambioRondaSend", { data: jugadores })
     }
   }, [contador]);
   return (
@@ -313,9 +299,9 @@ export default function Game() {
           </div>
 
           <div className={stylesG.longitudYinput}>
-            <h2 className={styles.subtitle2}>
+           {activo &&  <h2 className={styles.subtitle2}>
               Longitud {prevPalabra.length + 1} o más
-            </h2>
+            </h2>}
 
             <div className={stylesG.inputContainer}>
               {activo == true ? (<>
