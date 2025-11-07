@@ -9,7 +9,7 @@ import { useSocket } from "@/hooks/useSocket"
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout, admin}) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout, admin }) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -35,9 +35,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     setCodigoEntrada(event.target.value)
   }
 
-  function unirseASala(item){
+  function unirseASala(item) {
     localStorage.setItem("room", item.id_partida)
-    router.push('/SalaEspera', {scroll:false})
+    router.push('/SalaEspera', { scroll: false })
   }
 
   async function checkCodigoEntrada() {
@@ -66,14 +66,14 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
 
   if (!isOpen) return null; // Don't render the modal if it's not open
   function handleClose() {
-      onClose();  // Cerrar el modal
-      if (action) {
-        console.log("ACCION MODAL")
-        action.accion();  // Ejecutar la acción si existe
-      }
+    onClose();  // Cerrar el modal
+    if (action) {
+      console.log("ACCION MODAL")
+      action.accion();  // Ejecutar la acción si existe
+    }
   };
 
-  function handleCloseLogout(){
+  function handleCloseLogout() {
     onCloseLogout();
     console.log("pipipi")
     if (action) {
@@ -82,7 +82,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     }
   }
 
-  function handleCloseCancel(){
+  function handleCloseCancel() {
     onCloseLogout();
   }
 
@@ -134,19 +134,31 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             <p>{mensaje}</p>
           </div>
           {/*Tabla de jugadores, utilizado solo en game */}
-          {jugadores && <div className={styles.tablaJugadores}>
-            {jugadores.map((jugador, i) => (
-              <div key={i} className={styles.filaJugador}>
-                <Person text={jugador.nombre} image={jugador.foto}></Person>
-                <p className={styles.puntosJugador}>{jugador.puntos} pts</p>
-                {admin==true&&            
-                  <Button onClick={() => {socket.emit("cambioRondaSend", {jugadores: jugadores})}} className="buttonModal" text="Cerrar Sesión"> </Button>
-                }
-              </div>
-              
-            ))}
-          </div>
-          }
+          {jugadores && (
+            <div className={styles.tablaJugadores}>
+              {jugadores.map((jugador, i) => {
+                const src = jugador.foto
+                  ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
+                  : "/sesion.png";
+
+                return (
+                  <div key={i} className={styles.filaJugador}>
+                    <Person text={jugador.nombre} src={src} />
+                    <p className={styles.puntosJugador}>{jugador.puntos} pts</p>
+                  </div>
+                );
+              })}
+
+              {admin === true && (
+                <Button
+                  onClick={handleClose}
+                  className="buttonModal"
+                  text="Iniciar siguiente ronda"
+                />
+              )}
+            </div>
+          )}
+
           {Array.isArray(mensajePartidas) && esModalPartidas && (
             <>
               {mensajePartidas.length > 0 ? (
@@ -159,11 +171,11 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                       <span className={styles.codigoPartida}>
                         PARTIDA {partida.id_partida}  ADMIN: {partida.admin_nombre}
                       </span>
-                      <Button onClick={() => {unirseASala(partida)}} className="chico" text="Unirse" />
+                      <Button onClick={() => { unirseASala(partida) }} className="chico" text="Unirse" />
                     </div>
                   ))}
                   <span className={styles.span}>
-                      Ingresar codigo de Partida
+                    Ingresar codigo de Partida
                   </span>
                   <Input onChange={handleCodigoEntrada} classNameInput="chico" classNameInputWrapper="wrapperChico" value={codigoEntrada}></Input>
                 </>
@@ -176,16 +188,16 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
               <Button onClick={checkCodigoEntrada} className={"buttonModalCode"} text={"Unirse con código"}></Button>
             </>
           )}
-          
+
           {esLogout ? (
             <>
-            <Button onClick={handleCloseLogout} className="buttonModal" text="Cerrar Sesión"> </Button>
-            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
+              <Button onClick={handleCloseLogout} className="buttonModal" text="Cerrar Sesión"> </Button>
+              <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
             </>
-            
-            ):
-          
-          <Button onClick={handleClose} className="buttonModalCode" text="Cerrar"> </Button>}
+
+          ) :
+
+            <Button onClick={handleClose} className="buttonModalCode" text="Cerrar"> </Button>}
 
         </div>
       </div>

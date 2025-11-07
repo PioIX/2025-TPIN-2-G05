@@ -9,7 +9,7 @@ import UserPoint from "@/Components/UserPoint"
 import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import Person from "@/Components/Person";
 import LetraProhibida from "@/Components/LetraProhibida";
@@ -21,6 +21,7 @@ export default function Game() {
   const [palabra, setPalabra] = useState("");
   const [id, setId] = useState("");
   const [idAdmin, setIdAdmin] = useState("")
+  const [isAdmin, setIsAdmin] = useState(false)
   const [prevPalabra, setPrevPalabra] = useState("");
   const [room, setRoom] = useState("");
   const [letrasprohibidas, setLetrasprohibidas] = useState([]);
@@ -34,6 +35,7 @@ export default function Game() {
   const [palabraMasCorta, setPalabraMasCorta] = useState(false)
   const [palabraNoExiste, setPalabraNoExiste] = useState(false)
 
+  const refJugadores = useRef(jugadores)
 
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
@@ -67,14 +69,17 @@ export default function Game() {
     console.log("Esto es elparse de stored ", JSON.parse(stored))
     setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
     if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
+      setIsAdmin(true)
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
       setActivo(true)
       setContador(10)
-      if (ronda == undefined) {
-        setRonda(0)
-      }
+      setRonda(0)
     }
   }, [])
+
+  useEffect(() => {
+    refJugadores.current = jugadores
+  }, [jugadores])
 
   useEffect(() => {
     if (!socket) return
@@ -102,15 +107,14 @@ export default function Game() {
             auxiliar.push(letras.charAt(indiceAleatorio));
             console.log(auxiliar)
           }
-          console.log({ index: -1, jugadores: jugadores, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })
-          socket.emit("cambioTurnoSend", { index: -1, jugadores: jugadores, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+          socket.emit("cambioTurnoSend", { index: -1, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
         }
         setContador(10)
       }
     }
     )
-    socket.emit("cambioRondaSend", { jugadores: jugadores })
-  }, [socket /**Aca iba socketRonda en vez de socket */])
+    socket.emit("cambioRondaSend", { jugadores: refJugadores.current })
+  }, [socket, id, room /**Aca iba socketRonda en vez de socket */])
 
   useEffect(() => {
     console.log("Estas son las rondas, ", ronda)
@@ -138,7 +142,7 @@ export default function Game() {
       console.log("El usuario ", data.user, " se unió a la partida ", data.room)
     })
   }, [socket])
-
+  // socket.emit("cambioRondaSend", { jugadores: jugadores })}
   // //useEffect(()=>{
   //  if (!socket) return;
   // socket.on("cambioTurno", data =>{
@@ -153,12 +157,21 @@ export default function Game() {
   //ronda por la que se vaya
   //letras que estan prohibidas
   useEffect(() => {
+    if (!socket) return;
+    socket.on("rondaTerminadaReceive", (data) => {
+      console.log("Estos son los jugadores cuando se termina la ronda ", data.jugadores)
+      setJugadores(data.jugadores)
+      const accion = socket.emit("cambioRondaSend", { jugadores: refJugadores.current })
+      openModal("Se ha terminado la ronda", accion);
+    })
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
       console.log(data.index)
       console.log(jugadores.length)
       if (data.index >= jugadores.length) {
-        socket.emit("cambioRondaSend", { jugadores: jugadores })
+        console.log("Esto se manda al que empezó la partida ", { jugadores: refJugadores.current, index: -1, letrasProhibidas: letrasprohibidas, ronda: ronda, palabra: palabra })
+        socket.emit("cambioTurnoSend", { jugadores: data.jugadores, index: -1, letrasProhibidas: data.letrasProhibidas, ronda: data.ronda, palabra: data.palabra })
+        setContador(1000000000000000)
       } else if (jugadores[data.index].id_usuario == id) {
         console.log("Soy el siguiente jugador y solo deberia aparecer en el siguiente jugador")
         setRonda(data.ronda)
@@ -197,8 +210,9 @@ export default function Game() {
 
         }
         console.log("Este es index: ", index)
-        //if (!socket) return;
-        socket.emit("cambioTurnoSend", { index: index, jugadores: jugadores, palabra: palabra, letrasProhibidas: letrasprohibidas, ronda: ronda })
+        if (!socket) return;
+        socket.emit("cambioTurnoSend", { index: index, jugadores: refJugadores.current, palabra: palabra, letrasProhibidas: letrasprohibidas, ronda: ronda })
+        setContador(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
         setActivo(false)
         console.log(jugadores)
       } else {
@@ -250,11 +264,12 @@ export default function Game() {
 
 
         }
-        //socket.emit("cambioRondaSend", { data: jugadores })//nova
-//que se ejecute el socket y que de ahi se abra el modal . manda la variable admin, yta en el modacompruieba si es true. solo al admin le aparece el nboton para el boton de cambio de ronda y de ahi empieza
+        socket.emit("rondaTerminadaSend", { room, jugadores: refJugadores.current });
+        //nova
+        //que se ejecute el socket y que de ahi se abra el modal . manda la variable admin, yta en el modacompruieba si es true. solo al admin le aparece el nboton para el boton de cambio de ronda y de ahi empieza
       }
     }
-  }, [contador]);
+  }, [contador, activo, isModalOpen]);
   return (
     <>
       {activo && <p className={stylesG.contador}>{contador}'</p>}
@@ -338,6 +353,7 @@ export default function Game() {
           mensaje={modalMessage}
           jugadores={jugadores}
           action={modalAction || null}
+          admin={isAdmin}
         />
       </div>
     </>

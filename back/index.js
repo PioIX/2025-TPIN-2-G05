@@ -107,9 +107,13 @@ io.on("connection", (socket) => {
     })
   })
 
+  socket.on("rondaTerminadaSend", (data) => {
+    io.to(data.room).emit("rondaTerminadaReceive", data);
+  });
+
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
-    console.log("Se emitio cambio turno",data.index)
+    console.log("Se emitio cambio turno", data.jugadores)
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
