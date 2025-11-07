@@ -89,3 +89,36 @@
     color: white;
     padding: 0 1rem;
 }
+.expandDiv,.expandDiv2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:0;
+    height: 100vh;
+    background: #b10000;
+    animation: grow 10.5s linear forwards;
+    pointer-events: none;
+    /* no bloquea clics */
+    z-index: 0;
+    overflow-y: hidden;
+}
+.expandDiv{
+    background: #8f0000;
+    width: 4vw;
+    z-index: 0;
+    animation: grow2 10.5s linear forwards;
+
+}
+
+@keyframes grow {
+    to {
+        width: 100vw;
+        /* suficiente para llenar pantalla */
+    }
+}
+@keyframes grow2 {
+    to {
+        width: 104vw;
+        /* suficiente para llenar pantalla */
+    }
+}

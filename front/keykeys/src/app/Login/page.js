@@ -17,14 +17,14 @@ export default function Home() {
   const [nombre, setNombre] = useState("");
   const [contraseña, setContraseña] = useState("");
   const router = useRouter()
-  const [modalMessage, setModalMessage] = useState("");  
+  const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  function openModal(mensaje,action){
-    setModalMessage(mensaje);  
+
+  function openModal(mensaje, action) {
+    setModalMessage(mensaje);
     setModalAction(action)
-    setIsModalOpen(true);     
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -37,8 +37,8 @@ export default function Home() {
     setContraseña(event.target.value)
   }
 
-  function volver(){
-    router.push("/")
+  function volver() {
+    router.replace("/")
   }
 
   async function checkLogin() {
@@ -46,7 +46,7 @@ export default function Home() {
       openModal("faltan rellenar campos")
     } else {
       let respond = await loguearUsuario(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
-      console.log(typeof(respond.result.id_usuario) == "string")
+      console.log(typeof (respond.result.id_usuario) == "string")
       typeof (respond.result.id_usuario == "string") && (respond.result.id_usuario = parseInt(respond.result.id_usuario))
       switch (respond.result.id_usuario) {
         case -2:
@@ -57,8 +57,8 @@ export default function Home() {
           break
         default:
           localStorage.setItem("idUser", respond.result[0].id_usuario)
-          const accion = () => {router.replace('../Home', { scroll: false })}; 
-          openModal("Ingresando...",{accion: accion})
+          const accion = () => { router.replace('../Home', { scroll: false }) };
+          openModal("Ingresando...", { accion: accion })
           break
       }
     }
@@ -68,17 +68,17 @@ export default function Home() {
   return (
     <>
       <div className={styles.container}>
-        <ImagenClick src = {"/volver.png"}  onClick={volver} className={"imagenClick"}></ImagenClick>
+        <ImagenClick src={"/volver.png"} onClick={volver} className={"imagenClick"}></ImagenClick>
         <h1 className={styles.title}>Keykeys</h1>
         <h2 className={styles.subtitle2}>Inicie sesión</h2 >
         <h3 className={styles.subtitle}>Ingrese su nombre y contraseña</h3>
         <div className={stylesL.containerInputs}>
-          <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"}> </Input>
-          <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password"
+          <Input placeholder="Ingrese su nombre..." id="nombre" onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkLogin() } }}> </Input>
+          <Input placeholder="Ingrese su contraseña..." id="contraseña" onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapperLog"} type="password" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkLogin() } }}
           > </Input>
         </div>
 
-        <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={"buttonLog"}> </Button>
+        <Button type="button" onClick={checkLogin} text={"Iniciar sesion"} className={"buttonLog"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkLogin() } }}></Button>
         <h4 className={styles.subtitle3}>¿No tiene cuenta? Registrarse ahora</h4>
         <div className={styles.containerLinks}>
           <Link href="/Registro" className={styles.irALaOtraPagina}>Registrarse</Link>
@@ -90,7 +90,7 @@ export default function Home() {
         onClose={closeModal}
         mensaje={modalMessage}
         action={modalAction || null} // Si modalAction está vacío, pasa null
-      />    
+      />
     </>
   );
 }

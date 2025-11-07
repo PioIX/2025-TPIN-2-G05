@@ -5,7 +5,7 @@ export default function Button(props){
     
     return(
         <>
-            <button type={props.type} onClick={props.onClick} className={styles[props.className]}> {props.text} </button>
+            <button type={props.type} onClick={props.onClick} className={styles[props.className]} onKeyDown={props.onKeyDown? props.onKeyDown:null}> {props.text} </button>
         </>
     )
 }

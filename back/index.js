@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("enviarIdsDeJugadores", (data) => {
-    console.log(data);
+    console.log(data)
     io.to(req.session.room).emit("recibirIdsDeJugadores", {
       data: data,
     });
@@ -77,9 +77,12 @@ io.on("connection", (socket) => {
   socket.on("partidaInitSend", (data) => {
     io.to(req.session.room).emit("partidaInitReceive", {
       message: "Se recibio el evento partidaInit",
-    });
-    console.log("Se esta iniciando la partida");
-  });
+      cantidadRondas: data.cantidadRondas,
+      letrasProhibidas: data.letrasProhibidas,
+      idAdmin: data.idAdmin
+    })
+    console.log("Se esta iniciando la partida")
+  })
 
   socket.on("iniciarDentroDeLaPartida", (data) => {
     io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
@@ -99,9 +102,9 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("cambioTurno", (data) => {
-    data.index = data.index + 1;
-    io.to(req.session.room).emit("cambioTurno", {
+  socket.on("cambioTurnoSend", (data) => {
+    data.index = data.index + 1
+    io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
       index: data.index,
@@ -122,9 +125,10 @@ io.on("connection", (socket) => {
 
   socket.on("leaveRoomPlayer", (data) => {
     io.to(req.session.room).emit("leftRoomPlayer", {
-      user: data,
-    });
-  });
+      user: data
+    }
+    )
+  })
 
   socket.on("sendMessage", (data) => {
     io.to(req.session.room).emit("newMessage", {
@@ -154,7 +158,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
     if (respuesta.length > 0) {
-      res.send(respuesta);
+      res.send(respuesta[0]);
     } else {
       res.send(-1);
     }
@@ -371,12 +375,11 @@ app.post("/crearPartida", async function (req, res) {
 app.put("/actualizarValoresPartidaFalse", async function (req, res) {
   try {
     const { id_partida } = req.body;
-
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE Partidas
-      SET activa = 0,
-      WHERE id_partida = "${id_partida}"
+      SET activa = 0
+      WHERE id_partida = ${req.body.id_partida}
     `);
 
     res.send({ mensaje: "Partida actualizada exitosamente" });
@@ -551,7 +554,9 @@ app.get("/traerPartidaPorCodigo", async function (req, res) {
   }
 });
 
-app.get("/traerCodigo", async function (req, res) {
+
+app.get('/traerCodigo', async function (req, res) {
+
   const { id_partida } = req.body;
   try {
     let respuesta = await realizarQuery(`
@@ -619,5 +624,30 @@ app.put("/cambiarDatosUsuario", upload.single("foto"), async function (req, res)
     res.send({ mensaje: "Datos actualizados correctamente", res: 1 });
   } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message, res: -1 });
+  }
+});
+app.post('/checkearPalabra', async function (req, res) {
+  console.log("Esta es la palabra ", req.body.palabra)
+  let respuesta = await fetch(`https://rae-api.com/api/words/${req.body.palabra}`)
+  console.log(respuesta.ok)
+  res.send(respuesta.ok)
+})
+//Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back
+app.get("/traerDatosUsuariosParaJuego", async function (req, res) {
+  try {
+    console.log(req.query)
+    respuesta = await realizarQuery(
+      `SELECT id_usuario,nombre,foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+    );
+    if (respuesta.length > 0) {
+      res.send(respuesta[0]);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
   }
 });

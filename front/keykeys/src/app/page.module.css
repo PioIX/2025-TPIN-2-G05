@@ -3,6 +3,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
+  color: #ffffff;
 }
 
 .container {
@@ -51,6 +52,9 @@ html, body {
 
 .center {
   display: flex;
+  justify-content: center;
+}
+.center2 {
   justify-content: center;
 }
 
