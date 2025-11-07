@@ -255,3 +255,21 @@ export async function deleteUser(username) {
             return { result };
         });
 }
+
+export async function editUser(newUsername, oldUsername) {
+    console.log("Se entró al fetch")
+    return fetch(`http://localhost:4000/modificarUsuario`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            newUsername: newUsername,
+            oldUsername: oldUsername
+        })
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}

@@ -4,15 +4,29 @@ import styles from './home.module.css'
 import Input from "@/Components/Input";
 import { useState } from "react"
 import Button from "@/Components/Button";
-import { deleteUser } from "@/API/fetch";
+import { deleteUser, editUser } from "@/API/fetch";
+import { useRouter } from "next/navigation"
 
 export default function Home() {
     const [username, setUsername] = useState("")
-    const [menu, setMenu] = useState("username") //Booleano para cambiar entre eliminar o modificar
+    const [menu, setMenu] = useState("admin") //Booleano para cambiar entre eliminar o modificar
     const [check, setCheck] = useState(false)
+    const router = useRouter()
+    const [newUsername, setNewUsername] = useState("")
+    const [oldUsername, setOldUsername] = useState("")
+
+
 
     function handleUsername(event){
         setUsername(event.target.value)
+    }
+
+    function handleOldUsername(event){
+      setOldUsername(event.target.value)
+    }
+
+    function handleNewUsername(event){
+      setNewUsername(event.target.value)
     }
 
     function checkear(){
@@ -20,17 +34,15 @@ export default function Home() {
     }
 
     function menuEliminar(){
-      setCheck(checkear())
       setMenu("eliminar")
     }
 
     function menuModificar(){
-      setCheck(checkear())
       setMenu("modificar")
     }
 
     function modificarUsuario(){
-      //HACER EL FETCH DE ESTA THING
+      editUser(newUsername, oldUsername)
       alert("Usuario Modificado")
     }
 
@@ -41,32 +53,42 @@ export default function Home() {
     }
 
     function volver(){
-      router.push("../")
+      router.push("Home")
+    }
+
+    function menuAdmin(){
+      setMenu("admin")
     }
   return (
 
     <div>
       <h1>MENU ADMINISTRADOR</h1>
       <div>
-          <Input onChange={handleUsername} value={username} placeHolder={"Ingrese Nombre de Usuario"}></Input>
-          <Button onClick={menuModificar} text={"Modificar"} className={`${styles.mainButton} ${styles.game}`}></Button>
-          <Button onClick={menuEliminar} text={"Eliminar"} className={`${styles.mainButton} ${styles.game}`}></Button> 
-          {(menu=="modificar" && check) &&
+          {menu=="admin" &&
             <div>
+              <Button onClick={menuModificar} text={"Modificar"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Button onClick={menuEliminar} text={"Eliminar"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Button onClick={volver} text={"Volver al Menú Principal"} className={`${styles.mainButton} ${styles.game}`}></Button>
+
+            </div>
+          }
+          {(menu=="modificar") &&
+            <div>
+              <Input onChange={handleOldUsername} value={oldUsername} placeholder={"Ingrese Nombre de Usuario"}></Input>
               <Button onClick={modificarUsuario} text={"Modificar el Nombre de Usuario"} className={`${styles.mainButton} ${styles.game}`}></Button>
-              <Input onChange={handleUsername} value={username} placeHolder={"Ingrese el Nuevo Nombre de Usuario"}></Input>
+              <Input onChange={handleNewUsername} value={newUsername} placeholder={"Ingrese el Nuevo Nombre de Usuario"}></Input>
+              <Button onClick={menuAdmin} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
 
             </div>
           }
-
-
-
-          {(menu=="eliminar" && check) &&
+          {(menu=="eliminar") &&
             <div>
+              <Input onChange={handleUsername} value={username} placeholder={"Ingrese Nombre de Usuario"}></Input>
               <Button onClick={eliminarUsuario} text={"Eliminar Usuario"}></Button>
+              <Button onClick={menuAdmin} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
+
             </div>
           }
-          <Button onClick={volver} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
       </div>
     </div>
   )

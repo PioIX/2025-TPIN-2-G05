@@ -248,7 +248,23 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
 });
 
 
-//ELIMINAR USUARIO ELIMINAR USUARIO ELIMINAR USUARIO ELIMINAR USUARIO ELIMINAR USUARIO ELIMINAR USUARIO 
+app.put('/modificarUsuario', async function (req, res) {
+  try {
+    const oldUsername = req.body.oldUsername;
+    const newUsername = req.body.newUsername;
+    
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE UsuariosKey
+      SET nombre = "${newUsername}"
+      WHERE nombre = "${oldUsername}"
+    `);
+
+    res.send({ mensaje: "Se ha modificao el uchuario" });
+  } catch (error) {
+    res.send({ mensaje: "Error al modificar usuario", error: error.message });
+  }
+});
 
 
 app.put('/eliminarUsuario', async function (req, res) {
@@ -267,6 +283,7 @@ app.put('/eliminarUsuario', async function (req, res) {
     res.send({ mensaje: "Error al borrar usuario", error: error.message });
   }
 });
+
 
 //AMIGOS---------------------------------------------------------------------------------------------------
 app.get('/traerAmigos', async function (req, res) {

@@ -47,7 +47,7 @@ export default function Home() {
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
-    if(id==28){
+    if(id==38){
       setAdmin(true)
     }
   }, [])
