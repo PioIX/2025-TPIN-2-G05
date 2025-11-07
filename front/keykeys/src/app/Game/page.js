@@ -232,6 +232,15 @@ export default function Game() {
     setPalabra(event.target.value)
   }
 
+  function checkLetra(event) {
+    let letra = event.key
+    for (let i = 0; i < letrasprohibidas.length; i++) {
+      if (letrasprohibidas[i] == letra.toLowerCase()) {
+        event.preventDefault()
+      }
+    }
+  }
+
   //TIMER
   useEffect(() => {
     //Esto usa timers temporales de 1 segundo en vez de uno de 10. Cuando llega a 0 no se crean más timers.
@@ -312,7 +321,13 @@ export default function Game() {
               {activo == true ? (<>
                 <div className={styles.flex}>
                   <Input
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); envioPalabra() } }}
+                    onKeyDown={(e) => {
+                      checkLetra(e);
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        envioPalabra();
+                      }
+                    }}
                     onChange={cambiarPalabra}
                     classNameInputWrapper={"inputWrapperGame"}
                     classNameInput={"inputGame"}
