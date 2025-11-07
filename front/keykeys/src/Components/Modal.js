@@ -5,14 +5,16 @@ import Button from "@/Components/Button";
 import Input from "@/Components/Input";
 import Person from "./Person";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/hooks/useSocket"
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout}) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, onCloseLogout, admin}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
   const router = useRouter()
+  const { socket } = useSocket()
 
   useEffect(() => {
     let id = localStorage.getItem("idUser")
@@ -137,8 +139,11 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
               <div key={i} className={styles.filaJugador}>
                 <Person text={jugador.nombre} image={jugador.foto}></Person>
                 <p className={styles.puntosJugador}>{jugador.puntos} pts</p>
+                {admin==true&&            
+                  <Button onClick={() => {socket.emit("cambioRondaSend", {jugadores: jugadores})}} className="buttonModal" text="Cerrar Sesión"> </Button>
+                }
               </div>
-
+              
             ))}
           </div>
           }

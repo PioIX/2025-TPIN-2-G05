@@ -96,19 +96,20 @@ export default function Game() {
           setPrevPalabra("")
           setJugadores(data.jugadores)
           const letras = "abcdefghijklmnñopqrstuvwxyz"
+          const auxiliar = []
           for (let i = 0; i < cantidadLetras; i++) {
             const indiceAleatorio = Math.floor(Math.random() * letras.length);
-            setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+            auxiliar.push(letras.charAt(indiceAleatorio));
+            console.log(auxiliar)
           }
-          if (id == jugadores[0].id_usuario) {
-            setActivo(true)
-          }// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+          console.log({ index: -1, jugadores: jugadores, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })
+          socket.emit("cambioTurnoSend", { index: -1, jugadores: jugadores, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
         }
         setContador(10)
       }
     }
     )
-    socket.emit("cambioRondaSend", {jugadores: jugadores})
+    socket.emit("cambioRondaSend", { jugadores: jugadores })
   }, [socket /**Aca iba socketRonda en vez de socket */])
 
   useEffect(() => {
@@ -131,12 +132,6 @@ export default function Game() {
       //setJugadores(data.jugadores)
     })
 
-    if (!socket) return
-    socket.on("letrasProhibidasReceive", data =>{
-      if (letrasprohibidas.length > 0){
-        setLetrasprohibidas(data.letrasProhibidas)
-      }
-    })
 
     if (!socket) return
     socket.on("joined_OK_room", data => {
@@ -163,7 +158,7 @@ export default function Game() {
       console.log(data.index)
       console.log(jugadores.length)
       if (data.index >= jugadores.length) {
-        socket.emit("cambioRondaSend", {jugadores: jugadores})
+        socket.emit("cambioRondaSend", { jugadores: jugadores })
       } else if (jugadores[data.index].id_usuario == id) {
         console.log("Soy el siguiente jugador y solo deberia aparecer en el siguiente jugador")
         setRonda(data.ronda)
@@ -173,6 +168,8 @@ export default function Game() {
         setPrevPalabra(data.palabra)
         setJugadores(data.jugadores)
         setContador(10)
+      } else {
+        setActivo(false)
       }
     })
   }, [socket /**Aca iba socketTurno en vez de socket */])
@@ -230,31 +227,32 @@ export default function Game() {
   //TIMER
   useEffect(() => {
     //Esto usa timers temporales de 1 segundo en vez de uno de 10. Cuando llega a 0 no se crean más timers.
-    if (contador > 0) {
-      const timer = setInterval(() => {
-        setContador(contadorPrevio => contadorPrevio - 1);
-      }, 1000);
+    if (isModalOpen == false) {
+      if (contador > 0) {
+        const timer = setInterval(() => {
+          setContador(contadorPrevio => contadorPrevio - 1);
+        }, 1000);
 
-      return () => {
-        clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
-      }
-    } else {
-      console.log(jugadores)
-      let jugadoresTemp = []
-      for (let i = 0; i < jugadores.length; i++) {
-
-
-        if (jugadores[i].id_usuario == id && activo) {
-          jugadores[i].puntos -= 10;
-          setJugadores((prevArray) => [...prevArray, {}])
-          setJugadores((prevArray) => prevArray.slice(0, -1))
-          setActivo(false)
-          break; // corta el bucle si ya lo encontró
+        return () => {
+          clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
         }
+      } else {
+        console.log(jugadores)
+        for (let i = 0; i < jugadores.length; i++) {
 
 
+          if (jugadores[i].id_usuario == id && activo) {
+            jugadores[i].puntos -= 10;
+            setJugadores((prevArray) => [...prevArray, {}])
+            setJugadores((prevArray) => prevArray.slice(0, -1))
+            break; // corta el bucle si ya lo encontró
+          }
+
+
+        }
+        //socket.emit("cambioRondaSend", { data: jugadores })//nova
+//que se ejecute el socket y que de ahi se abra el modal . manda la variable admin, yta en el modacompruieba si es true. solo al admin le aparece el nboton para el boton de cambio de ronda y de ahi empieza
       }
-      socket.emit("cambioRondaSend", { data: jugadores })
     }
   }, [contador]);
   return (
@@ -299,7 +297,7 @@ export default function Game() {
           </div>
 
           <div className={stylesG.longitudYinput}>
-           {activo &&  <h2 className={styles.subtitle2}>
+            {activo && <h2 className={styles.subtitle2}>
               Longitud {prevPalabra.length + 1} o más
             </h2>}
 

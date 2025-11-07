@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
 
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
-    console.log("Se emitio cambio turno")
+    console.log("Se emitio cambio turno",data.index)
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
