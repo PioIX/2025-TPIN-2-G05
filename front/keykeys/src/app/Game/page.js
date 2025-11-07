@@ -27,10 +27,12 @@ export default function Game() {
   const [cantidadLetras, setCantidadLetras] = useState("");
   const [rondas, setRondas] = useState("");
   const [ronda, setRonda] = useState(0);
-  const [activo, setActivo] = useState(undefined);
+  const [activo, setActivo] = useState(false);
   const router = useRouter();
   const { socket } = useSocket()
   const [contador, setContador] = useState(10)
+  const [palabraMasCorta, setPalabraMasCorta] = useState(false)
+  const [palabraNoExiste, setPalabraNoExiste] = useState(false)
 
 
   const [modalMessage, setModalMessage] = useState("");
@@ -56,7 +58,6 @@ export default function Game() {
 
     console.log(localStorage)
     console.log(localStorage.getItem("idAdmin"), localStorage.getItem("idUser"), "admin", localStorage.getItem("idAdmin") == localStorage.getItem(`idUser`))
-    setActivo(true)
     console.log("rondas", localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`), "letras", localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
     setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
@@ -67,10 +68,11 @@ export default function Game() {
     if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
       setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
+      setActivo(true)
+      setContador(10)
       if (ronda == undefined) {
         setRonda(0)
       }
-      socket.emit("iniciarDentroDeLaPartida", { })
     }
   }, [])
 
@@ -81,11 +83,24 @@ export default function Game() {
     )
   }, [id, room])
 
+  useEffect(() => {
+    const letras = "abcdefghijklmnñopqrstuvwxyz"
+    for (let i = 0; i < cantidadLetras; i++) {
+      const indiceAleatorio = Math.floor(Math.random() * letras.length);
+      setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
+    }
+  }, [cantidadLetras])
+
+  function returnLetrasProhibidas(){
+    if (letrasprohibidas.length > 0){
+      return letrasprohibidas
+    }
+  }
+
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if (!socket) return;
     socket.on("cambioRondaReceive", data => {
-      //setJugadores(data.jugadores)
       if (id == localStorage.getItem("idAdmin")) {
         if (ronda > rondas) {
           socket.emit("terminarPartida", { data: jugadores })
@@ -98,18 +113,21 @@ export default function Game() {
             const indiceAleatorio = Math.floor(Math.random() * letras.length);
             setLetrasprohibidas((prev) => [...prev, letras.charAt(indiceAleatorio)]);
           }
-          setActivo(true)// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+          if (id == jugadores[0].id_usuario) {
+            setActivo(true)
+          }// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
         }
       }
     }
-  )}, [socket /**Aca iba socketRonda en vez de socket */])
+    )
+  }, [socket /**Aca iba socketRonda en vez de socket */])
 
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Estas son las rondas ", rondas)
   }, [rondas])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(ronda)
   }, [ronda])
 
@@ -129,6 +147,12 @@ export default function Game() {
       //setJugadores(data.jugadores)
     })
 
+    if (!socket) return
+    socket.on("letrasProhibidasReceive", data =>{
+      if (letrasprohibidas.length > 0){
+        setLetrasprohibidas(data.letrasProhibidas)
+      }
+    })
 
     if (!socket) return
     socket.on("joined_OK_room", data => {
@@ -152,57 +176,61 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
-      console.log(data)
+      if (data.index > jugadores.length) {
+        socket.emit("cambioTurno")
+      } else if (jugadores[data.index].id_usuario == id) {
+        console.log("Soy el siguiente jugador y solo deberia aparecer en el siguiente jugador")
+        //setRonda(socket.ronda)
+        setPalabra("")
+        //setLetrasprohibidas(socket.letras)
+        setActivo(true)
+        setPrevPalabra(data.palabra)
+        setJugadores(data.jugadores)
+        setContador(10)
+      }
     })
-    //setPrevPalabra(socket.prevpalabra)
-    if (id == socket.idTurno) {
-      //setRonda(socket.ronda)
-      //setPalabra("")
-      //setLetrasprohibidas(socket.letras)
-      //setActivo(true)
-    } else {
-      //setActivo(false)
-    }
   }, [socket /**Aca iba socketTurno en vez de socket */])
+
 
 
 
   //Esto va en el onchange del input
   async function envioPalabra() {
+    console.log("Envio la palara")
     if (prevPalabra.length < palabra.length) {
       let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
-      console.log(valid)
+      console.log("Esto es valid, ", valid)
       if (valid) {
+        let index
+        setPalabraMasCorta(false)
         for (let i = 0; i < jugadores.length; i++) {
-          if (jugadores[i].id == id) {
+          if (jugadores[i].id_usuario == id) {
+            index = i
             jugadores[i].puntos += palabra.length;
-            socket.emit("cambioTurno", { jugadores: jugadores, palabra: palabra, index: i })
+            setJugadores((prevArray) => [...prevArray, {}])
+            setJugadores((prevArray) => prevArray.slice(0, -1))
             break; // corta el bucle si ya lo encontró
           }
+
         }
+        console.log("Este es index: ", index)
+        //if (!socket) return;
+        socket.emit("cambioTurnoSend", { index: index, jugadores: jugadores, palabra: palabra })
+        setActivo(false)
+        console.log(jugadores)
       } else {
-        //palabra invalida
+        setPalabraMasCorta(false)
+        setPalabraNoExiste(true)
       }
     } else {
-      // return que palabra es invalida
+      setPalabraNoExiste(false)
+      setPalabraMasCorta(true)
     }
   }
 
-
-  //esto va en el on key down
-  function checkLetra(event) {
-    let letra = event.key
-    for (let i = 0; i < letrasprohibidas.length; i++) {
-      if (letrasprohibidas[i] == letra.toLowerCase()) {
-        event.preventDefault()
-      }
-    }
-  }
   function cambiarPalabra(event) {
     setPalabra(event.target.value)
   }
-
-
 
   //TIMER
   useEffect(() => {
@@ -221,22 +249,22 @@ export default function Game() {
       for (let i = 0; i < jugadores.length; i++) {
 
 
-        if (jugadores[i].id_usuario == id) {
+        if (jugadores[i].id_usuario == id && activo) {
           jugadores[i].puntos -= 10;
           setJugadores((prevArray) => [...prevArray, {}])
           setJugadores((prevArray) => prevArray.slice(0, -1))
-
+          setActivo(false)
           break; // corta el bucle si ya lo encontró
         }
 
 
       }
-      socket.emit("cambioRondaSend", { data: jugadores })
+      //socket.emit("cambioRondaSend", { data: jugadores })
     }
   }, [contador]);
   return (
     <>
-      <p className={stylesG.contador}>{contador}'</p>
+      {activo && <p className={stylesG.contador}>{contador}'</p>}
 
       <div className={stylesG[activo]}>
         <div className={styles.top}>
@@ -248,7 +276,6 @@ export default function Game() {
 
             {jugadores &&
               jugadores.map((jugador, index) => {
-                console.log("jugador en el map ", jugador)
                 const src = jugador.foto
                   ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
                   : "/sesion.png";
@@ -266,7 +293,6 @@ export default function Game() {
             <div className={stylesG.cajaprohibidas}>
               {letrasprohibidas != undefined &&
                 letrasprohibidas.map((letrasprohibida, index) => {
-                  console.log(letrasprohibida)
                   return (
                     <LetraProhibida
                       key={index}
@@ -283,10 +309,10 @@ export default function Game() {
             </h2>
 
             <div className={stylesG.inputContainer}>
-              {activo == true ? (
+              {activo == true ? (<>
                 <div className={styles.flex}>
                   <Input
-                    onKeyDown={checkLetra}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); envioPalabra() } }}
                     onChange={cambiarPalabra}
                     classNameInputWrapper={"inputWrapperGame"}
                     classNameInput={"inputGame"}
@@ -296,6 +322,8 @@ export default function Game() {
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>
                 </div>
+                {palabraMasCorta && <p>La palabra debe ser mas larga que {prevPalabra.length + 1}</p>}
+                {palabraNoExiste && <p>Esta palabra no existe</p>}</>
               ) : (
                 <h2 className={styles.subtitle}>
                   No es tu turno

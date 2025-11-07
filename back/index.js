@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
     console.log("Se esta iniciando la partida")
   })
 
-  socket.on("iniciarDentroDeLaPartida", (data) => {
+  socket.on("iniciarDentroDeLaPartida", (data) => { //Este pedido es para que se sepa quien va primero
     io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
       jugadores: data.jugadores
     })
@@ -100,6 +100,12 @@ io.on("connection", (socket) => {
     console.log("La partida ha terminado")
   })
 
+  socket.emit("letrasProhibidasSend", (data)=>{
+    console.log("Se enviaron las letras prohibidas")
+    io.to(req.session.room).emit("letrasProhibidasReceive",{
+      letrasProhibidas: data.letrasProhibidas
+    })
+  })
   socket.on("cambioRonda", (data) => {
     io.to(req.session.room).emit("cambioRonda", {
       jugadores: data
@@ -108,6 +114,8 @@ io.on("connection", (socket) => {
 
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
+    console.log("Se emitio cambio turno")
+    console.log(data)
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
