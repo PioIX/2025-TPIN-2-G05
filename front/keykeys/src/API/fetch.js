@@ -253,3 +253,16 @@ export async function traerCodigo(id_partida) {
             return { result };
         });
 }
+
+export async function actualizarDatosUsuario(formData) {
+    return fetch(`http://localhost:4000/cambiarDatosUsuario`,{
+        method: "PUT",
+        body: formData
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result)
+            return { result }
+        }
+        )
+}

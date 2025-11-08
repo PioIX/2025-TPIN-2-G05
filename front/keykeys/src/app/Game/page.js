@@ -269,7 +269,11 @@ export default function Game() {
   }, [contador, activo, isModalOpen]);
   return (
     <>
-      {activo && <p className={stylesG.contador}>{contador}'</p>}
+
+    {activo &&(
+    <div className={stylesG.expandDiv}></div>
+    <div className={stylesG.expandDiv2}></div>
+    <p className={stylesG.contador}>{contador}'</p>)}
 
       <div className={stylesG[activo]}>
         <div className={styles.top}>
@@ -325,10 +329,10 @@ export default function Game() {
                       }
                     }}
                     onChange={cambiarPalabra}
-                    classNameInputWrapper={"inputWrapperGame"}
-                    classNameInput={"inputGame"}
+                    classNameInputWrapper="inputWrapperGame"
+                    classNameInput="inputGame"
                     placeholder="Escribir acá"
-                  ></Input>
+                  />
                   <div className={stylesG.aumentar}>
                     <ImagenClick onClick={envioPalabra} src={"/next.png"} />
                   </div>

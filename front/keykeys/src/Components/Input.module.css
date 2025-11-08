@@ -85,10 +85,10 @@
 }
 
 .inputGame {
-    background-color: #7f7f7f;
+    background-color: #a9a8a8;
     color: #fff;
     font-size: 1rem;
-    border: 0.5rem solid #a9a8a8;
+    border: 0.5rem solid #7f7f7f;
     padding: 3rem;
     text-align: center;
     outline: none;
@@ -103,5 +103,4 @@
 .inputGame:focus {
     border-color: #ff3c00;
     box-shadow: 0 0 6px #ff3c00;
-    background-color: #a9a8a8;
 }
