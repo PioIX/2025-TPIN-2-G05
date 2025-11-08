@@ -93,27 +93,31 @@ io.on("connection", (socket) => {
     console.log("Se esta iniciando la partida desde dentro")
   })
 
-  socket.on("terminarPartida", (data) => {
-    io.to(req.session.room).emit("terminarPartida", {
-
+  socket.on("terminarPartidaSend", (data) => {
+    io.to(req.session.room).emit("terminarPartidaReceive", {
+      jugadores: data.jugadores
     })
     console.log("La partida ha terminado")
   })
 
   socket.on("cambioRondaSend", (data) => {
     console.log("Se ejecuto cambioRonda")
+    console.log("Antes ", data.ronda)
     io.to(req.session.room).emit("cambioRondaReceive", {
-      jugadores: data.jugadores
+      jugadores: data.jugadores,
+      ronda: data.ronda + 1
     })
+    console.log("Despues ", data.ronda)
   })
 
   socket.on("rondaTerminadaSend", (data) => {
+    console.log("Se ejecutó rondaTerminada")
     io.to(data.room).emit("rondaTerminadaReceive", data);
   });
 
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
-    console.log("Se emitio cambio turno", data.jugadores)
+    console.log("Se emitio cambio turno")
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,

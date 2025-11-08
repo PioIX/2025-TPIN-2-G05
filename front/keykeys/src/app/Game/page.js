@@ -36,6 +36,8 @@ export default function Game() {
   const [palabraNoExiste, setPalabraNoExiste] = useState(false)
 
   const refJugadores = useRef(jugadores)
+  const refModal = useRef(false)
+  const refRonda = useRef(0)
 
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
@@ -51,22 +53,13 @@ export default function Game() {
     setIsModalOpen(false);
   };
 
-  function ingresoNombre(event) {
-    setNombre(event.target.value)
-  }
-
   //codigo en eladmin y //hacer tema rondas
   useEffect(() => {
-
-    console.log(localStorage)
-    console.log(localStorage.getItem("idAdmin"), localStorage.getItem("idUser"), "admin", localStorage.getItem("idAdmin") == localStorage.getItem(`idUser`))
-    console.log("rondas", localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`), "letras", localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
     setPrevPalabra("aaa")
     setRoom(localStorage.getItem(`room`))
     const stored = localStorage.getItem("Usuarios");
     setId(localStorage.getItem(`idUser`))
     setJugadores(JSON.parse(stored))
-    console.log("Esto es elparse de stored ", JSON.parse(stored))
     setRondas(localStorage.getItem(`rondasTotalesDeJuego${localStorage.getItem("room")}`))
     if (localStorage.getItem(`idUser`) == localStorage.getItem("idAdmin")) {
       setIsAdmin(true)
@@ -84,19 +77,31 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit("joinRoom", { room: room, id: id },
-      console.log("Se hizo el joinRoom")
+
     )
   }, [id, room])
+
+  useEffect(() => {
+    refModal.current = isModalOpen
+  }, [isModalOpen])
+
+  useEffect(() => {
+    refRonda.current = ronda
+  }, [ronda])
+
+  useEffect(()=>{
+    console.log(jugadores)
+  }, [jugadores])
 
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if (!socket) return;
     socket.on("cambioRondaReceive", data => {
+      if (refModal.current) {
+        closeModal()
+      }
       if (id == localStorage.getItem("idAdmin")) {
-        if (ronda > rondas) {
-          socket.emit("terminarPartida", { data: data.jugadores })
-        } else {
-          setRonda(prev => prev + 1)
+          setRonda(data.ronda)
           setLetrasprohibidas([])
           setPrevPalabra("")
           setJugadores(data.jugadores)
@@ -105,26 +110,25 @@ export default function Game() {
           for (let i = 0; i < cantidadLetras; i++) {
             const indiceAleatorio = Math.floor(Math.random() * letras.length);
             auxiliar.push(letras.charAt(indiceAleatorio));
-            console.log(auxiliar)
           }
-          socket.emit("cambioTurnoSend", { index: -1, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-        }
-        setContador(10)
+          socket.emit("cambioTurnoSend", { index: -1, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+         setContador(10)
       }
     }
     )
-    socket.emit("cambioRondaSend", { jugadores: refJugadores.current })
+    socket.emit("cambioRondaSend", { jugadores: refJugadores.current, ronda: ronda })
   }, [socket, id, room /**Aca iba socketRonda en vez de socket */])
 
   useEffect(() => {
-    console.log("Estas son las rondas, ", ronda)
+    console.log("Esta es la ronda, ", ronda)
   }, [ronda])
 
   // //terminar partida
   useEffect(() => {
     if (!socket) return;
-    socket.on("terminarPartida", data => {
-      //setJugadores(data.jugadores)
+    socket.on("terminarPartidaReceive", data => {
+      console.log(data)
+      setJugadores(data.jugadores)
       const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
       openModal("Partida Finalizada", { accion: accion })
       //Modal de fin de partida + resultados
@@ -132,15 +136,7 @@ export default function Game() {
       //El siguiente codigo se ejecuta al iniciar la partida
     })
     if (!socket) return
-    socket.on("iniciarDentroDeLaPartida", data => { //Creo que era para hacer un random del array de jugadores que le mandes
-      //setJugadores(data.jugadores)
-    })
-
-
-    if (!socket) return
-    socket.on("joined_OK_room", data => {
-      console.log("El usuario ", data.user, " se unió a la partida ", data.room)
-    })
+    socket.on("joined_OK_room", data => {})
   }, [socket])
   // socket.emit("cambioRondaSend", { jugadores: jugadores })}
   // //useEffect(()=>{
@@ -157,23 +153,13 @@ export default function Game() {
   //ronda por la que se vaya
   //letras que estan prohibidas
   useEffect(() => {
-    if (!socket) return;
-    socket.on("rondaTerminadaReceive", (data) => {
-      console.log("Estos son los jugadores cuando se termina la ronda ", data.jugadores)
-      setJugadores(data.jugadores)
-      const accion = socket.emit("cambioRondaSend", { jugadores: refJugadores.current })
-      openModal("Se ha terminado la ronda", accion);
-    })
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
-      console.log(data.index)
-      console.log(jugadores.length)
       if (data.index >= jugadores.length) {
-        console.log("Esto se manda al que empezó la partida ", { jugadores: refJugadores.current, index: -1, letrasProhibidas: letrasprohibidas, ronda: ronda, palabra: palabra })
         socket.emit("cambioTurnoSend", { jugadores: data.jugadores, index: -1, letrasProhibidas: data.letrasProhibidas, ronda: data.ronda, palabra: data.palabra })
         setContador(1000000000000000)
       } else if (jugadores[data.index].id_usuario == id) {
-        console.log("Soy el siguiente jugador y solo deberia aparecer en el siguiente jugador")
+        console.log("En cambioturnoreceive se setea la ronda a ", data.ronda)
         setRonda(data.ronda)
         setPalabra("")
         setLetrasprohibidas(data.letrasProhibidas)
@@ -188,14 +174,28 @@ export default function Game() {
   }, [socket /**Aca iba socketTurno en vez de socket */])
 
 
-
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("rondaTerminadaReceive", (data) => {
+      if (refRonda.current == rondas) {
+        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current })
+      } else {
+        setJugadores(data.jugadores)
+        setContador(10)
+        const accion = () => { socket.emit("cambioRondaSend", { jugadores: refJugadores.current, ronda: refRonda.current }) }
+        if (isAdmin) {
+          openModal("Se ha terminado la ronda", { accion: accion });
+        } else {
+          openModal("Se hay terminado la ronda")
+        }
+      }
+    })
+  }, [socket])
 
   //Esto va en el onchange del input
   async function envioPalabra() {
-    console.log("Envio la palara")
     if (prevPalabra.length < palabra.length) {
       let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
-      console.log("Esto es valid, ", valid)
       if (valid) {
         let index
         setPalabraMasCorta(false)
@@ -209,12 +209,10 @@ export default function Game() {
           }
 
         }
-        console.log("Este es index: ", index)
         if (!socket) return;
         socket.emit("cambioTurnoSend", { index: index, jugadores: refJugadores.current, palabra: palabra, letrasProhibidas: letrasprohibidas, ronda: ronda })
         setContador(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
         setActivo(false)
-        console.log(jugadores)
       } else {
         setPalabraMasCorta(false)
         setPalabraNoExiste(true)
@@ -251,7 +249,6 @@ export default function Game() {
           clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
         }
       } else {
-        console.log(jugadores)
         for (let i = 0; i < jugadores.length; i++) {
 
 
@@ -354,6 +351,7 @@ export default function Game() {
           jugadores={jugadores}
           action={modalAction || null}
           admin={isAdmin}
+          partidaTerminada={refRonda.current == rondas}
         />
       </div>
     </>
