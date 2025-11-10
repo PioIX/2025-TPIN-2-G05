@@ -253,10 +253,17 @@ export default function Game() {
 
 
           if (jugadores[i].id_usuario == id && activo) {
-            jugadores[i].puntos -= 10;
-            setJugadores((prevArray) => [...prevArray, {}])
-            setJugadores((prevArray) => prevArray.slice(0, -1))
-            break; // corta el bucle si ya lo encontró
+            if(jugadores[i].puntos >=10){
+              jugadores[i].puntos -= 10;
+              setJugadores((prevArray) => [...prevArray, {}])
+              setJugadores((prevArray) => prevArray.slice(0, -1))
+              break; // corta el bucle si ya lo encontró
+            }else{
+              jugadores[i].puntos = 0;
+              setJugadores((prevArray) => [...prevArray, {}])
+              setJugadores((prevArray) => prevArray.slice(0, -1))
+              break; // corta el bucle si ya lo encontró
+            }
           }
 
 
@@ -270,10 +277,10 @@ export default function Game() {
   return (
     <>
 
-    {activo &&(
+    {activo &&(<>
     <div className={stylesG.expandDiv}></div>
     <div className={stylesG.expandDiv2}></div>
-    <p className={stylesG.contador}>{contador}'</p>)}
+    <p className={stylesG.contador}>{contador}'</p></>)}
 
       <div className={stylesG[activo]}>
         <div className={styles.top}>
