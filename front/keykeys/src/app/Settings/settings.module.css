@@ -1,0 +1,123 @@
+/* especifico settings */
+.containerInputsYBoton {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  gap: 4rem;
+  padding: 0 2rem;
+}
+
+.containerInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 2.5rem;
+  width: 400px;
+  height: 300px;
+  position: relative;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.uploadContainer:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+}
+
+.uploadButton {
+  background: linear-gradient(135deg, #d32f2f 0%, #ff6b6b 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.2);
+}
+
+.uploadButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.3);
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.irALaOtraPagina {
+  color: #ff6b6b;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.irALaOtraPagina:hover {
+  color: #d32f2f;
+}
+
+.irALaOtraPagina::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: linear-gradient(90deg, #ff6b6b, #d32f2f);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.irALaOtraPagina:hover::after {
+  transform: scaleX(1);
+}
+
+.title {
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, #d32f2f 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 2rem 0;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+

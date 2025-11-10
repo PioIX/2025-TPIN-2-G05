@@ -11,7 +11,8 @@
     margin-bottom: 3rem;
     margin-left: 6rem;
 }
-.buttonModal {
+
+.buttonModal,.buttonModalCode {
     width: fit-content;
     height: fit-content;
     background-color: #851010;
@@ -23,8 +24,11 @@
     transition: background-color 0.3s ease;
     margin-top: 3rem;
 }
+.buttonModalCode{
+    margin-top: 1.5rem;
+}
 
-.buttonModalAceptar{
+.buttonModalAceptar {
     width: fit-content;
     height: fit-content;
     background-color: #12cf1b;
@@ -36,7 +40,7 @@
     transition: background-color 0.3s ease;
 }
 
-.buttonModalRechazar{
+.buttonModalRechazar {
     width: fit-content;
     height: fit-content;
     background-color: #d11f1f;
@@ -48,7 +52,12 @@
     transition: background-color 0.3s ease;
 }
 
-.button:hover,.buttonLog:hover,.buttonModal:hover, .buttonModalClose:hover {
+.button:hover,
+.buttonLog:hover,
+.buttonModal:hover,
+.buttonModalClose:hover,
+.buttonAbandonar:hover,
+.chico:hover {
     background-color: red;
 }
 
@@ -64,3 +73,46 @@
     margin-top: 0.5rem;
     margin-bottom: 3rem;
 }
+
+.buttonAbandonar {
+    width: 65vw;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.9rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+    margin-bottom: 3rem;
+}
+
+/* .buttonGame {
+    background-color: #555;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-left: 5%;
+    height: 10vw;
+    width: 15vw;
+
+}
+
+.buttonGame:hover {
+    background-color: #ff3c00;
+    transform: scale(1.05);
+} */
+ .chico{
+    width: fit-content;
+    background-color: #851010;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 1rem;
+ }

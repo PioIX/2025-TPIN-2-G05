@@ -1,26 +1,26 @@
 "use client";
 import ImagenClick from "@/Components/ImagenClick";
-import styles from "./Input.module.css"; 
+import styles from "./Input.module.css";
 
 export default function Input(props) {
   return (
     <div className={styles[props.classNameInputWrapper]}>
       <input
-        
+
         className={styles[props.classNameInput]}
         placeholder={props.placeholder}
         onChange={props.onChange}
         type={props.type || "text"}
-        value ={props.value}
-        onKeyDown={props.onKeyDown}
+        value={props.value}
+        onKeyDown={props.onKeyDown ? props.onKeyDown : null}
       />
       {props.src && (
         <div className={styles.iconWrapper}>
-        <ImagenClick
-          onClick={props.onClick}
-          src={props.src}
-          className={styles.icon} 
-        />
+          <ImagenClick
+            onClick={props.onClick}
+            src={props.src}
+            className={styles.icon}
+          />
         </div>
       )}
     </div>

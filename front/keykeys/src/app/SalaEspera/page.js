@@ -1,85 +1,271 @@
 "use client";
 
-import styles from "./page.module.css";
 import clsx from "clsx";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
+import { useSocket } from "@/hooks/useSocket"
+import { infoUsuarioPartida, actualizarValoresPartidaFalse } from "@/API/fetch";
+import Modal from "@/Components/Modal";
+import styles from "@/app/page.module.css"
+import stylesSE from "@/app/SalaEspera/page.module.css"
+import Person from "@/Components/Person";
 
 export default function Game() {
-  const [jugadores, setJugadores] = useState([]); 
-  const [id, setId] = useState("");
-  const [idAdmin, setIdAdmin] = useState("");
-  const [rondas, setRondas] = useState("");
-  const [letrasProhibidas, setLetrasprohibidas] = useState("");
+  const [jugadores, setJugadores] = useState([]);
+  const [id, setId] = useState(-1);
+  const [idAdmin, setIdAdmin] = useState(-1);
+  const [room, setRoom] = useState(0)
+  const [letrasProhibidas, setLetrasprohibidas] = useState(1);
   const router = useRouter();
-  const [modalMessage, setModalMessage] = useState("");  
+  const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
+  const [jugadoresId, setJugadoresId] = useState([]);
+  const { socket } = useSocket()
+  const refJugadores = useRef(jugadores)
+  const [cantidadRondas, setCantidadRondas] = useState(1);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  function openModal(mensaje,action){
-    setModalMessage(mensaje);  
+  function openModal(mensaje, action) {
+    setModalMessage(mensaje);
     setModalAction(action)
-    setIsModalOpen(true);     
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  //codigo en eladmin y //hacer tema inicio
-  useEffect(()=>{
-    setId(localstorage.getItem('idUser'))
-    //conecta a la room localstorage(room)
-    if(id==localStorage.getItem('idAdmin')){
+
+  const handleCantidadRondasChange = (event) => {
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setCantidadRondas(event.target.value);
+    }
+  };
+
+  const handleLetrasProhibidasChange = (event) => {
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setLetrasprohibidas(event.target.value)
+    }
+  };
+  useEffect(() => {
+    if (!jugadoresId || jugadoresId.length === 0) return;
+
+    async function cargarJugadores() {
+      const respuestas = [];
+      for (let i = 0; i < jugadoresId.length; i++) {
+        respuestas.push(await infoUsuarioPartida(jugadoresId[i]));
+        respuestas[i].puntos = 0;
+      }
+      console.log("Respuestas de cargar jugadores: ", respuestas);
+      setJugadores(respuestas);
+    }
+    cargarJugadores();
+  }, [jugadoresId]);
+
+  useEffect(() => {
+    setId(localStorage.getItem('idUser'))
+    setRoom(localStorage.getItem("room"))
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("Usuarios");
+      if (stored) {
+        setJugadores(JSON.parse(stored));
+        localStorage.removeItem("Usuarios");
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (id == localStorage.getItem('idAdmin')) {
       setIdAdmin(id)
     }
-  },[])
-    //cada vez que te llega el evento de nuevo jugador en sala
-  useEffect(()=>{
-    setJugadores(socket.jugadorSala)
-  },[socketjugadorSala])
-    useEffect(()=>{
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-      localStorage.setItem(`idAdmin`, idAdmin)
+  }, [id])
+
+  useEffect(() => {
+    if (!socket) return
+    socket.emit('joinRoom', { room: room, user: id },
+      console.log("me uno a la sala"),
+    )
+  }, [id, room])
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.setItem("Usuarios", JSON.stringify(jugadores));
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [jugadores]);
+
+
+  useEffect(() => {
+    refJugadores.current = jugadores;
+  }, [jugadores])
+
+  useEffect(() => {
+    if (!socket) return
+    if (jugadores.length <= 1)
+      socket.on('joined_OK_room', data => {
+        console.log("Se ejecuto joinRoom")
+        console.log("Datos recibidos en joined_OK_room: ", data)
+        setJugadoresId(prevArray => {
+          if (prevArray.includes(data.user)) return prevArray;
+          const nuevo = [...prevArray, data.user];
+          if (Number(localStorage.getItem("idAdmin")) > 0) {
+            socket.emit("enviarIdsDeJugadores", { data: nuevo });
+          }
+          return nuevo;
+        });
+      });
+
+    if (!socket) return
+    socket.on("leftRoomPlayer", data => {
+      console.log("Se ejecuto leftRoomPlayer ", data.user.id)
+
+      setJugadores(prevJugadores => {
+        const nuevos = prevJugadores.filter(j => {
+          const jugador = j[0] || j;
+          if (jugador.id_usuario != data.user.id) {
+            return jugador.id_usuario
+          }
+        });
+
+        return nuevos;
+      });
+      if (id == data.user.id) {
+        salirSala()
+        const action = router.replace(`/Home`)
+        openModal("Has abandonado la partida", action)
+      }
+    })
+
+    if (!socket) return
+    socket.on("leftRoomAdmin", data => {
+      const action = router.replace(`/Home`)
+      openModal("Has abandonado la partida", action)
+    })
+
+    if (!socket && Number(localStorage.getItem("idAdmin")) < 0) {
+      return
+    } else {
+      socket.on("recibirIdsDeJugadores", data => {
+        setJugadoresId(data.data.data)
+      }
+      )
+    }
+  }, [socket])
+
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("partidaInitReceive", data => {
+      console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin);
+      console.log("Recibido de persona:", id,room,refJugadores.current);
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
+      localStorage.setItem(`idAdmin`, data.idAdmin)
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
+      localStorage.setItem("Usuarios", JSON.stringify(refJugadores.current))
       router.replace('../Game', { scroll: false })
-  },[socketPlay])
+    })
+  }, [socket])
+
+
+
+  useEffect(() => {
+    if (jugadores.length != jugadoresId.length) {
+      let aux = []
+      for (let i = 0; i < jugadores.length; i++) {
+        const element = jugadores[i];
+        console.log(element)
+        aux.push(element.id_usuario)
+      }
+      console.log(aux)
+      setJugadoresId(aux)
+    }
+  }, [jugadores])
+
+  useEffect(() => {
+    console.log("Estos son los jugadores Id", jugadoresId)
+  }, [jugadoresId])
 
   //inicio de partida
-  function partidaInit(){
-    //mandar socket en rondas letrasProhibidas admin idUser room
+  async function partidaInit() {
+    console.log("Enviando al servidor:", cantidadRondas, letrasProhibidas, idAdmin);
+    await actualizarValoresPartidaFalse(room)
+    socket.emit("partidaInitSend", { cantidadRondas: cantidadRondas, letrasProhibidas: letrasProhibidas, idAdmin: idAdmin })
   }
-  function salirSala(){
+
+  function abandonarPartida() {
+    if (idAdmin > 0) {
+      socket.emit("leaveRoomAdmin")
+      salirSala()
+    } else {
+      socket.emit("leaveRoomPlayer", { id })
+      setJugadores([])
+      salirSala()
+    }
+  }
+  function salirSala() {
+    localStorage.removeItem("Usuarios")
     localStorage.setItem(`idAdmin`, -1)
     localStorage.setItem(`room`, -1)
-    openModal("Saliendo de la sala",router.replace('../Home', { scroll: false }))
     //salir de la sala
   }
   return <>
-    {
-      jugadores.map((jugador, index)=>{
-        <Person key={index} text={jugador[0]}src={jugador[1]}></Person>
-      })
-    }
-    {
-      idAdmin == id ? (
-        <Button onClick={partidaInit} text={"Inicie partida"} />
-      ) : (
-        <h2 className={styles.subtitle}>No es tu turno</h2>
-      )
-    }
-    {/* Boton salirse de la sala */}
+    <div className={stylesSE.jugadorescontainer}>
+      {
+        jugadores.map((jugador, index) => {
+          const src = jugador.foto
+            ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
+            : "/sesion.png";
+          return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index == 0 ? true : false} />;
+        })
+      }
+    </div>
+    <div className={stylesSE.container}>
+      {
+        idAdmin == id && (
+          <>
+
+            <div className={styles.center2}>
+              <h2>Configuración de la partida</h2>
+
+              {/* Desplegable de cantidad de rondas */}
+              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
+
+              {/* Desplegable de letras prohibidas */}
+              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
+
+              {/* Mostrar valores seleccionados */}
+              <p>Rondas seleccionadas: {cantidadRondas}</p>
+              <p>Letras prohibidas: {letrasProhibidas}</p>
+              <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+            </div>
+          </>
+        )
+      }
+      {/* Boton salirse de la sala */}
+      <Button onClick={abandonarPartida} text={"Abandonar partida"} className={"buttonAbandonar"} />
+    </div>
     {/* Modal Component */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        mensaje={modalMessage}
-        action={modalAction || null} // Si modalAction está vacío, pasa null
-      />   
+    <Modal
+      isOpen={isModalOpen}
+      onClose={closeModal}
+      mensaje={modalMessage}
+      action={modalAction || null}
+      mensajePartidas={""} // Si modalAction está vacío, pasa null
+    />
   </>;
 }

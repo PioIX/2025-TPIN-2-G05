@@ -25,7 +25,6 @@ export default function Person(props) {
             result.push(1);
             number -= 1;
         }
-        console.log(result)
         return result;
 
     }
@@ -33,7 +32,7 @@ export default function Person(props) {
         <div className={styles.container}>
             {
                 /* stars  */
-                generateArray(props.point).reverse().map((point, index) => {
+                generateArray(props.points).reverse().map((point, index) => {
                     return <img
                         key={index}
                         className={styles.star}

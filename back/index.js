@@ -3,7 +3,7 @@ var bodyParser = require("body-parser"); //Convierte los JSON
 const cors = require("cors");
 const session = require("express-session"); // Para el manejo de las variables de sesión
 const { realizarQuery } = require("./modulos/mysql");
-var multer = require("multer")// Middleware para manejar multipart/form-data (para la foto)
+var multer = require("multer"); // Middleware para manejar multipart/form-data (para la foto)
 
 const upload = multer({ storage: multer.memoryStorage() }); // Configuración de multer para almacenar en memoria la foto y luego dividir entre req.body y req.file
 var app = express(); //Inicializo express
@@ -47,38 +47,107 @@ io.use((socket, next) => {
 let contador = 0; // Movido fuera del evento connection
 
 io.on("connection", (socket) => {
-  // Enviar el valor actual del contador al nuevo cliente
-  socket.emit("respuestaPersonalizada", { contador });
-
   const req = socket.request;
 
   socket.on("joinRoom", (data) => {
-    console.log("🚀 ~ io.on ~ req.session.room:", req.session.room);
-    if (req.session.room != undefined && req.session.room.length > 0)
+    req.session.user = data.user;
+    console.log("Este es req.user ", req.session.user);
+    console.log("🚀 ~ io.on ~ req.session.room:", data.room);
+    if (req.session.room != undefined) {
       socket.leave(req.session.room);
+    }
     req.session.room = data.room;
     socket.join(req.session.room);
 
-    socket.on("chat-messages", (data) => {
-      console.log("Usuario unido a sala:", data.room);
-      setCurrentRoom(data.room);
-    });
-
-    io.to(req.session.room).emit("chat-messages", {
+    io.to(req.session.room).emit("joined_OK_room", {
       user: req.session.user,
       room: req.session.room,
     });
+    console.log("Este es el room ", req.session.room);
+    console.log("Este es el user ", req.session.user);
   });
+
+  socket.on("enviarIdsDeJugadores", (data) => {
+    console.log(data)
+    io.to(req.session.room).emit("recibirIdsDeJugadores", {
+      data: data,
+    });
+  });
+
+  socket.on("partidaInitSend", (data) => {
+    io.to(req.session.room).emit("partidaInitReceive", {
+      message: "Se recibio el evento partidaInit",
+      cantidadRondas: data.cantidadRondas,
+      letrasProhibidas: data.letrasProhibidas,
+      idAdmin: data.idAdmin
+    })
+    console.log("Se esta iniciando la partida")
+  })
+
+  socket.on("iniciarDentroDeLaPartida", (data) => { //Este pedido es para que se sepa quien va primero
+    io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
+      jugadores: data.jugadores,
+    });
+    console.log("Se esta iniciando la partida desde dentro");
+  });
+
+  socket.on("terminarPartidaSend", (data) => {
+    io.to(req.session.room).emit("terminarPartidaReceive", {
+      jugadores: data.jugadores
+    })
+    console.log("La partida ha terminado")
+  })
+
+  socket.on("cambioRondaSend", (data) => {
+    console.log("Se ejecuto cambioRonda")
+    console.log("Antes ", data.ronda)
+    io.to(req.session.room).emit("cambioRondaReceive", {
+      jugadores: data.jugadores,
+      ronda: data.ronda + 1
+    })
+    console.log("Despues ", data.ronda)
+  })
+
+  socket.on("rondaTerminadaSend", (data) => {
+    console.log("Se ejecutó rondaTerminada")
+    io.to(data.room).emit("rondaTerminadaReceive", data);
+  });
+
+  socket.on("cambioTurnoSend", (data) => {
+    data.index = data.index + 1
+    console.log("Se emitio cambio turno")
+    io.to(req.session.room).emit("cambioTurnoReceive", {
+      jugadores: data.jugadores,
+      palabra: data.palabra,
+      index: data.index,
+      letrasProhibidas: data.letrasProhibidas,
+      ronda: data.ronda
+    })
+  })
 
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
     io.emit("pingAll", { event: "Ping to all", message: data });
   });
 
+  socket.on("leaveRoomAdmin", (data) => {
+    io.to(req.session.room).emit("leftRoomAdmin", {
+      message: "Has abandonado la partida",
+    });
+    socket.leave(req.session.room);
+  });
+
+  socket.on("leaveRoomPlayer", (data) => {
+    io.to(req.session.room).emit("leftRoomPlayer", {
+      user: data
+    }
+    )
+  })
+
   socket.on("sendMessage", (data) => {
     io.to(req.session.room).emit("newMessage", {
-      room: req.session.room,
-      message: data,
+      message: data.message,
+      room: data.room,
     });
   });
 });
@@ -98,12 +167,12 @@ io.on("connection", (socket) => {
 
 app.get("/traerDatosUsuarios", async function (req, res) {
   try {
-    console.log(req.query)
+    console.log(req.query);
     respuesta = await realizarQuery(
       `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
     );
     if (respuesta.length > 0) {
-      res.send(respuesta);
+      res.send(respuesta[0]);
     } else {
       res.send(-1);
     }
@@ -117,9 +186,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
 
 app.get("/traerTodosUsuarios", async function (req, res) {
   try {
-    respuesta = await realizarQuery(
-      `SELECT * FROM UsuariosKey`
-    );
+    respuesta = await realizarQuery(`SELECT * FROM UsuariosKey`);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -132,7 +199,6 @@ app.get("/traerTodosUsuarios", async function (req, res) {
     });
   }
 });
-
 
 app.get("/ingresarUsuario", async function (req, res) {
   try {
@@ -160,30 +226,33 @@ app.get("/ingresarUsuario", async function (req, res) {
 });
 
 app.get("/traerFotoUsuario", async function (req, res) {
-  try{
-    let foto = await realizarQuery(`SELECT foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`)
-    res.send({foto: foto})
-  } catch (error){
+  try {
+    let foto = await realizarQuery(
+      `SELECT foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+    );
+    res.send({ foto: foto });
+  } catch (error) {
     res.send({ mensaje: "Tuviste un error", error: error.message });
   }
-}
-)
+});
 
-app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { // Con upload.single("foto") manejo la subida de la foto y la division de datos en req.body y req.file
+app.post("/insertarUsuario", upload.single("foto"), async function (req, res) {
+  // Con upload.single("foto") manejo la subida de la foto y la division de datos en req.body y req.file
   try {
     let check = await realizarQuery(
       `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
     );
     if (check.length == 0) {
       const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
-        await realizarQuery(
-          "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
-          [req.body.nombre, req.body.contrasena, foto]) //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
-        let respuesta = await realizarQuery(
-          `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
-        );
-        res.send({respuesta});
-      }else {
+      await realizarQuery(
+        "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
+        [req.body.nombre, req.body.contrasena, foto]
+      ); //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
+      let respuesta = await realizarQuery(
+        `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
+      );
+      res.send({ respuesta });
+    } else {
       res.send({ id: "-1" });
     }
   } catch (error) {
@@ -191,12 +260,48 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) { 
   }
 });
 
-//AMIGOS------------------------------------------------------ --------------------------------------------
-app.get('/traerAmigos', async function (req, res) {
-    try {
-        const idUsuario = req.query.id;
+app.put('/modificarUsuario', async function (req, res) {
+  try {
+    const oldUsername = req.body.oldUsername;
+    const newUsername = req.body.newUsername;
+    
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE UsuariosKey
+      SET nombre = "${newUsername}"
+      WHERE nombre = "${oldUsername}"
+    `);
 
-        let respuesta = await realizarQuery(`
+    res.send({ mensaje: "Se ha modificao el uchuario" });
+  } catch (error) {
+    res.send({ mensaje: "Error al modificar usuario", error: error.message });
+  }
+});
+
+
+app.put('/eliminarUsuario', async function (req, res) {
+  try {
+    const username = req.body.username;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE UsuariosKey
+      SET estaActivo = false
+      WHERE nombre = "${username}"
+    `);
+
+    res.send({ mensaje: "Se ha borrao el uchuario" });
+  } catch (error) {
+    res.send({ mensaje: "Error al borrar usuario", error: error.message });
+  }
+});
+
+//AMIGOS---------------------------------------------------------------------------------------------------
+app.get("/traerAmigos", async function (req, res) {
+  try {
+    const idUsuario = req.query.id;
+
+    let respuesta = await realizarQuery(`
             SELECT 
                 UsuariosKey.id_usuario,
                 UsuariosKey.nombre,
@@ -208,39 +313,39 @@ app.get('/traerAmigos', async function (req, res) {
               AND UsuariosKey.id_usuario != "${idUsuario}"
         `);
 
-        res.send(respuesta);
-
-    } catch (error) {
-        res.send({ mensaje: "Error al traer amigos", error: error.message });
-    }
+    res.send(respuesta);
+  } catch (error) {
+    res.send({ mensaje: "Error al traer amigos", error: error.message });
+  }
 });
 
-
-app.post('/insertarAmigos', async function (req, res) {
-    try {
-        let check = await realizarQuery(`SELECT id_relacion FROM Relaciones WHERE (id_usuario1 = "${req.body.id}" AND id_usuario2 = "${req.body.id2}") OR (id_usuario1 = "${req.body.id2}" AND id_usuario2 = "${req.body.id}")`);
-        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
-            await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
+app.post("/insertarAmigos", async function (req, res) {
+  try {
+    let check = await realizarQuery(
+      `SELECT id_relacion FROM Relaciones WHERE (id_usuario1 = "${req.body.id}" AND id_usuario2 = "${req.body.id2}") OR (id_usuario1 = "${req.body.id2}" AND id_usuario2 = "${req.body.id}")`
+    );
+    if (check.length == 0) {
+      //Este condicional corrobora que exista algun usuario con ese mail
+      await realizarQuery(`INSERT INTO Relaciones ( id_usuario1, id_usuario2) VALUES
                 ("${req.body.id}", "${req.body.id2}")`); //Si no existe, inserta la solicitud
-            await realizarQuery(`DELETE FROM Solicitudes WHERE id_solicitud = "${req.body.id_solicitud}"
-        `); 
-            res.send({ res: 1 })
-        } else {
-            res.send({ res: -1 }) //Si ya existe, devuelve -1
-        };
-    } catch (error) {
-        res.send({ mensaje: "Tuviste un error", error: error.message })
+      await realizarQuery(`DELETE FROM Solicitudes WHERE id_solicitud = "${req.body.id_solicitud}"
+        `);
+      res.send({ res: 1 });
+    } else {
+      res.send({ res: -1 }); //Si ya existe, devuelve -1
     }
-})
-
+  } catch (error) {
+    res.send({ mensaje: "Tuviste un error", error: error.message });
+  }
+});
 
 // SOLICITUDES DE AMISTAD----------------------------------------------------------------------------------
 
-app.get('/traerSolicitudes', async function (req, res) {
-    try {
-        const idUsuario = req.query.id;
+app.get("/traerSolicitudes", async function (req, res) {
+  try {
+    const idUsuario = req.query.id;
 
-        let respuesta = await realizarQuery(`
+    let respuesta = await realizarQuery(`
             SELECT 
                 Solicitudes.id_solicitud,
                 UsuariosKey.id_usuario,
@@ -252,77 +357,95 @@ app.get('/traerSolicitudes', async function (req, res) {
             WHERE Solicitudes.id_usuario_recibo = "${idUsuario}"
         `);
 
-        res.send(respuesta);
-
-    } catch (error) {
-        res.send({ mensaje: "Error al traer solicitudes", error: error.message });
-    }
+    res.send(respuesta);
+  } catch (error) {
+    res.send({ mensaje: "Error al traer solicitudes", error: error.message });
+  }
 });
 
-app.delete('/eliminarSolicitud', async function (req, res) {
-    try {
-        const id_solicitud = req.body.id;
-        await realizarQuery(`
+app.delete("/eliminarSolicitud", async function (req, res) {
+  try {
+    const id_solicitud = req.body.id;
+    await realizarQuery(`
             DELETE FROM Solicitudes WHERE id_solicitud = "${id_solicitud}"
         `);
-        res.send({ mensaje: "Solicitud eliminada correctamente" });
-    } catch (error) {
-        res.send({ mensaje: "Error al eliminar solicitud", error: error.message });
-    }
+    res.send({ mensaje: "Solicitud eliminada correctamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al eliminar solicitud", error: error.message });
+  }
 });
 
-app.post('/insertarSolicitud', async function (req, res) {
-    try {
-        let check = await realizarQuery(`SELECT id_solicitud FROM Solicitudes WHERE (id_usuario_envio = "${req.body.id}" AND id_usuario_recibo = "${req.body.id_envio}") OR (id_usuario_envio = "${req.body.id_envio}" AND id_usuario_recibo = "${req.body.id}")`);
-        if (check.length == 0) {     //Este condicional corrobora que exista algun usuario con ese mail
-            await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
-                ("${req.body.id}", "${req.body.id_envio}")`);  //Si no existe, inserta la solicitud
-            res.send({ res: 1 })
-        } else {
-            res.send({ res: -1 }) //Si ya existe, devuelve -1
-        };
-    } catch (error) {
-        res.send({ mensaje: "Tuviste un error", error: error.message })
+app.post("/insertarSolicitud", async function (req, res) {
+  try {
+    let check = await realizarQuery(
+      `SELECT id_solicitud FROM Solicitudes WHERE (id_usuario_envio = "${req.body.id}" AND id_usuario_recibo = "${req.body.id_envio}") OR (id_usuario_envio = "${req.body.id_envio}" AND id_usuario_recibo = "${req.body.id}")`
+    );
+    if (check.length == 0) {
+      //Este condicional corrobora que exista algun usuario con ese mail
+      await realizarQuery(`INSERT INTO Solicitudes ( id_usuario_envio, id_usuario_recibo) VALUES
+                ("${req.body.id}", "${req.body.id_envio}")`); //Si no existe, inserta la solicitud
+      res.send({ res: 1 });
+    } else {
+      res.send({ res: -1 }); //Si ya existe, devuelve -1
     }
-})
+  } catch (error) {
+    res.send({ mensaje: "Tuviste un error", error: error.message });
+  }
+});
 
-app.post('/CrearPartida', async function (req, res) {
+app.post("/crearPartida", async function (req, res) {
   try {
     const { id_usuario_admin } = req.body;
 
     // Generar un código random de 5 letras
-    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let codigo_entrada = '';
+    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let codigo_entrada = "";
     for (let i = 0; i < 5; i++) {
-      codigo_entrada += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+      codigo_entrada += caracteres.charAt(
+        Math.floor(Math.random() * caracteres.length)
+      );
     }
 
     // Crear la partida en la base de datos
-    let respuesta = await realizarQuery(`
+    await realizarQuery(`
       INSERT INTO Partidas (activa, codigo_entrada, id_usuario_admin, id_usuario_ganador)
       VALUES (1, "${codigo_entrada}", "${id_usuario_admin}", NULL)
     `);
 
-    res.send({
-      mensaje: "Partida creada exitosamente",
-      partidaId: respuesta.insertId,
-      codigo: codigo_entrada
-    });
-
+    let respuesta = await realizarQuery(
+      `SELECT MAX(id_partida) AS id_partida FROM Partidas`
+    );
+    res.send({ id_partida: respuesta });
   } catch (error) {
     res.send({ mensaje: "Error al crear partida", error: error.message });
   }
 });
 
 //actualizar valores partida actualiara a false cuando termine la partida y establece al usuario ganador que recibe del body
-app.put('/ActualizarValoresPartida', async function (req, res) {
+app.put("/actualizarValoresPartidaFalse", async function (req, res) {
   try {
-    const { id_partida, id_usuario_ganador } = req.body;
+    const { id_partida } = req.body;
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE Partidas
+      SET activa = 0
+      WHERE id_partida = ${req.body.id_partida}
+    `);
+
+    res.send({ mensaje: "Partida actualizada exitosamente" });
+  } catch (error) {
+    res.send({ mensaje: "Error al actualizar partida", error: error.message });
+  }
+});
+
+app.put("/actualizarValoresPartidaTrue", async function (req, res) {
+  try {
+    const { id_partida } = req.body;
 
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE Partidas
-      SET activa = 0, id_usuario_ganador = "${id_usuario_ganador}"
+      SET activa = 1,
       WHERE id_partida = "${id_partida}"
     `);
 
@@ -332,7 +455,7 @@ app.put('/ActualizarValoresPartida', async function (req, res) {
   }
 });
 
-app.get('/ChequearUsuariosPartida', async function (req, res) {
+app.get("/chequearUsuariosPartida", async function (req, res) {
   try {
     const idPartida = req.query.id;
 
@@ -346,55 +469,233 @@ app.get('/ChequearUsuariosPartida', async function (req, res) {
 
     res.send(respuesta);
   } catch (error) {
-    res.send({ mensaje: "Error al traer los usuarios de la partida", error: error.message });
+    res.send({
+      mensaje: "Error al traer los usuarios de la partida",
+      error: error.message,
+    });
   }
 });
-app.get('/traerPartidasActivas', async function (req, res) {
-    try {
-        const idUsuario = req.query.id;
-        let respuesta = await realizarQuery(`
-            SELECT 
-                p.id_partida,
-                p.codigo_entrada,
-                p.id_usuario_admin,
-                p.id_usuario_ganador
-            FROM Partidas p
-            INNER JOIN UsuariosEnPartida uep 
-                ON p.id_partida = uep.id_partida
-            WHERE uep.id_usuario = "${idUsuario}"
-                AND p.activa = 1
-        `);
-        
-        if (respuesta.length > 0) {
-            res.send(respuesta);
-        } else {
-            res.send([]);
-        }
-    } catch (error) {
-        res.send({ 
-            mensaje: "Error al obtener partidas activas", 
-            error: error.message 
-        });
+
+// app.get('/traerPartidasActivas', async function (req, res) {
+//     try {
+//         const idUsuario = req.query.id;
+//         let respuesta = await realizarQuery(`
+//             SELECT
+//                 p.id_partida,
+//                 p.codigo_entrada,
+//                 p.id_usuario_admin,
+//                 p.id_usuario_ganador
+//             FROM Partidas p
+//             INNER JOIN UsuariosEnPartida uep
+//                 ON p.id_partida = uep.id_partida
+//             WHERE uep.id_usuario = "${idUsuario}"
+//                 AND p.activa = 1
+//         `);
+
+//         if (respuesta.length > 0) {
+//             res.send(respuesta);
+//         } else {
+//             res.send([]);
+//         }
+//     } catch (error) {
+//         res.send({
+//             mensaje: "Error al obtener partidas activas",
+//             error: error.message
+//         });
+//     }
+// });
+
+app.post("/AgregarUsuarioAPartida", async function (req, res) {
+  try {
+    const { id_partida, id_usuario } = req.body;
+
+    // Verificar si el usuario ya está en la partida
+    let check = await realizarQuery(
+      `SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`
+    );
+    if (check.length > 0) {
+      res.send({ mensaje: "El usuario ya está en la partida" });
+      return;
     }
-});
-
-app.post('/AgregarUsuarioAPartida', async function (req, res) {
-    try {
-        const { id_partida, id_usuario } = req.body;
-
-        // Verificar si el usuario ya está en la partida
-        let check = await realizarQuery(`SELECT * FROM UsuariosEnPartida WHERE id_partida = "${id_partida}" AND id_usuario = "${id_usuario}"`);
-        if (check.length > 0) {
-            res.send({ mensaje: "El usuario ya está en la partida" });
-            return;
-        }
-        // Agregar el usuario a la partida
-        await realizarQuery(`
+    // Agregar el usuario a la partida
+    await realizarQuery(`
             INSERT INTO UsuariosEnPartida (id_partida, id_usuario)
             VALUES ("${id_partida}", "${id_usuario}")
         `);
-        res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
-    } catch (error) {
-        res.send({ mensaje: "Error al agregar usuario a la partida", error: error.message });
+    res.send({ mensaje: "Usuario agregado a la partida exitosamente" });
+  } catch (error) {
+    res.send({
+      mensaje: "Error al agregar usuario a la partida",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/traerPartidasActivasAmigos", async function (req, res) {
+  try {
+    const idUsuario = req.query.id;
+
+    let amigos = [];
+    let partidasAmigosAdmin = [];
+
+    // Buscar relaciones del usuario
+    let rta1 = await realizarQuery(`
+            SELECT * 
+            FROM Relaciones 
+            WHERE id_usuario1 = "${idUsuario}" OR id_usuario2 = "${idUsuario}"
+        `);
+
+    // Obtener los IDs de amigos
+    for (let i = 0; i < rta1.length; i++) {
+      if (rta1[i].id_usuario1 == idUsuario) {
+        amigos.push(rta1[i].id_usuario2);
+      } else {
+        amigos.push(rta1[i].id_usuario1);
+      }
     }
+
+    //  Buscar partidas activas donde los amigos sean admin
+    for (let i = 0; i < amigos.length; i++) {
+      let rta2 = await realizarQuery(`
+                SELECT 
+                    Partidas.id_partida,
+                    Partidas.codigo_entrada,
+                    Partidas.id_usuario_admin,
+                    UsuariosKey.nombre AS admin_nombre,
+                    Partidas.id_usuario_ganador
+                FROM Partidas
+                INNER JOIN UsuariosKey 
+                    ON Partidas.id_usuario_admin = UsuariosKey.id_usuario
+                WHERE Partidas.id_usuario_admin = "${amigos[i]}" 
+                  AND Partidas.activa = 1
+            `);
+
+      if (rta2.length > 0) {
+        partidasAmigosAdmin.push(...rta2);
+      }
+    }
+
+    res.send(partidasAmigosAdmin);
+  } catch (error) {
+    res.send({
+      mensaje: "Error al obtener partidas activas de amigos",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/traerPartidaPorCodigo", async function (req, res) {
+  try {
+    let respuesta = await realizarQuery(`
+            SELECT * FROM Partidas WHERE codigo_entrada = "${req.query.codigo.toUpperCase()}" AND activa = 1
+        `);
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta);
+    } else {
+      res.send({ mensaje: "No se encontró una partida activa con ese código" });
+      return;
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Error al traer partida por código",
+      error: error.message,
+    });
+  }
+});
+
+
+app.get('/traerCodigo', async function (req, res) {
+
+  const { id_partida } = req.body;
+  try {
+    let respuesta = await realizarQuery(`
+            SELECT codigo_entrada FROM Partidas WHERE id_partida = "${id_partida}" AND activa = 1
+        `);
+    console.log(respuesta);
+    if (respuesta.length > 0) {
+      res.send(respuesta);
+    } else {
+      res.send({ mensaje: "Error, no existe esa partida" });
+      return;
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Error al traer partida por código",
+      error: error.message,
+    });
+  }
+});
+
+app.put("/cambiarDatosUsuario", upload.single("foto"), async function (req, res) {
+  try {
+    const { nombre, contrasena, id_usuario } = req.body;
+    const foto = req.file ? req.file.buffer : null;
+
+    // Comprobamos que haya un id_usuario válido
+    if (!id_usuario) {
+      res.send({ mensaje: "Falta el ID del usuario", res: -1 });
+      return;
+    }
+
+    // Construimos dinámicamente la consulta SQL y los valores
+    let campos = [];
+    let valores = [];
+
+    if (nombre && nombre.trim() !== "") {
+      campos.push("nombre = ?");
+      valores.push(nombre);
+    }
+
+    if (contrasena && contrasena.trim() !== "") {
+      campos.push("contraseña = ?");
+      valores.push(contrasena);
+    }
+
+    if (foto) {
+      campos.push("foto = ?");
+      valores.push(foto);
+    }
+
+    // Si no se envió ningún campo para actualizar
+    if (campos.length === 0) {
+      res.send({ mensaje: "No se proporcionó ningún dato para actualizar", res: 0 });
+      return;
+    }
+
+    // Agregamos el ID al final de los valores
+    valores.push(id_usuario);
+
+    // Construimos la consulta completa
+    const sql = `UPDATE UsuariosKey SET ${campos.join(", ")} WHERE id_usuario = ?`;
+
+    await realizarQuery(sql, valores);
+
+    res.send({ mensaje: "Datos actualizados correctamente", res: 1 });
+  } catch (error) {
+    res.send({ mensaje: "Tuviste un error", error: error.message, res: -1 });
+  }
+});
+app.post('/checkearPalabra', async function (req, res) {
+  let respuesta = await fetch(`https://rae-api.com/api/words/${req.body.palabra}`)
+  res.send(respuesta.ok)
+})
+//Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back
+app.get("/traerDatosUsuariosParaJuego", async function (req, res) {
+  try {
+    console.log(req.query)
+    respuesta = await realizarQuery(
+      `SELECT id_usuario,nombre,foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+    );
+    if (respuesta.length > 0) {
+      res.send(respuesta[0]);
+    } else {
+      res.send(-1);
+    }
+  } catch (error) {
+    res.send({
+      mensaje: "Tuviste un error en back/user",
+      error: error.message,
+    });
+  }
 });

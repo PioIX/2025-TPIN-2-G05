@@ -61,7 +61,7 @@ export default function Home() {
   }
 
     function volver(){
-    router.push("/")
+    router.replace("/")
   }
   
   async function checkRegister() {
@@ -81,8 +81,8 @@ export default function Home() {
       openModal("Usuario existente, reingrese")
     } else {
       localStorage.setItem("idUser", respond.result.respuesta[0].id_usuario)
-      const accion = () => {router.replace('../Home', { scroll: false })}; 
-      openModal("Ingresando...",{accion: accion})
+      router.replace('../Home', { scroll: false });
+
     }
   }
 
@@ -90,16 +90,16 @@ export default function Home() {
     <>
       <div className={styles.container}>
         <div className={styles.card}>
-        <ImagenClick src = {"/volver.png"} onClick={volver} className={styles.imagenClick}></ImagenClick>
+        <ImagenClick src = {"/volver.png"} onClick={volver} className={"imagenClick"}></ImagenClick>
           <h1 className={stylesR.title} >Keykeys</h1>
-          <h2 className={styles.subtitle}>Registro</h2>
-          <h3 className={styles.subtitle2}>Ingrese un nombre, una contraseña y una foto</h3>
+          <h2 className={styles.subtitle2}>Registro</h2>
+          <h3 className={styles.subtitle}>Ingrese un nombre, una contraseña y una foto</h3>
           <div className={styles.container}>
             <div className={stylesR.containerInputsYBoton}>
               <div className={stylesR.conatinerInputs}>
-                <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
-                <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} type="password"></Input>
-                <Button type="button" onClick={checkRegister} text={"Registrarse"} className={"button"}> </Button>
+                <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}></Input>
+                <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} type="password" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}></Input>
+                <Button type="button" onClick={checkRegister} text={"Registrarse"} className={"button"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}> </Button>
               </div>
               <div className={stylesR.uploadContainer}>
                 {image ? <><img src={preview} alt="Cargando..." width={450} height={700} onClick={removeImageAndPreview}></img></> :
