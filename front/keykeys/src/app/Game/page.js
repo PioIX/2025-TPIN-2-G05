@@ -127,10 +127,12 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
-      console.log(data)
+
+      if (isAdmin){
+        const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("") };
+        openModal("Partida Finalizada", { accion: accion })
+      }
       setJugadores(data.jugadores)
-      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-      openModal("Partida Finalizada", { accion: accion })
       //Modal de fin de partida + resultados
       //boton de ir a sala de espera
       //El siguiente codigo se ejecuta al iniciar la partida

@@ -125,6 +125,11 @@ io.on("connection", (socket) => {
     })
   })
 
+  socket.on("abandonarPartidaSend", (data) => {
+    io.to(req.session.room).emit("abandonarPartidaReceive", {
+      jugadores: data.jugadores,
+    })})
+
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
     io.emit("pingAll", { event: "Ping to all", message: data });
