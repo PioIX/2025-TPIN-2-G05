@@ -127,10 +127,12 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
-
       if (isAdmin){
-        const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("") };
+        const accion = () => { router.push('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
         openModal("Partida Finalizada", { accion: accion })
+      }else{
+        setRonda(data.ronda)
+        openModal("Partida Finalizada, esperandoa que eladmin vuelva a la sala")
       }
       setJugadores(data.jugadores)
       //Modal de fin de partida + resultados
@@ -139,6 +141,13 @@ export default function Game() {
     })
     if (!socket) return
     socket.on("joined_OK_room", data => {})
+
+    if (!socket);
+    socket.on("abandonarPartidaReceive", (data) =>{
+      if (isAdmin == false){
+        router.push('../SalaEspera', { scroll: false })
+      }
+    },)
   }, [socket])
   // socket.emit("cambioRondaSend", { jugadores: jugadores })}
   // //useEffect(()=>{
@@ -180,7 +189,7 @@ export default function Game() {
     if (!socket) return;
     socket.on("rondaTerminadaReceive", (data) => {
       if (refRonda.current == rondas) {
-        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current })
+        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current, ronda: refRonda.current })
       } else {
         setJugadores(data.jugadores)
         setContador(10)

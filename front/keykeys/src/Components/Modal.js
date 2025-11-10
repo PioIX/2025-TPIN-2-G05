@@ -157,7 +157,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                   text="Iniciar siguiente ronda"
                 />
               )}
-              {partidaTerminada && (
+              {partidaTerminada && admin && (
                 <Button
                   onClick={handleClose}
                   className="buttonModal"
