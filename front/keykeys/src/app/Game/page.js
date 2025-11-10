@@ -250,6 +250,7 @@ export default function Game() {
         }
       } else {
         for (let i = 0; i < jugadores.length; i++) {
+          setActivo(false)
 
 
           if (jugadores[i].id_usuario == id && activo) {
