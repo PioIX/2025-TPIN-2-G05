@@ -61,7 +61,7 @@ export default function Home() {
   }
 
     function volver(){
-    router.push("/")
+    router.replace("/")
   }
   
   async function checkRegister() {
@@ -97,9 +97,9 @@ export default function Home() {
           <div className={styles.container}>
             <div className={stylesR.containerInputsYBoton}>
               <div className={stylesR.conatinerInputs}>
-                <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
-                <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} type="password"></Input>
-                <Button type="button" onClick={checkRegister} text={"Registrarse"} className={"button"}> </Button>
+                <Input placeholder="Ingrese su nombre..." value={nombre} onChange={ingresoNombre} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}></Input>
+                <Input placeholder="Ingrese su nueva contraseña..." value={contraseña} onChange={ingresoContraseña} classNameInput={"input"} classNameInputWrapper={"inputWrapper"} type="password" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}></Input>
+                <Button type="button" onClick={checkRegister} text={"Registrarse"} className={"button"} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkRegister() } }}> </Button>
               </div>
               <div className={stylesR.uploadContainer}>
                 {image ? <><img src={preview} alt="Cargando..." width={450} height={700} onClick={removeImageAndPreview}></img></> :

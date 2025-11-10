@@ -4,10 +4,10 @@ import clsx from "clsx";
 // import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import { useSocket } from "@/hooks/useSocket"
-import { infoUsuario } from "@/API/fetch";
+import { infoUsuarioPartida, actualizarValoresPartidaFalse } from "@/API/fetch";
 import Modal from "@/Components/Modal";
 import styles from "@/app/page.module.css"
 import stylesSE from "@/app/SalaEspera/page.module.css"
@@ -18,13 +18,14 @@ export default function Game() {
   const [id, setId] = useState(-1);
   const [idAdmin, setIdAdmin] = useState(-1);
   const [room, setRoom] = useState(0)
-  const [rondas, setRondas] = useState("");
-  const [letrasProhibidas, setLetrasprohibidas] = useState("");
+  const [letrasProhibidas, setLetrasprohibidas] = useState(1);
   const router = useRouter();
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
   const [jugadoresId, setJugadoresId] = useState([]);
   const { socket } = useSocket()
+  const refJugadores = useRef(jugadores)
+  const [cantidadRondas, setCantidadRondas] = useState(1);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   function openModal(mensaje, action) {
@@ -37,14 +38,33 @@ export default function Game() {
     setIsModalOpen(false);
   };
 
+  const handleCantidadRondasChange = (event) => {
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setCantidadRondas(event.target.value);
+    }
+  };
+
+  const handleLetrasProhibidasChange = (event) => {
+    if (event.target.value < 1) {
+      event.preventDefault()
+    } else {
+      console.log(event.target.value)
+      setLetrasprohibidas(event.target.value)
+    }
+  };
   useEffect(() => {
     if (!jugadoresId || jugadoresId.length === 0) return;
 
     async function cargarJugadores() {
       const respuestas = [];
       for (let i = 0; i < jugadoresId.length; i++) {
-        respuestas.push(await infoUsuario(jugadoresId[i]));
+        respuestas.push(await infoUsuarioPartida(jugadoresId[i]));
+        respuestas[i].puntos = 0;
       }
+      console.log("Respuestas de cargar jugadores: ", respuestas);
       setJugadores(respuestas);
     }
     cargarJugadores();
@@ -89,9 +109,13 @@ export default function Game() {
 
 
   useEffect(() => {
+    refJugadores.current = jugadores;
+  }, [jugadores])
+
+  useEffect(() => {
     if (!socket) return
     if (jugadores.length <= 1)
-      socket.on('joined_OK_room', data => { 
+      socket.on('joined_OK_room', data => {
         console.log("Se ejecuto joinRoom")
         console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
@@ -111,8 +135,6 @@ export default function Game() {
       setJugadores(prevJugadores => {
         const nuevos = prevJugadores.filter(j => {
           const jugador = j[0] || j;
-          console.log("Este es el for ", jugador)
-          console.log(jugador.id_usuario)
           if (jugador.id_usuario != data.user.id) {
             return jugador.id_usuario
           }
@@ -122,14 +144,14 @@ export default function Game() {
       });
       if (id == data.user.id) {
         salirSala()
-        const action = router.push(`/Home`)
+        const action = router.replace(`/Home`)
         openModal("Has abandonado la partida", action)
       }
     })
 
     if (!socket) return
     socket.on("leftRoomAdmin", data => {
-      const action = router.push(`/Home`)
+      const action = router.replace(`/Home`)
       openModal("Has abandonado la partida", action)
     })
 
@@ -147,25 +169,29 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem(`letrasProhibidasDeJuego${room}`, letrasProhibidas)
-      localStorage.setItem(`idAdmin`, idAdmin)
+      console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin);
+      console.log("Recibido de persona:", id,room,refJugadores.current);
+      localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
+      localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
+      localStorage.setItem(`idAdmin`, data.idAdmin)
       localStorage.setItem(`idUser`, id)
       localStorage.setItem(`room`, room)
-      localStorage.setItem(`rondasTotalesDeJuego${room}`, rondas)
-      localStorage.setItem("Usuarios", jugadores)
+      localStorage.setItem("Usuarios", JSON.stringify(refJugadores.current))
       router.replace('../Game', { scroll: false })
     })
   }, [socket])
 
+
+
   useEffect(() => {
-    console.log("Estos son los jugadores ", jugadores)
     if (jugadores.length != jugadoresId.length) {
       let aux = []
       for (let i = 0; i < jugadores.length; i++) {
         const element = jugadores[i];
-        aux.push(element[0].id_usuario)
+        console.log(element)
+        aux.push(element.id_usuario)
       }
+      console.log(aux)
       setJugadoresId(aux)
     }
   }, [jugadores])
@@ -175,8 +201,10 @@ export default function Game() {
   }, [jugadoresId])
 
   //inicio de partida
-  function partidaInit() {
-    socket.emit("partidaInitSend")
+  async function partidaInit() {
+    console.log("Enviando al servidor:", cantidadRondas, letrasProhibidas, idAdmin);
+    await actualizarValoresPartidaFalse(room)
+    socket.emit("partidaInitSend", { cantidadRondas: cantidadRondas, letrasProhibidas: letrasProhibidas, idAdmin: idAdmin })
   }
 
   function abandonarPartida() {
@@ -199,10 +227,10 @@ export default function Game() {
     <div className={stylesSE.jugadorescontainer}>
       {
         jugadores.map((jugador, index) => {
-          const src = jugador[0].foto
-            ? `data:image/png;base64,${Buffer.from(jugador[0].foto.data).toString("base64")}`
+          const src = jugador.foto
+            ? `data:image/png;base64,${Buffer.from(jugador.foto.data).toString("base64")}`
             : "/sesion.png";
-          return <Person key={jugador[0].id ?? index} text={jugador[0].nombre} src={src} index={index == 0 ? true : false} />;
+          return <Person key={jugador.id ?? index} text={jugador.nombre} src={src} index={index == 0 ? true : false} />;
         })
       }
     </div>
@@ -210,7 +238,21 @@ export default function Game() {
       {
         idAdmin == id && (
           <>
-            <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+
+            <div className={styles.center2}>
+              <h2>Configuración de la partida</h2>
+
+              {/* Desplegable de cantidad de rondas */}
+              <Input placeholder="Cantidad de Rondas..." onChange={handleCantidadRondasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
+
+              {/* Desplegable de letras prohibidas */}
+              <Input placeholder="Cantidad de Letras prohibidas..." onChange={handleLetrasProhibidasChange} classNameInput={"input"} classNameInputWrapper={"inputWrapperSE"} type="number" > </Input>
+
+              {/* Mostrar valores seleccionados */}
+              <p>Rondas seleccionadas: {cantidadRondas}</p>
+              <p>Letras prohibidas: {letrasProhibidas}</p>
+              <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+            </div>
           </>
         )
       }

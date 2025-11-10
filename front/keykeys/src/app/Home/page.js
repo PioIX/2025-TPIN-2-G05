@@ -80,7 +80,7 @@ export default function Home() {
     console.log("openModalLogOut")
     const accionDeCierre = () => {
       localStorage.setItem("idUser", null)
-      router.push("..")
+      router.replace("..")
     };
     openModal("Estás seguro?", {accion: accionDeCierre})
     setBooleanoLogout(true)
@@ -127,7 +127,7 @@ export default function Home() {
   }
   async function fetchDatosUsuario(id) {
     let respond = await infoUsuario(id)
-    setNombreUsuario(respond[0].nombre)
+    setNombreUsuario(respond.nombre)
   }
   async function fetchInsertarSolicitud() {
     let respond = await traerTodosLosUsuarios()
@@ -172,6 +172,11 @@ export default function Home() {
     setIsModalOpen(true);
     setIsModalPartidasOpen(true)
   }
+
+  function configuracion() {
+    router.push("/Settings")
+  }
+  
   async function fetchAmigos(id) {
     let respond = await traerAmigos(id)
     setAmigos(respond.result)
