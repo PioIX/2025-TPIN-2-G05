@@ -9,7 +9,7 @@ import { useSocket } from "@/hooks/useSocket"
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, esAdmin}) {
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, esAdmin,admin}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -202,15 +202,18 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             </>
             )}
 
-          {esAdmin ? (
+          {esAdmin && (
             <>
             {/*usar una variable menu que sea "eliminar", "modificar" o "home" para determinar que submodal se abre*/}
             <Button onClick={modalAdminEliminar} className="buttonModal" text="Eliminar Usuario"> </Button>
             <Button onClick={modalAdminModificar} className="buttonModal" text="Modificar Usuario"> </Button>
             </>
-            ):
-          <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
+          )}
+          { admin ==null || esLogout==false&&
+            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
           }
+          
+          
 
         </div>
       </div>
