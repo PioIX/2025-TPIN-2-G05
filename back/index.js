@@ -84,32 +84,46 @@ io.on("connection", (socket) => {
     console.log("Se esta iniciando la partida")
   })
 
-  socket.on("iniciarDentroDeLaPartida", (data) => {
+  socket.on("iniciarDentroDeLaPartida", (data) => { //Este pedido es para que se sepa quien va primero
     io.to(req.session.room).emit("iniciarDentroDeLaPartida", {
       jugadores: data.jugadores,
     });
     console.log("Se esta iniciando la partida desde dentro");
   });
 
-  socket.on("terminarPartida", (data) => {
-    io.to(req.session.room).emit("terminarPartida", {});
-    console.log("La partida ha terminado");
-  });
+  socket.on("terminarPartidaSend", (data) => {
+    io.to(req.session.room).emit("terminarPartidaReceive", {
+      jugadores: data.jugadores
+    })
+    console.log("La partida ha terminado")
+  })
 
-  socket.on("cambioRonda", (data) => {
-    io.to(req.session.room).emit("cambioRonda", {
-      jugadores: data,
-    });
+  socket.on("cambioRondaSend", (data) => {
+    console.log("Se ejecuto cambioRonda")
+    console.log("Antes ", data.ronda)
+    io.to(req.session.room).emit("cambioRondaReceive", {
+      jugadores: data.jugadores,
+      ronda: data.ronda + 1
+    })
+    console.log("Despues ", data.ronda)
+  })
+
+  socket.on("rondaTerminadaSend", (data) => {
+    console.log("Se ejecutó rondaTerminada")
+    io.to(data.room).emit("rondaTerminadaReceive", data);
   });
 
   socket.on("cambioTurnoSend", (data) => {
     data.index = data.index + 1
+    console.log("Se emitio cambio turno")
     io.to(req.session.room).emit("cambioTurnoReceive", {
       jugadores: data.jugadores,
       palabra: data.palabra,
       index: data.index,
-    });
-  });
+      letrasProhibidas: data.letrasProhibidas,
+      ronda: data.ronda
+    })
+  })
 
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
@@ -627,9 +641,7 @@ app.put("/cambiarDatosUsuario", upload.single("foto"), async function (req, res)
   }
 });
 app.post('/checkearPalabra', async function (req, res) {
-  console.log("Esta es la palabra ", req.body.palabra)
   let respuesta = await fetch(`https://rae-api.com/api/words/${req.body.palabra}`)
-  console.log(respuesta.ok)
   res.send(respuesta.ok)
 })
 //Este pedido es porque no funciona llamar al fetch de la API externa desde el front, la conexion entre el back y el front debe ser cerrada, por lo que solo se puede acceder a un dominio externo desde el back

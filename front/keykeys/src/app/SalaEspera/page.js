@@ -188,8 +188,10 @@ export default function Game() {
       let aux = []
       for (let i = 0; i < jugadores.length; i++) {
         const element = jugadores[i];
-        aux.push(element[0].id_usuario)
+        console.log(element)
+        aux.push(element.id_usuario)
       }
+      console.log(aux)
       setJugadoresId(aux)
     }
   }, [jugadores])
