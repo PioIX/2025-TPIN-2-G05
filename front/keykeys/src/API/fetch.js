@@ -254,6 +254,41 @@ export async function traerCodigo(id_partida) {
         });
 }
 
+export async function deleteUser(username) {
+    console.log("Se entró al fetch")
+    return fetch(`http://localhost:4000/eliminarUsuario`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username
+        })
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
+export async function editUser(newUsername, oldUsername) {
+    console.log("Se entró al fetch")
+    return fetch(`http://localhost:4000/modificarUsuario`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            newUsername: newUsername,
+            oldUsername: oldUsername
+        })
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
 export async function actualizarDatosUsuario(formData) {
     return fetch(`http://localhost:4000/cambiarDatosUsuario`,{
         method: "PUT",
@@ -266,3 +301,4 @@ export async function actualizarDatosUsuario(formData) {
         }
         )
 }
+

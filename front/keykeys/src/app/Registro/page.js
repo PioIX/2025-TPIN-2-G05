@@ -81,8 +81,8 @@ export default function Home() {
       openModal("Usuario existente, reingrese")
     } else {
       localStorage.setItem("idUser", respond.result.respuesta[0].id_usuario)
-      const accion = () => {router.replace('../Home', { scroll: false })}; 
-      openModal("Ingresando...",{accion: accion})
+      router.replace('../Home', { scroll: false });
+
     }
   }
 

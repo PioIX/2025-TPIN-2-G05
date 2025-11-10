@@ -28,12 +28,9 @@ export default function Home() {
   const [modalAction, setModalAction] = useState("")
   const [isModalPartidasOpen, setIsModalPartidasOpen] = useState(false)
   const [partidas, setPartidas] = useState([])
-  const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket, isConnected } = useSocket()
   const [admin, setAdmin] = useState(false)
-  const [cerrarSesion, setCerrarSesion] = useState(false)
   const [booleanoLogout, setBooleanoLogout] = useState(false)
-
   function openModal(mensaje, action){
     setModalMessage(mensaje);
     setModalAction(action);
@@ -50,7 +47,7 @@ export default function Home() {
     fetchFotoUsuario(id)
     fetchDatosUsuario(id)
     fetchAmigos(id)
-    if(id==30){
+    if(id==38){
       setAdmin(true)
     }
   }, [])
@@ -76,7 +73,7 @@ export default function Home() {
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
     setIsModalPartidasOpen(false)
-    openModal("Creando sala...", router.replace(`/SalaEspera`, { scroll: false }))
+    router.push(`/SalaEspera`, { scroll: false })
   }
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
@@ -87,12 +84,6 @@ export default function Home() {
     };
     openModal("Estás seguro?", {accion: accionDeCierre})
     setBooleanoLogout(true)
-  }
-
-  function closeModalLogout(){
-    setBooleanoLogout(false)
-    setIsModalOpen(false);
-    setModalAction(null)
   }
   
   function showConfiguracion() {
@@ -105,12 +96,14 @@ export default function Home() {
     setIsModalOpen(true)
   }
 
-  const closeModalEleccion = () => {
+  const closeModal = () => {
     setIsModalEleccionOpen(false);  // Cierra el modal
     setIsModalOpen(false);
     setIsModalAceptarSolicitudesOpen(false)
     setIsModalEnviarOpen(false)
     setIsModalPartidasOpen(false)
+    setModalAction(null)
+    setBooleanoLogout(false);
   };
 
   const openModalSolicitudes = () => {
@@ -167,9 +160,6 @@ export default function Home() {
       return;
     }
   }
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   useEffect(()=>{
     console.log(partidas)
@@ -195,14 +185,25 @@ export default function Home() {
   const handleChangeAmigo = (event) => {
     setAmigo(event.target.value)
   }
-  function modalAdministrarUsuarios(){
-    console.log("Se abrió el modalAdministrarUsuarios")
-    alert("Se abrió el modalAdministrarUsuarios")
+
+  function openAdmin(){
+    localStorage.setItem("idUser", null)
+    router.push("Admin")
   }
-  function modalAdministrarBDD(){
-    console.log("Se abrió el modalAdministrarBDD")
-    alert("Se abrió el modalAdministrarBDD")
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   return (
     <div>
       <div className={styles.container}>
@@ -240,21 +241,18 @@ export default function Home() {
 
         <div className={styles.menuJuego}>
           <h1>KEY KEYS</h1>
-          <button className={`${styles.mainButton} ${styles.join}`} onClick={mostrarPartidas}>Unirse a una sala</button>
-          <button className={`${styles.mainButton} ${styles.create}`} onClick={crearSala}>Crear una sala</button>
-          <button className={`${styles.mainButton} ${styles.config}`} onClick={configuracion}>Configuración</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
+          <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
+          {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openAdmin}>Administrar Usuarios</button>}
         </div>
-        {admin && 
-        <div className={styles.menuJuego}> {/*MENU ADMIN*/}
-          <button className={`${styles.mainButton} ${styles.join}`} onClick={modalAdministrarUsuarios}>Administrar Usuarios</button>
-          <button className={`${styles.mainButton} ${styles.create}`} onClick={modalAdministrarBDD}>Administrar BDD</button>
-        </div>}
+
         <Modal 
             onUpdate={() => { fetchAmigos(idUser) }} 
             eleccion={isModalEleccionOpen} 
             aceptarSolicitud={isModalSolicitudesOpen} 
             isOpen={isModalOpen} 
-            onClose={closeModalEleccion} //ACCIONES DEL CIERRE DE SESION
+            onClose={closeModal} //ACCIONES DEL CIERRE DE SESION
             mensaje={modalMessage} 
             value={amigo} onChange={handleChangeAmigo} 
             aceptarSolicitudes={openModalSolicitudes} 
@@ -264,7 +262,6 @@ export default function Home() {
             mensajePartidas={partidas} 
             esModalPartidas={isModalPartidasOpen}
             esLogout={booleanoLogout}
-            onCloseLogout={closeModalLogout}
             action={modalAction}
             />
       </div>

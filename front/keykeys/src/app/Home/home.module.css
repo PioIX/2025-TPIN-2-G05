@@ -234,23 +234,17 @@
 .mainButton:hover { transform: translateY(-3px); }
 
 /* Colores específicos */
-.join {
+.game {
   background-color: #bcbcbc;
   color: #000;
 }
-.join:hover{ background-color:#b22222 ; color:white; }
+.game:hover{ background-color:#b22222 ; color:white; }
 
-.create {
+.admin {
   background-color: #b22222;
   color: #fff;
 }
-.create:hover{ background-color:#bcbcbc ; color:black; }
-
-.config {
-  background-color: #bcbcbc;
-  color: #000;
-}
-.config:hover{ background-color:#b22222; color:white; }
+.admin:hover{ background-color:#bcbcbc ; color:black; }
 
 /* ----------------------------------------
    Reglas responsive para evitar desbordes
