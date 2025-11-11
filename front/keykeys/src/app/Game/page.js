@@ -323,7 +323,7 @@ export default function Game() {
               Longitud {prevPalabra.length + 1} o más
             </h2>}
 
-            <div className={stylesG.inputContainer}>
+            <div className={styles.inputContainer}>
               {activo == true ? (<>
                 <div className={styles.flex}>
                   <Input
@@ -339,9 +339,7 @@ export default function Game() {
                     classNameInput="inputGame"
                     placeholder="Escribir acá"
                   />
-                  <div className={stylesG.aumentar}>
-                    <ImagenClick onClick={envioPalabra} src={"/next.png"} />
-                  </div>
+                  <ImagenClick onClick={envioPalabra} className={"imagenClickGame"} src={"/next.png"} />
                 </div>
                 {palabraMasCorta && <p>La palabra debe ser mas larga que {prevPalabra.length + 1}</p>}
                 {palabraNoExiste && <p>Esta palabra no existe</p>}</>
