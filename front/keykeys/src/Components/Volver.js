@@ -6,5 +6,5 @@ export default function Volver(){
     function volver(){
         router.replace("../")
     }
-    return(<ImagenClick onClick={volver} src={"/volver.png"}/>)
+    return(<ImagenClick onClick={volver} className={volver} src={"/volver.png"}/>)
 }

@@ -127,7 +127,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
-      console.log(data)
       setJugadores(data.jugadores)
       const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
       openModal("Partida Finalizada", { accion: accion })
@@ -159,7 +158,6 @@ export default function Game() {
         socket.emit("cambioTurnoSend", { jugadores: data.jugadores, index: -1, letrasProhibidas: data.letrasProhibidas, ronda: data.ronda, palabra: data.palabra })
         setContador(1000000000000000)
       } else if (jugadores[data.index].id_usuario == id) {
-        console.log("En cambioturnoreceive se setea la ronda a ", data.ronda)
         setRonda(data.ronda)
         setPalabra("")
         setLetrasprohibidas(data.letrasProhibidas)
@@ -250,6 +248,7 @@ export default function Game() {
         }
       } else {
         for (let i = 0; i < jugadores.length; i++) {
+          setActivo(false)
 
 
           if (jugadores[i].id_usuario == id && activo) {
@@ -324,7 +323,7 @@ export default function Game() {
               Longitud {prevPalabra.length + 1} o más
             </h2>}
 
-            <div className={stylesG.inputContainer}>
+            <div className={styles.inputContainer}>
               {activo == true ? (<>
                 <div className={styles.flex}>
                   <Input
@@ -340,9 +339,7 @@ export default function Game() {
                     classNameInput="inputGame"
                     placeholder="Escribir acá"
                   />
-                  <div className={stylesG.aumentar}>
-                    <ImagenClick onClick={envioPalabra} src={"/next.png"} />
-                  </div>
+                  <ImagenClick onClick={envioPalabra} className={"imagenClickGame"} src={"/next.png"} />
                 </div>
                 {palabraMasCorta && <p>La palabra debe ser mas larga que {prevPalabra.length + 1}</p>}
                 {palabraNoExiste && <p>Esta palabra no existe</p>}</>
