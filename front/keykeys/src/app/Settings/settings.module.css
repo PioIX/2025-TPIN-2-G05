@@ -16,12 +16,12 @@
   gap: 1.5rem;
   flex: 1;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1); /* Cambio de gris a negro */
   padding: 2rem;
   border-radius: 15px;
-  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); /* Ajuste de sombra a negro */
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.18); /* Ajuste de borde a negro */
 }
 
 .uploadContainer {
@@ -29,27 +29,27 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border: 2px dashed #b22222; /* Cambio de gris a negro */
   border-radius: 15px;
   padding: 2.5rem;
+  margin: 2rem;
   width: 400px;
   height: 300px;
   position: relative;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+  background: rgba(0, 0, 0, 0.1); /* Cambio de gris a negro */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); /* Ajuste de sombra a negro */
   backdrop-filter: blur(4px);
   transition: all 0.3s ease;
 }
 
 .uploadContainer:hover {
   transform: scale(1.02);
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(250, 76, 76, 0.2);
+  border-color: white; /* Cambio de gris a negro */
 }
 
 .uploadButton {
-  background: linear-gradient(135deg, #d32f2f 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #212121 0%, #424242 100%); /* Ajuste de colores oscuros */
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -59,12 +59,12 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra más oscura */
 }
 
 .uploadButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Sombra más oscura */
 }
 
 .fileInput {
@@ -87,7 +87,7 @@
 }
 
 .irALaOtraPagina:hover {
-  color: #d32f2f;
+  color: #b22222;
 }
 
 .irALaOtraPagina::after {
@@ -108,7 +108,7 @@
 
 .title {
   font-size: 3.5rem;
-  background: linear-gradient(135deg, #d32f2f 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #b22222 0%, #ff6b6b 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -117,7 +117,5 @@
   text-transform: uppercase;
   text-align: center;
   font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
 }
-
-

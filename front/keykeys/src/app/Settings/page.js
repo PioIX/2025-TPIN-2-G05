@@ -89,15 +89,15 @@ export default function Settings() {
               placeholder="Modificar nombre"
               id="nombre"
               onChange={cambiarNombre}
-              classNameInput={settingsStyles.input}
-              classNameInputWrapper={settingsStyles.inputWrapper}
+              classNameInput={"input"}
+              classNameInputWrapper={"inputWrapper"}
             />
             <Input
               placeholder="Modificar contraseña..."
               id="contraseña"
               onChange={cambiarContraseña}
-              classNameInput={settingsStyles.input}
-              classNameInputWrapper={settingsStyles.inputWrapper}
+              classNameInput={"input"}
+              classNameInputWrapper={"inputWrapper"}
               type="password"
             />
           </div>
@@ -134,7 +134,7 @@ export default function Settings() {
           type="button" 
           onClick={enviarDatos} 
           text={"Guardar cambios"} 
-          className={settingsStyles.button}
+          className={"buttonModal"}
         />
       </div>
       {/* Modal Component */}

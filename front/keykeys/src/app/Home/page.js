@@ -243,7 +243,7 @@ export default function Home() {
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
-          <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={configuracion}>Configuración</button>
           {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openAdmin}>Administrar Usuarios</button>}
         </div>
 
