@@ -38,7 +38,6 @@ export default function Settings() {
   };
   function cambiarNombre(event) {
     setNombre(event.target.value);
-    console.log(nombre);
   }
   function cambiarContraseña(event) {
     setContraseña(event.target.value);

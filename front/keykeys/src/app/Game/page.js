@@ -127,7 +127,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
-      console.log(data)
       setJugadores(data.jugadores)
       const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
       openModal("Partida Finalizada", { accion: accion })
@@ -159,7 +158,6 @@ export default function Game() {
         socket.emit("cambioTurnoSend", { jugadores: data.jugadores, index: -1, letrasProhibidas: data.letrasProhibidas, ronda: data.ronda, palabra: data.palabra })
         setContador(1000000000000000)
       } else if (jugadores[data.index].id_usuario == id) {
-        console.log("En cambioturnoreceive se setea la ronda a ", data.ronda)
         setRonda(data.ronda)
         setPalabra("")
         setLetrasprohibidas(data.letrasProhibidas)
