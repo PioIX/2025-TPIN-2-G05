@@ -20,11 +20,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     let id = localStorage.getItem("idUser")
     setIdUser(id)
     fetchTraerSolicitudes(id)
-  }, [])
-
-  useEffect(() => {
-    console.log(mensajePartidas)
-  }, [mensajePartidas])
+  }, [aceptarSolicitud])
 
   async function fetchTraerSolicitudes(id) {
     let respond = await traerSolicitudes(id)
