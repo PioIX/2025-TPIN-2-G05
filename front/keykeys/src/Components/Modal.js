@@ -201,6 +201,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
           {esLogout && (
             <>
             <Button onClick={handleCloseLogout} className="buttonModal" text="Cerrar Sesión"> </Button>
+            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button> 
             </>
             )}
 

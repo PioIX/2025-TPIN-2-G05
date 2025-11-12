@@ -1,6 +1,7 @@
 "use client";
 
-import styles from './home.module.css'
+import styles from '@/app/page.module.css'
+import stylesA from './home.module.css'
 import Input from "@/Components/Input";
 import { useState, useEffect } from "react"
 import Button from "@/Components/Button";
@@ -73,33 +74,36 @@ export default function Home() {
   return (
 
     <div>
-      <h1>MENU ADMINISTRADOR</h1>
-      <div>
+      <div className={styles.container}>
+        <div className={stylesA.organizer}>
+            <h1>MENU ADMINISTRADOR</h1>
+
           {menu=="admin" &&
             <div>
-              <Button onClick={menuModificar} text={"Modificar"} className={`${styles.mainButton} ${styles.game}`}></Button>
-              <Button onClick={menuEstado} text={"Estado"} className={`${styles.mainButton} ${styles.game}`}></Button>
-              <Button onClick={volver} text={"Volver al Menú Principal"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Button onClick={menuModificar} text={"Modificar"} className={`button`}></Button>
+              <Button onClick={menuEstado} text={"Estado"} className={`button`}></Button>
+              <Button onClick={volver} text={"Volver al Menú Principal"} className={`button`}></Button>
             </div>
           }
           {(menu=="modificar") &&
             <div>
-              <Input onChange={handleOldUsername} value={oldUsername} placeholder={"Ingrese Nombre de Usuario"}></Input>
-              <Button onClick={modificarUsuario} text={"Modificar el Nombre de Usuario"} className={`${styles.mainButton} ${styles.game}`}></Button>
-              <Input onChange={handleNewUsername} value={newUsername} placeholder={"Ingrese el Nuevo Nombre de Usuario"}></Input>
-              <Button onClick={menuAdmin} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Input onChange={handleOldUsername} value={oldUsername} placeholder={"Ingrese Nombre de Usuario"} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
+              <Button onClick={modificarUsuario} text={"Modificar el Nombre de Usuario"} className={`buttonAdmin`}></Button>
+              <Input onChange={handleNewUsername} value={newUsername} placeholder={"Ingrese el Nuevo Nombre de Usuario"} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
+              <Button onClick={menuAdmin} text={"Volver"} className={`buttonAdmin`}></Button>
 
             </div>
           }
           {(menu=="Estado") &&
             <div>
-              <Input onChange={handleUsername} value={username} placeholder={"Ingrese Nombre de Usuario"}></Input>
-              <Button onClick={desUsuario} text={"Desactivar Usuario"}></Button>
-              <Button onClick={actUsuario} text={"Activar Usuario"}></Button>
-              <Button onClick={menuAdmin} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Input onChange={handleUsername} value={username} placeholder={"Ingrese Nombre de Usuario"} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
+              <Button onClick={desUsuario} text={"Desactivar Usuario"} className={`buttonAdmin`}></Button>
+              <Button onClick={actUsuario} text={"Activar Usuario"} className={`buttonAdmin`}></Button>
+              <Button onClick={menuAdmin} text={"Volver"} className={`buttonAdmin`}></Button>
 
             </div>
           }
+          </div>
       </div>
     </div>
   )
