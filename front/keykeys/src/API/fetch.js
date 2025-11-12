@@ -1,6 +1,6 @@
 //insertar todos los fetch
 //igualar aca a la ip de la compu donde este el back
-let ip="10.1.5.140"
+let ip="192.168.56.1"
 
 //API API API API API API API API API API API API API API API API API
 export async function checkearPalabra(palabra) {
