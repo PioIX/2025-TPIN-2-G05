@@ -100,7 +100,9 @@ export default function Game() {
       localStorage.setItem("Usuarios", JSON.stringify(jugadores));
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    if (jugadores.length > 1){
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -119,7 +121,7 @@ export default function Game() {
         console.log("Se ejecuto joinRoom")
         console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
-          if (prevArray.includes(data.user)) return prevArray;
+          if (prevArray.includes(parseInt(data.user))) return prevArray;
           const nuevo = [...prevArray, data.user];
           if (Number(localStorage.getItem("idAdmin")) > 0) {
             socket.emit("enviarIdsDeJugadores", { data: nuevo });

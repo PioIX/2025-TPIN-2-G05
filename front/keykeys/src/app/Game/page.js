@@ -132,7 +132,7 @@ export default function Game() {
         openModal("Partida Finalizada", { accion: accion })
       }else{
         setRonda(data.ronda)
-        openModal("Partida Finalizada, esperandoa que eladmin vuelva a la sala")
+        openModal("Partida Finalizada, esperandoa que el admin vuelva a la sala")
       }
       setJugadores(data.jugadores)
       //Modal de fin de partida + resultados
