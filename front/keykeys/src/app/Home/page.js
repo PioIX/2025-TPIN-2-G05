@@ -185,7 +185,6 @@ export default function Home() {
   }
 
   function openAdmin(){
-    localStorage.setItem("idUser", null)
     router.push("Admin")
   }
 
