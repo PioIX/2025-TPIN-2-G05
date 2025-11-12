@@ -279,7 +279,7 @@ app.put('/modificarUsuario', async function (req, res) {
 });
 
 
-app.put('/eliminarUsuario', async function (req, res) {
+app.put('/desactivarUsuario', async function (req, res) {
   try {
     const username = req.body.username;
 
@@ -290,9 +290,26 @@ app.put('/eliminarUsuario', async function (req, res) {
       WHERE nombre = "${username}"
     `);
 
-    res.send({ mensaje: "Se ha borrao el uchuario" });
+    res.send({ mensaje: "Se ha desactivar el usuario" });
   } catch (error) {
-    res.send({ mensaje: "Error al borrar usuario", error: error.message });
+    res.send({ mensaje: "Error al desactivar usuario", error: error.message });
+  }
+});
+
+app.put('/activarUsuario', async function (req, res) {
+  try {
+    const username = req.body.username;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE UsuariosKey
+      SET estaActivo = true
+      WHERE nombre = "${username}"
+    `);
+
+    res.send({ mensaje: "Se ha activado el usuario" });
+  } catch (error) {
+    res.send({ mensaje: "Error al activar usuario", error: error.message });
   }
 });
 

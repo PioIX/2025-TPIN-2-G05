@@ -4,7 +4,7 @@ import styles from './home.module.css'
 import Input from "@/Components/Input";
 import { useState, useEffect } from "react"
 import Button from "@/Components/Button";
-import { deleteUser, editUser } from "@/API/fetch";
+import {desactivarUsuario, activarUsuario, editUser } from "@/API/fetch";
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -33,22 +33,27 @@ export default function Home() {
       if(username){return true}
     }
 
-    function menuEliminar(){
-      setMenu("eliminar")
+    function menuEstado(){
+      setMenu("Estado")
     }
 
     function menuModificar(){
       setMenu("modificar")
     }
 
-    function modificarUsuario(){
-      editUser(newUsername, oldUsername)
+    async function modificarUsuario(){
+      await editUser(newUsername, oldUsername)
       alert("Usuario Modificado")
     }
 
-    async function eliminarUsuario(){
-      deleteUser(username)
-      alert("Usuario Eliminado")
+    async function desUsuario(){
+      await desactivarUsuario(username)
+      alert("Usuario desactivado")
+    }
+
+    async function actUsuario(){
+      await activarUsuario(username)
+      alert("Usuario activado")
 
     }
 
@@ -73,9 +78,8 @@ export default function Home() {
           {menu=="admin" &&
             <div>
               <Button onClick={menuModificar} text={"Modificar"} className={`${styles.mainButton} ${styles.game}`}></Button>
-              <Button onClick={menuEliminar} text={"Eliminar"} className={`${styles.mainButton} ${styles.game}`}></Button>
+              <Button onClick={menuEstado} text={"Estado"} className={`${styles.mainButton} ${styles.game}`}></Button>
               <Button onClick={volver} text={"Volver al Menú Principal"} className={`${styles.mainButton} ${styles.game}`}></Button>
-
             </div>
           }
           {(menu=="modificar") &&
@@ -87,10 +91,11 @@ export default function Home() {
 
             </div>
           }
-          {(menu=="eliminar") &&
+          {(menu=="Estado") &&
             <div>
               <Input onChange={handleUsername} value={username} placeholder={"Ingrese Nombre de Usuario"}></Input>
-              <Button onClick={eliminarUsuario} text={"Eliminar Usuario"}></Button>
+              <Button onClick={desUsuario} text={"Desactivar Usuario"}></Button>
+              <Button onClick={actUsuario} text={"Activar Usuario"}></Button>
               <Button onClick={menuAdmin} text={"Volver"} className={`${styles.mainButton} ${styles.game}`}></Button>
 
             </div>
