@@ -128,7 +128,7 @@ export default function Game() {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
       if (isAdmin){
-        const accion = () => { router.push('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
+        const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
         openModal("Partida Finalizada", { accion: accion })
       }else{
         setRonda(data.ronda)
@@ -145,7 +145,7 @@ export default function Game() {
     if (!socket);
     socket.on("abandonarPartidaReceive", (data) =>{
       if (isAdmin == false){
-        router.push('../SalaEspera', { scroll: false })
+        router.replace('../SalaEspera', { scroll: false })
       }
     },)
   }, [socket])

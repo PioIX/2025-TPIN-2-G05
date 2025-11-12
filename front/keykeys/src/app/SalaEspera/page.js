@@ -91,16 +91,16 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit('joinRoom', { room: room, user: id },
-      console.log("me uno a la sala"),
+      console.log("me uno a la sala")
     )
-  }, [id, room])
+  }, [id, room, socket])
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       localStorage.setItem("Usuarios", JSON.stringify(jugadores));
     };
 
-    if (jugadores.length > 1){
+    if (jugadores.length > 1) {
       window.addEventListener("beforeunload", handleBeforeUnload);
     }
 
@@ -115,20 +115,19 @@ export default function Game() {
   }, [jugadores])
 
   useEffect(() => {
-    if (!socket) return
-    if (jugadores.length <= 1)
+      if (!socket) return
       socket.on('joined_OK_room', data => {
-        console.log("Se ejecuto joinRoom")
         console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
           if (prevArray.includes(parseInt(data.user))) return prevArray;
-          const nuevo = [...prevArray, data.user];
+          const nuevo = [...prevArray, parseInt(data.user)];
           if (Number(localStorage.getItem("idAdmin")) > 0) {
             socket.emit("enviarIdsDeJugadores", { data: nuevo });
           }
           return nuevo;
         });
       });
+
 
     if (!socket) return
     socket.on("leftRoomPlayer", data => {
@@ -172,7 +171,7 @@ export default function Game() {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
       console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin);
-      console.log("Recibido de persona:", id,room,refJugadores.current);
+      console.log("Recibido de persona:", id, room, refJugadores.current);
       localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
       localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
       localStorage.setItem(`idAdmin`, data.idAdmin)
@@ -196,6 +195,10 @@ export default function Game() {
       console.log(aux)
       setJugadoresId(aux)
     }
+  }, [jugadores])
+
+  useEffect(()=>{
+    console.log(jugadores)
   }, [jugadores])
 
   useEffect(() => {
