@@ -246,8 +246,7 @@
 }
 .admin:hover{ background-color:#bcbcbc ; color:black; }
 
-/* ----------------------------------------
-   Reglas responsive para evitar desbordes
+/* ----------------------------------------Reglas responsive para evitar desbordes
    ---------------------------------------- */
 @media (max-width: 900px) {
   .container { flex-direction: column; align-items: stretch; }
@@ -264,14 +263,115 @@
   .menuLateral::after { display: none; }
   .userSection { flex-direction: row; gap: 10px; margin: 0; }
   .userName { font-size: 1rem; }
-  .menuAmigos { display: none; } /* opcional: esconder lista larga en móviles */
   .menuJuego { padding: 20px; }
   .mainButton { height: 56px; font-size: 1rem; }
 }
 
-@media (max-width: 480px) {
-  .userImage { width: 64px; height: 64px; }
-  .mainButton { width: 100%; height: 52px; font-size: 0.95rem; }
-  .menuLateral { padding: 10px; }
-  .menuJuego h1 { font-size: 1.6rem; margin-bottom: 20px; }
+
+/* === Mejoras de responsive === */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .menuLateral {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    gap: 12px;
+    height: auto;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  .menuLateral::after {
+    display: none;
+  }
+
+  .userSection {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .userImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .userName {
+    font-size: 1rem;
+    max-width: 80px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .logoutButton,
+  .agregarButton {
+    width: auto;
+    min-width: 120px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  /* Ocultamos lista larga de amigos en móvil */
+  /* .menuAmigos {
+    display: none;
+  } */
+
+  .menuLateral h3 {
+    display: none;
+  }
+
+  .menuJuego {
+    margin-top: 20px;
+    padding: 16px;
+  }
+
+  .mainButton {
+    width: 85%;
+    max-width: 250px;
+    height: 55px;
+    font-size: 1rem;
+  }
+}
+
+/* Pantallas pequeñas tipo celular */
+@media (max-width: 500px) {
+  .menuLateral {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .userImage {
+    width: 48px;
+    height: 48px;
+  }
+
+  .userName {
+    font-size: 0.9rem;
+    max-width: 60px;
+  }
+
+  .logoutButton,
+  .agregarButton {
+    font-size: 0.8rem;
+    min-width: 100px;
+    padding: 5px 8px;
+  }
+
+  .mainButton {
+    width: 100%;
+    font-size: 0.9rem;
+    height: 48px;
+  }
+
+  .menuJuego h1 {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+  }
 }

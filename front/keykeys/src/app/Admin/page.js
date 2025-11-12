@@ -2,7 +2,7 @@
 
 import styles from './home.module.css'
 import Input from "@/Components/Input";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Button from "@/Components/Button";
 import { deleteUser, editUser } from "@/API/fetch";
 import { useRouter } from "next/navigation"
@@ -14,7 +14,7 @@ export default function Home() {
     const router = useRouter()
     const [newUsername, setNewUsername] = useState("")
     const [oldUsername, setOldUsername] = useState("")
-
+    const [id, setIdUser] = useState(0);
 
 
     function handleUsername(event){
@@ -59,6 +59,12 @@ export default function Home() {
     function menuAdmin(){
       setMenu("admin")
     }
+
+      useEffect(() => {
+        let id = localStorage.getItem("idUser");
+        setIdUser(id);
+      }, []);
+
   return (
 
     <div>

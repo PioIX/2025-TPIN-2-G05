@@ -46,7 +46,6 @@ export default function Home() {
       openModal("faltan rellenar campos")
     } else {
       let respond = await loguearUsuario(nombre, contraseña) //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
-      console.log(typeof (respond.result.id_usuario) == "string")
       typeof (respond.result.id_usuario == "string") && (respond.result.id_usuario = parseInt(respond.result.id_usuario))
       switch (respond.result.id_usuario) {
         case -2:

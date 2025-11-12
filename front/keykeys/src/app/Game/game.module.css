@@ -75,20 +75,6 @@
     gap: 10px;
 }
 
-.aumentar {
-    width: 15vw;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 70vh;
-    color: white;
-    padding: 0 1rem;
-}
 .expandDiv,.expandDiv2 {
     position: fixed;
     top: 0;

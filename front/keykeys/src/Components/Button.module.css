@@ -116,3 +116,8 @@
     transition: background-color 0.3s ease;
     margin-left: 1rem;
  }
+ @media (max-width: 1000px) {
+    .button{
+        margin: 1rem;
+    }
+}
