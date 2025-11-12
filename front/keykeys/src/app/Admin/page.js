@@ -5,7 +5,7 @@ import stylesA from './home.module.css'
 import Input from "@/Components/Input";
 import { useState, useEffect } from "react"
 import Button from "@/Components/Button";
-import { deleteUser, editUser } from "@/API/fetch";
+import {desactivarUsuario, activarUsuario, editUser } from "@/API/fetch";
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -34,22 +34,27 @@ export default function Home() {
       if(username){return true}
     }
 
-    function menuEliminar(){
-      setMenu("eliminar")
+    function menuEstado(){
+      setMenu("Estado")
     }
 
     function menuModificar(){
       setMenu("modificar")
     }
 
-    function modificarUsuario(){
-      editUser(newUsername, oldUsername)
+    async function modificarUsuario(){
+      await editUser(newUsername, oldUsername)
       alert("Usuario Modificado")
     }
 
-    async function eliminarUsuario(){
-      deleteUser(username)
-      alert("Usuario Eliminado")
+    async function desUsuario(){
+      await desactivarUsuario(username)
+      alert("Usuario desactivado")
+    }
+
+    async function actUsuario(){
+      await activarUsuario(username)
+      alert("Usuario activado")
 
     }
 
@@ -76,9 +81,8 @@ export default function Home() {
           {menu=="admin" &&
             <div>
               <Button onClick={menuModificar} text={"Modificar"} className={`button`}></Button>
-              <Button onClick={menuEliminar} text={"Eliminar"} className={`button`}></Button>
+              <Button onClick={menuEstado} text={"Estado"} className={`button`}></Button>
               <Button onClick={volver} text={"Volver al Menú Principal"} className={`button`}></Button>
-
             </div>
           }
           {(menu=="modificar") &&
@@ -90,10 +94,11 @@ export default function Home() {
 
             </div>
           }
-          {(menu=="eliminar") &&
+          {(menu=="Estado") &&
             <div>
               <Input onChange={handleUsername} value={username} placeholder={"Ingrese Nombre de Usuario"} classNameInput={"input"} classNameInputWrapper={"inputWrapper"}></Input>
-              <Button onClick={eliminarUsuario} text={"Eliminar Usuario"} className={`buttonAdmin`}></Button>
+              <Button onClick={desUsuario} text={"Desactivar Usuario"} className={`buttonAdmin`}></Button>
+              <Button onClick={actUsuario} text={"Activar Usuario"} className={`buttonAdmin`}></Button>
               <Button onClick={menuAdmin} text={"Volver"} className={`buttonAdmin`}></Button>
 
             </div>

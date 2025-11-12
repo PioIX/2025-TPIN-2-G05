@@ -254,9 +254,26 @@ export async function traerCodigo(id_partida) {
         });
 }
 
-export async function deleteUser(username) {
+export async function desactivarUsuario(username) {
     console.log("Se entró al fetch")
-    return fetch(`http://localhost:4000/eliminarUsuario`, {
+    return fetch(`http://localhost:4000/desactivarUsuario`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username
+        })
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            return { result };
+        });
+}
+
+export async function activarUsuario(username) {
+    console.log("Se entró al fetch")
+    return fetch(`http://localhost:4000/activarUsuario`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
