@@ -262,7 +262,7 @@ export default function Game() {
       } else {
         for (let i = 0; i < jugadores.length; i++) {
 
-
+          setActivo(0)
           if (jugadores[i].id_usuario == id && activo) {
             if(jugadores[i].puntos >=10){
               jugadores[i].puntos -= 10;
