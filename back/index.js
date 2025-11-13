@@ -175,7 +175,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
   try {
     console.log(req.query);
     respuesta = await realizarQuery(
-      `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+      `SELECT * FROM UsuariosKey WHERE id_usuario = "${req.query.id}" AND estaActivo = 1`
     );
     if (respuesta.length > 0) {
       res.send(respuesta[0]);
@@ -192,7 +192,7 @@ app.get("/traerDatosUsuarios", async function (req, res) {
 
 app.get("/traerTodosUsuarios", async function (req, res) {
   try {
-    respuesta = await realizarQuery(`SELECT * FROM UsuariosKey`);
+    respuesta = await realizarQuery(`SELECT * FROM UsuariosKey WHERE estaActivo = 1`);
     if (respuesta.length > 0) {
       res.send(respuesta);
     } else {
@@ -209,21 +209,21 @@ app.get("/traerTodosUsuarios", async function (req, res) {
 app.get("/ingresarUsuario", async function (req, res) {
   try {
     let checkNombre = await realizarQuery(
-      `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
+      `SELECT nombre FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND estaActivo = 1`
     );
     if (checkNombre.length === 0) {
       res.send({ id_usuario: "-1" });
       return;
     }
     let checkContraseña = await realizarQuery(
-      `SELECT contraseña FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND contraseña = "${req.query.contraseña}"`
+      `SELECT contraseña FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND contraseña = "${req.query.contraseña}" AND estaActivo = 1`
     );
     if (checkContraseña.length === 0) {
       res.send({ id_usuario: "-2" });
       return;
     }
     let respuesta = await realizarQuery(
-      `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}"`
+      `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.query.nombre}" AND estaActivo = 1`
     );
     res.send(respuesta);
   } catch (error) {
@@ -234,7 +234,7 @@ app.get("/ingresarUsuario", async function (req, res) {
 app.get("/traerFotoUsuario", async function (req, res) {
   try {
     let foto = await realizarQuery(
-      `SELECT foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+      `SELECT foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}" AND estaActivo = 1`
     );
     res.send({ foto: foto });
   } catch (error) {
@@ -251,8 +251,8 @@ app.post("/insertarUsuario", upload.single("foto"), async function (req, res) {
     if (check.length == 0) {
       const foto = req.file ? req.file.buffer : null; // Obtiene el buffer de la foto subida, el dato que se inserta en SQL, en blob, y en caso que no haya lo declara como null
       await realizarQuery(
-        "INSERT INTO UsuariosKey (nombre, contraseña, foto) VALUES (?, ?, ?)",
-        [req.body.nombre, req.body.contrasena, foto]
+        "INSERT INTO UsuariosKey (nombre, contraseña, foto, estaActivo) VALUES (?, ?, ?, ?)",
+        [req.body.nombre, req.body.contrasena, foto, 1]
       ); //Se inserta el buffer en la base de datos, no se podia de la anterior manera porque el binario se traducia a string (o eso entendí)
       let respuesta = await realizarQuery(
         `SELECT id_usuario FROM UsuariosKey WHERE nombre = "${req.body.nombre}"`
@@ -285,7 +285,7 @@ app.put('/modificarUsuario', async function (req, res) {
 });
 
 
-app.put('/eliminarUsuario', async function (req, res) {
+app.put('/desactivarUsuario', async function (req, res) {
   try {
     const username = req.body.username;
 
@@ -296,9 +296,26 @@ app.put('/eliminarUsuario', async function (req, res) {
       WHERE nombre = "${username}"
     `);
 
-    res.send({ mensaje: "Se ha borrao el uchuario" });
+    res.send({ mensaje: "Se ha desactivar el usuario" });
   } catch (error) {
-    res.send({ mensaje: "Error al borrar usuario", error: error.message });
+    res.send({ mensaje: "Error al desactivar usuario", error: error.message });
+  }
+});
+
+app.put('/activarUsuario', async function (req, res) {
+  try {
+    const username = req.body.username;
+
+    // Actualizar la partida en la base de datos
+    await realizarQuery(`
+      UPDATE UsuariosKey
+      SET estaActivo = true
+      WHERE nombre = "${username}"
+    `);
+
+    res.send({ mensaje: "Se ha activado el usuario" });
+  } catch (error) {
+    res.send({ mensaje: "Error al activar usuario", error: error.message });
   }
 });
 
@@ -317,6 +334,7 @@ app.get("/traerAmigos", async function (req, res) {
                 ON (UsuariosKey.id_usuario = Relaciones.id_usuario1 OR UsuariosKey.id_usuario = Relaciones.id_usuario2)
             WHERE (Relaciones.id_usuario1 = "${idUsuario}" OR Relaciones.id_usuario2 = "${idUsuario}")
               AND UsuariosKey.id_usuario != "${idUsuario}"
+              AND UsuariosKey.estaActivo = 1
         `);
 
     res.send(respuesta);
@@ -361,6 +379,7 @@ app.get("/traerSolicitudes", async function (req, res) {
             INNER JOIN UsuariosKey 
                 ON UsuariosKey.id_usuario = Solicitudes.id_usuario_envio
             WHERE Solicitudes.id_usuario_recibo = "${idUsuario}"
+              AND UsuariosKey.estaActivo = 1
         `);
 
     res.send(respuesta);
@@ -471,6 +490,7 @@ app.get("/chequearUsuariosPartida", async function (req, res) {
       INNER JOIN UsuariosEnPartida
       ON UsuariosKey.id_usuario = UsuariosEnPartida.id_usuario
       WHERE UsuariosEnPartida.id_partida = "${idPartida}"
+        AND UsuariosKey.estaActivo = 1
     `);
 
     res.send(respuesta);
@@ -574,6 +594,7 @@ app.get("/traerPartidasActivasAmigos", async function (req, res) {
                     ON Partidas.id_usuario_admin = UsuariosKey.id_usuario
                 WHERE Partidas.id_usuario_admin = "${amigos[i]}" 
                   AND Partidas.activa = 1
+                  AND UsuariosKey.estaActivo = 1
             `);
 
       if (rta2.length > 0) {
@@ -691,7 +712,7 @@ app.get("/traerDatosUsuariosParaJuego", async function (req, res) {
   try {
     console.log(req.query)
     respuesta = await realizarQuery(
-      `SELECT id_usuario,nombre,foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}"`
+      `SELECT id_usuario,nombre,foto FROM UsuariosKey WHERE id_usuario = "${req.query.id}" AND estaActivo = 1`
     );
     if (respuesta.length > 0) {
       res.send(respuesta[0]);

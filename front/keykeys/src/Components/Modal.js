@@ -9,7 +9,8 @@ import { useSocket } from "@/hooks/useSocket"
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
-function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, esAdmin, admin, partidaTerminada}) {
+
+function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, esAdmin,admin,partidaTerminada}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
   const [codigoEntrada, setCodigoEntrada] = useState("")
@@ -108,7 +109,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                   </div>
                 ))}
               </>
-            ) : <h1>No hay solicitudes que aceptar</h1>
+            ) : <><h1>No hay solicitudes que aceptar</h1>
+            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
+            </>
           )
           }
           {
@@ -116,6 +119,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
               <>
                 <Button className="buttonModal" onClick={aceptarSolicitudes} text="Aceptar Solicitudes"> </Button>
                 <Button onClick={enviarSolicitudes} className="buttonModal" text="Enviar solicitudes"></Button>
+                <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
               </>
             )
           }
@@ -124,6 +128,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
               <p>Ingrese el nombre de quien quieres agregar</p>
               <Input onChange={onChange} value={value} classNameInput={"inputModal"} classNameInputWrapper={"inputWrapperLogModal"}></Input>
               <Button className="buttonModal" onClick={onClickAgregar} text="Agregar amigo"></Button>
+              <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
             </>
           )
           }
@@ -178,23 +183,22 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                       <Button onClick={() => { unirseASala(partida) }} className="chico" text="Unirse" />
                     </div>
                   ))}
-                  <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} className={"buttonModal"} text={"Unirse con código"}></Button>
                 </>
               ) : (
                 <>
                   <span>No hay partidas activas de tus amigos</span>
-                  <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
-                  <Button onClick={checkCodigoEntrada} className={"buttonModal"} text={"Unirse con código"}></Button>
                 </>
               )}
+              <Input onChange={handleCodigoEntrada} value={codigoEntrada}></Input>
               <Button onClick={checkCodigoEntrada} className={"buttonModalCode"} text={"Unirse con código"}></Button>
+              <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
             </>
           )}
           
           {esLogout && (
             <>
             <Button onClick={handleCloseLogout} className="buttonModal" text="Cerrar Sesión"> </Button>
+            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button> 
             </>
             )}
 
@@ -203,14 +207,9 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
             {/*usar una variable menu que sea "eliminar", "modificar" o "home" para determinar que submodal se abre*/}
             <Button onClick={modalAdminEliminar} className="buttonModal" text="Eliminar Usuario"> </Button>
             <Button onClick={modalAdminModificar} className="buttonModal" text="Modificar Usuario"> </Button>
+            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
             </>
           )}
-          { admin ==null || esLogout==false&&
-            <Button onClick={handleCloseCancel} className="buttonModal" text="Cancelar"> </Button>
-          }
-          
-          
-
         </div>
       </div>
     </>

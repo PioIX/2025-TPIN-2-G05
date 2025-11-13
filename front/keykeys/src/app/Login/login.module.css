@@ -12,3 +12,10 @@
   display:flex;
   justify-content: center;
 }
+@media (max-width: 1000px) {
+.containerInputs{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+}

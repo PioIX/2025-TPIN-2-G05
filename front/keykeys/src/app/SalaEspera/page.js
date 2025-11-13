@@ -42,7 +42,6 @@ export default function Game() {
     if (event.target.value < 1) {
       event.preventDefault()
     } else {
-      console.log(event.target.value)
       setCantidadRondas(event.target.value);
     }
   };
@@ -51,7 +50,6 @@ export default function Game() {
     if (event.target.value < 1) {
       event.preventDefault()
     } else {
-      console.log(event.target.value)
       setLetrasprohibidas(event.target.value)
     }
   };
@@ -64,7 +62,6 @@ export default function Game() {
         respuestas.push(await infoUsuarioPartida(jugadoresId[i]));
         respuestas[i].puntos = 0;
       }
-      console.log("Respuestas de cargar jugadores: ", respuestas);
       setJugadores(respuestas);
     }
     cargarJugadores();
@@ -170,8 +167,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin);
-      console.log("Recibido de persona:", id, room, refJugadores.current);
       localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
       localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
       localStorage.setItem(`idAdmin`, data.idAdmin)
@@ -189,10 +184,8 @@ export default function Game() {
       let aux = []
       for (let i = 0; i < jugadores.length; i++) {
         const element = jugadores[i];
-        console.log(element)
         aux.push(element.id_usuario)
       }
-      console.log(aux)
       setJugadoresId(aux)
     }
   }, [jugadores])
@@ -207,7 +200,6 @@ export default function Game() {
 
   //inicio de partida
   async function partidaInit() {
-    console.log("Enviando al servidor:", cantidadRondas, letrasProhibidas, idAdmin);
     await actualizarValoresPartidaFalse(room)
     socket.emit("partidaInitSend", { cantidadRondas: cantidadRondas, letrasProhibidas: letrasProhibidas, idAdmin: idAdmin })
   }

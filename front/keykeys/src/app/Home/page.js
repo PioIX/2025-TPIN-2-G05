@@ -68,7 +68,6 @@ export default function Home() {
 
   async function crearSala() {
     let id_partida = await crearPartida(idUser)
-    console.log(id_partida.result.id_partida[0].id_partida)
     socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
@@ -77,7 +76,6 @@ export default function Home() {
   }
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
-    console.log("openModalLogOut")
     const accionDeCierre = () => {
       localStorage.setItem("idUser", null)
       router.replace("..")
@@ -187,7 +185,6 @@ export default function Home() {
   }
 
   function openAdmin(){
-    localStorage.setItem("idUser", null)
     router.push("Admin")
   }
 
@@ -243,7 +240,7 @@ export default function Home() {
           <h1>KEY KEYS</h1>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={mostrarPartidas}>Unirse a una sala</button>
           <button className={`${styles.mainButton} ${styles.game}`} onClick={crearSala}>Crear una sala</button>
-          <button className={`${styles.mainButton} ${styles.game}`}>Configuración</button>
+          <button className={`${styles.mainButton} ${styles.game}`} onClick={configuracion}>Configuración</button>
           {admin &&<button className={`${styles.mainButton} ${styles.admin}`} onClick={openAdmin}>Administrar Usuarios</button>}
         </div>
 
