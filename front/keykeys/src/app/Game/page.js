@@ -1,7 +1,5 @@
 "use client";
 
-
-import clsx from "clsx";
 import styles from "../page.module.css";
 import stylesG from "./game.module.css";
 import { checkearPalabra } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
@@ -10,8 +8,6 @@ import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import Button from "@/Components/Button";
-import Person from "@/Components/Person";
 import LetraProhibida from "@/Components/LetraProhibida";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
@@ -108,12 +104,12 @@ export default function Game() {
           auxiliar.push(letras.charAt(indiceAleatorio));
         }
         socket.emit("cambioTurnoSend", { index: indexN, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda})// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-         setContador(15)
+        setContador(15)
       }
     }
     )
     socket.emit("cambioRondaSend", { jugadores: refJugadores.current, ronda: ronda })
-  }, [socket, id, room /**Aca iba socketRonda en vez de socket */])
+  }, [socket, id, room])
 
   useEffect(() => {
     console.log("Esta es la ronda, ", ronda)
@@ -131,9 +127,6 @@ export default function Game() {
         openModal("Partida Finalizada, esperandoa que el admin vuelva a la sala")
       }
       setJugadores(data.jugadores)
-      //Modal de fin de partida + resultados
-      //boton de ir a sala de espera
-      //El siguiente codigo se ejecuta al iniciar la partida
     })
     if (!socket) return
     socket.on("joined_OK_room", data => { })
@@ -164,7 +157,7 @@ export default function Game() {
         setActivo(false)
       }
     })
-  }, [socket /**Aca iba socketTurno en vez de socket */])
+  }, [socket])
 
 
   useEffect(() => {
@@ -231,7 +224,6 @@ export default function Game() {
 
   //TIMER
   useEffect(() => {
-    //Esto usa timers temporales de 1 segundo en vez de uno de 10. Cuando llega a 0 no se crean más timers.
     if (isModalOpen == false) {
       if (contador > 0) {
         const timer = setInterval(() => {
@@ -263,8 +255,6 @@ export default function Game() {
 
         }
         socket.emit("rondaTerminadaSend", { room, jugadores: refJugadores.current });
-        //nova
-        //que se ejecute el socket y que de ahi se abra el modal . manda la variable admin, yta en el modacompruieba si es true. solo al admin le aparece el nboton para el boton de cambio de ronda y de ahi empieza
       }
     }
   }, [contador, activo, isModalOpen]);

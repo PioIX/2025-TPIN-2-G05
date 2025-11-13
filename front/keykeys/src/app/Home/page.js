@@ -1,10 +1,7 @@
 "use client";
 
-import Button from "@/Components/Button";
-import Input from "@/Components/Input"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ImagenClick from "@/Components/ImagenClick";
 import Modal from "@/Components/Modal";
 import { useSocket } from "@/hooks/useSocket";
 import { infoUsuario, traerFotoUsuario, traerAmigos, traerTodosLosUsuarios, enviarSolicitud, traerSolicitudes, traerPartidasActivasAmigos, crearPartida } from '@/API/fetch'
