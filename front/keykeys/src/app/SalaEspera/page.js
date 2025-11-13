@@ -23,6 +23,7 @@ export default function Game() {
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
   const [jugadoresId, setJugadoresId] = useState([]);
+  const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket } = useSocket()
   const refJugadores = useRef(jugadores)
   const [cantidadRondas, setCantidadRondas] = useState(1);
@@ -70,6 +71,7 @@ export default function Game() {
   useEffect(() => {
     setId(localStorage.getItem('idUser'))
     setRoom(localStorage.getItem("room"))
+    setCodigoEntrada(localStorage.getItem("codigo_entrada"))
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("Usuarios");
       if (stored) {
@@ -88,16 +90,18 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit('joinRoom', { room: room, user: id },
-      console.log("me uno a la sala"),
+      console.log("me uno a la sala")
     )
-  }, [id, room])
+  }, [id, room, socket])
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       localStorage.setItem("Usuarios", JSON.stringify(jugadores));
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    if (jugadores.length > 1) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -110,19 +114,19 @@ export default function Game() {
   }, [jugadores])
 
   useEffect(() => {
-    if (!socket) return
-    if (jugadores.length <= 1)
+      if (!socket) return
       socket.on('joined_OK_room', data => {
-        console.log("Se ejecuto joinRoom. Datos recibidos en joined_OK_room: ", data)
+        console.log("Datos recibidos en joined_OK_room: ", data)
         setJugadoresId(prevArray => {
-          if (prevArray.includes(data.user)) return prevArray;
-          const nuevo = [...prevArray, data.user];
+          if (prevArray.includes(parseInt(data.user))) return prevArray;
+          const nuevo = [...prevArray, parseInt(data.user)];
           if (Number(localStorage.getItem("idAdmin")) > 0) {
             socket.emit("enviarIdsDeJugadores", { data: nuevo });
           }
           return nuevo;
         });
       });
+
 
     if (!socket) return
     socket.on("leftRoomPlayer", data => {
@@ -165,7 +169,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("partidaInitReceive", data => {
-      console.log("Recibido del servidor:", data.cantidadRondas, data.letrasProhibidas, data.idAdmin,"Recibido de persona:", id,room,refJugadores.current);
       localStorage.setItem(`rondasTotalesDeJuego${room}`, data.cantidadRondas)
       localStorage.setItem(`letrasProhibidasDeJuego${room}`, data.letrasProhibidas)
       localStorage.setItem(`idAdmin`, data.idAdmin)
@@ -189,6 +192,10 @@ export default function Game() {
     }
   }, [jugadores])
 
+  useEffect(()=>{
+    console.log(jugadores)
+  }, [jugadores])
+
   useEffect(() => {
     console.log("Estos son los jugadores Id", jugadoresId)
   }, [jugadoresId])
@@ -202,6 +209,7 @@ export default function Game() {
   function abandonarPartida() {
     if (idAdmin > 0) {
       socket.emit("leaveRoomAdmin")
+      localStorage.removeItem("codigo_entrada")
       salirSala()
     } else {
       socket.emit("leaveRoomPlayer", { id })
@@ -244,6 +252,7 @@ export default function Game() {
               <p>Rondas seleccionadas: {cantidadRondas}</p>
               <p>Letras prohibidas: {letrasProhibidas}</p>
               <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+              <h3 className={styles.subtittle}>Codigo de entrada: {codigoEntrada}</h3>
             </div>
           </>
         )

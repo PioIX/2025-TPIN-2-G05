@@ -9,6 +9,7 @@ import { useSocket } from "@/hooks/useSocket"
 import { agregarAmigo, eliminarSolicitud, traerSolicitudes, traerPartidaPorCodigo } from "@/API/fetch";
 
 
+
 function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, enviarSolicitudes, aceptarSolicitudes, input, onClickAgregar, value, onChange, onUpdate, jugadores, mensajePartidas, esModalPartidas, esLogout, esAdmin,admin,partidaTerminada}) {
   const [idUser, setIdUser] = useState(0)
   const [solicitudes, setSolicitudes] = useState([])
@@ -20,11 +21,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     let id = localStorage.getItem("idUser")
     setIdUser(id)
     fetchTraerSolicitudes(id)
-  }, [])
-
-  useEffect(() => {
-    console.log(mensajePartidas)
-  }, [mensajePartidas])
+  }, [aceptarSolicitud])
 
   async function fetchTraerSolicitudes(id) {
     let respond = await traerSolicitudes(id)
@@ -161,7 +158,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
                   text="Iniciar siguiente ronda"
                 />
               )}
-              {partidaTerminada && (
+              {partidaTerminada && admin && (
                 <Button
                   onClick={handleClose}
                   className="buttonModal"

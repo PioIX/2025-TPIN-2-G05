@@ -31,7 +31,7 @@ export default function Game() {
   const [activo, setActivo] = useState(false);
   const router = useRouter();
   const { socket } = useSocket()
-  const [contador, setContador] = useState(10)
+  const [contador, setContador] = useState(15)
   const [palabraMasCorta, setPalabraMasCorta] = useState(false)
   const [palabraNoExiste, setPalabraNoExiste] = useState(false)
 
@@ -65,7 +65,7 @@ export default function Game() {
       setIsAdmin(true)
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
       setActivo(true)
-      setContador(10)
+      setContador(15)
       setRonda(0)
     }
   }, [])
@@ -77,7 +77,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit("joinRoom", { room: room, id: id },
-
     )
   }, [id, room])
 
@@ -89,10 +88,6 @@ export default function Game() {
     refRonda.current = ronda
   }, [ronda])
 
-  useEffect(()=>{
-    console.log(jugadores)
-  }, [jugadores])
-
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if (!socket) return;
@@ -101,18 +96,19 @@ export default function Game() {
         closeModal()
       }
       if (id == localStorage.getItem("idAdmin")) {
-          setRonda(data.ronda)
-          setLetrasprohibidas([])
-          setPrevPalabra("")
-          setJugadores(data.jugadores)
-          const letras = "abcdefghijklmnñopqrstuvwxyz"
-          const auxiliar = []
-          for (let i = 0; i < cantidadLetras; i++) {
-            const indiceAleatorio = Math.floor(Math.random() * letras.length);
-            auxiliar.push(letras.charAt(indiceAleatorio));
-          }
-          socket.emit("cambioTurnoSend", { index: -1, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-         setContador(10)
+        setRonda(data.ronda)
+        setLetrasprohibidas([])
+        setPrevPalabra("")
+        setJugadores(data.jugadores)
+        const letras = "abcdefghijklmnñopqrstuvwxyz"
+        const auxiliar = []
+        const indexN = Math.floor(Math.random() * (refJugadores.current.length + 1));
+        for (let i = 0; i < cantidadLetras; i++) {
+          const indiceAleatorio = Math.floor(Math.random() * letras.length);
+          auxiliar.push(letras.charAt(indiceAleatorio));
+        }
+        socket.emit("cambioTurnoSend", { index: indexN, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda})// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+         setContador(15)
       }
     }
     )
@@ -127,30 +123,29 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
+      if (isAdmin) {
+        const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
+        openModal("Partida Finalizada", { accion: accion })
+      } else {
+        setRonda(data.ronda)
+        openModal("Partida Finalizada, esperandoa que el admin vuelva a la sala")
+      }
       setJugadores(data.jugadores)
-      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-      openModal("Partida Finalizada", { accion: accion })
       //Modal de fin de partida + resultados
       //boton de ir a sala de espera
       //El siguiente codigo se ejecuta al iniciar la partida
     })
     if (!socket) return
-    socket.on("joined_OK_room", data => {})
+    socket.on("joined_OK_room", data => { })
+
+    if (!socket);
+    socket.on("abandonarPartidaReceive", (data) => {
+      if (isAdmin == false) {
+        router.replace('../SalaEspera', { scroll: false })
+      }
+    },)
   }, [socket])
-  // socket.emit("cambioRondaSend", { jugadores: jugadores })}
-  // //useEffect(()=>{
-  //  if (!socket) return;
-  // socket.on("cambioTurno", data =>{
-  //  setJugadores(data.jugadores),
-  //  setPrevPalabra(data.palabra),
-  //  let index = data.index}
-  //)
-  //lOS SOCKET MANDAN
-  //jugadores (array) contiene: objeto con (puntos; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
-  //prevPalabra (string)
-  //idTurno de quien vaya (se puede poner nombre tambien)
-  //ronda por la que se vaya
-  //letras que estan prohibidas
+
   useEffect(() => {
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
@@ -164,7 +159,7 @@ export default function Game() {
         setActivo(true)
         setPrevPalabra(data.palabra)
         setJugadores(data.jugadores)
-        setContador(10)
+        setContador(15)
       } else {
         setActivo(false)
       }
@@ -176,10 +171,10 @@ export default function Game() {
     if (!socket) return;
     socket.on("rondaTerminadaReceive", (data) => {
       if (refRonda.current == rondas) {
-        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current })
+        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current, ronda: refRonda.current })
       } else {
         setJugadores(data.jugadores)
-        setContador(10)
+        setContador(15)
         const accion = () => { socket.emit("cambioRondaSend", { jugadores: refJugadores.current, ronda: refRonda.current }) }
         if (isAdmin) {
           openModal("Se ha terminado la ronda", { accion: accion });
@@ -241,7 +236,7 @@ export default function Game() {
       if (contador > 0) {
         const timer = setInterval(() => {
           setContador(contadorPrevio => contadorPrevio - 1);
-        }, 1000);
+        }, 1050);
 
         return () => {
           clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
@@ -250,14 +245,14 @@ export default function Game() {
         for (let i = 0; i < jugadores.length; i++) {
           setActivo(false)
 
-
+          setActivo(0)
           if (jugadores[i].id_usuario == id && activo) {
-            if(jugadores[i].puntos >=10){
+            if (jugadores[i].puntos >= 10) {
               jugadores[i].puntos -= 10;
               setJugadores((prevArray) => [...prevArray, {}])
               setJugadores((prevArray) => prevArray.slice(0, -1))
               break; // corta el bucle si ya lo encontró
-            }else{
+            } else {
               jugadores[i].puntos = 0;
               setJugadores((prevArray) => [...prevArray, {}])
               setJugadores((prevArray) => prevArray.slice(0, -1))
@@ -276,10 +271,10 @@ export default function Game() {
   return (
     <>
 
-    {activo &&(<>
-    <div className={stylesG.expandDiv}></div>
-    <div className={stylesG.expandDiv2}></div>
-    <p className={stylesG.contador}>{contador}'</p></>)}
+      {activo && (<>
+        <div className={stylesG.expandDiv}></div>
+        <div className={stylesG.expandDiv2}></div>
+        <p className={stylesG.contador}>{contador}'</p></>)}
 
       <div className={stylesG[activo]}>
         <div className={styles.top}>
