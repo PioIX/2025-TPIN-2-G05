@@ -82,7 +82,7 @@
     width:0;
     height: 100vh;
     background: #b10000;
-    animation: grow 10.5s linear forwards;
+    animation: grow 15s linear forwards;
     pointer-events: none;
     /* no bloquea clics */
     z-index: 0;
@@ -92,8 +92,7 @@
     background: #8f0000;
     width: 4vw;
     z-index: 0;
-    animation: grow2 10.5s linear forwards;
-
+    animation: grow 15s linear forwards;
 }
 
 @keyframes grow {

@@ -31,7 +31,7 @@ export default function Game() {
   const [activo, setActivo] = useState(false);
   const router = useRouter();
   const { socket } = useSocket()
-  const [contador, setContador] = useState(10)
+  const [contador, setContador] = useState(15)
   const [palabraMasCorta, setPalabraMasCorta] = useState(false)
   const [palabraNoExiste, setPalabraNoExiste] = useState(false)
 
@@ -65,7 +65,7 @@ export default function Game() {
       setIsAdmin(true)
       setCantidadLetras(localStorage.getItem(`letrasProhibidasDeJuego${localStorage.getItem("room")}`))
       setActivo(true)
-      setContador(10)
+      setContador(15)
       setRonda(0)
     }
   }, [])
@@ -108,7 +108,7 @@ export default function Game() {
           auxiliar.push(letras.charAt(indiceAleatorio));
         }
         socket.emit("cambioTurnoSend", { index: indexN, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda})// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
-        setContador(10)
+         setContador(15)
       }
     }
     )
@@ -159,7 +159,7 @@ export default function Game() {
         setActivo(true)
         setPrevPalabra(data.palabra)
         setJugadores(data.jugadores)
-        setContador(10)
+        setContador(15)
       } else {
         setActivo(false)
       }
@@ -174,7 +174,7 @@ export default function Game() {
         socket.emit("terminarPartidaSend", { jugadores: refJugadores.current, ronda: refRonda.current })
       } else {
         setJugadores(data.jugadores)
-        setContador(10)
+        setContador(15)
         const accion = () => { socket.emit("cambioRondaSend", { jugadores: refJugadores.current, ronda: refRonda.current }) }
         if (isAdmin) {
           openModal("Se ha terminado la ronda", { accion: accion });
@@ -236,7 +236,7 @@ export default function Game() {
       if (contador > 0) {
         const timer = setInterval(() => {
           setContador(contadorPrevio => contadorPrevio - 1);
-        }, 1000);
+        }, 1050);
 
         return () => {
           clearInterval(timer); // Limpiar el intervalo cuando el componente se desmonta o el contador cambia
