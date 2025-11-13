@@ -66,7 +66,7 @@ export default function Home() {
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
     localStorage.setItem("codigo_entrada", id_partida.result.codigo_entrada)
     setIsModalPartidasOpen(false)
-    router.push(`/SalaEspera`, { scroll: false })
+    router.replace(`/SalaEspera`, { scroll: false })
   }
 
   function openModalLogOut() { //CERRAR SESION - LOGOUT - CLOSE SESSION
@@ -157,7 +157,7 @@ export default function Home() {
   }
 
   function configuracion() {
-    router.push("/Settings")
+    router.replace("/Settings")
   }
   
   async function fetchAmigos(id) {
@@ -170,7 +170,7 @@ export default function Home() {
   }
 
   function openAdmin(){
-    router.push("Admin")
+    router.replace("Admin")
   }
 
   return (

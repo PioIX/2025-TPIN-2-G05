@@ -34,7 +34,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
 
   function unirseASala(item) {
     localStorage.setItem("room", item.id_partida)
-    router.push('/SalaEspera', { scroll: false })
+    router.replace('/SalaEspera', { scroll: false })
   }
 
   async function checkCodigoEntrada() {
@@ -43,7 +43,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     if (puedeEntrar.result.length > 0) {
       console.log("Puede entrar a la partida")
       localStorage.setItem("room", puedeEntrar.result[0].id_partida)
-      router.push(`/SalaEspera`, { scroll: false })
+      router.replace(`/SalaEspera`, { scroll: false })
     } else {
       alert("El código es incorrecto, no puede ingresar a la partida")
     }

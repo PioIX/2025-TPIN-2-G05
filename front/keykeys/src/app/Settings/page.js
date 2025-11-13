@@ -46,7 +46,7 @@ export default function Settings() {
   }
 
     function volver(){
-    router.push("/Home")
+    router.replace("/Home")
   }
 
   async function enviarDatos() {
