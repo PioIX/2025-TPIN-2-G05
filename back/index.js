@@ -93,7 +93,8 @@ io.on("connection", (socket) => {
 
   socket.on("terminarPartidaSend", (data) => {
     io.to(req.session.room).emit("terminarPartidaReceive", {
-      jugadores: data.jugadores
+      jugadores: data.jugadores,
+      ronda: data.ronda
     })
     console.log("La partida ha terminado")
   })
@@ -124,6 +125,11 @@ io.on("connection", (socket) => {
       ronda: data.ronda
     })
   })
+
+  socket.on("abandonarPartidaSend", (data) => {
+    io.to(req.session.room).emit("abandonarPartidaReceive", {
+      
+    })})
 
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);

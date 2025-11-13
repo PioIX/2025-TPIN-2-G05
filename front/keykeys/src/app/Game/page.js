@@ -127,15 +127,27 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
+      if (isAdmin){
+        const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
+        openModal("Partida Finalizada", { accion: accion })
+      }else{
+        setRonda(data.ronda)
+        openModal("Partida Finalizada, esperandoa que el admin vuelva a la sala")
+      }
       setJugadores(data.jugadores)
-      const accion = () => { router.replace('../SalaEspera', { scroll: false }) };
-      openModal("Partida Finalizada", { accion: accion })
       //Modal de fin de partida + resultados
       //boton de ir a sala de espera
       //El siguiente codigo se ejecuta al iniciar la partida
     })
     if (!socket) return
     socket.on("joined_OK_room", data => {})
+
+    if (!socket);
+    socket.on("abandonarPartidaReceive", (data) =>{
+      if (isAdmin == false){
+        router.replace('../SalaEspera', { scroll: false })
+      }
+    },)
   }, [socket])
   // socket.emit("cambioRondaSend", { jugadores: jugadores })}
   // //useEffect(()=>{
@@ -176,7 +188,7 @@ export default function Game() {
     if (!socket) return;
     socket.on("rondaTerminadaReceive", (data) => {
       if (refRonda.current == rondas) {
-        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current })
+        socket.emit("terminarPartidaSend", { jugadores: refJugadores.current, ronda: refRonda.current })
       } else {
         setJugadores(data.jugadores)
         setContador(10)
@@ -250,7 +262,7 @@ export default function Game() {
         for (let i = 0; i < jugadores.length; i++) {
           setActivo(false)
 
-
+          setActivo(0)
           if (jugadores[i].id_usuario == id && activo) {
             if(jugadores[i].puntos >=10){
               jugadores[i].puntos -= 10;
