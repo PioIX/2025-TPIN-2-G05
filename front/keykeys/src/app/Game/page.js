@@ -77,7 +77,6 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return
     socket.emit("joinRoom", { room: room, id: id },
-
     )
   }, [id, room])
 
@@ -89,10 +88,6 @@ export default function Game() {
     refRonda.current = ronda
   }, [ronda])
 
-  useEffect(()=>{
-    console.log(jugadores)
-  }, [jugadores])
-
   // //cada vez que te llega el , evento de cambio de ronda + al inicio
   useEffect(() => {
     if (!socket) return;
@@ -101,17 +96,18 @@ export default function Game() {
         closeModal()
       }
       if (id == localStorage.getItem("idAdmin")) {
-          setRonda(data.ronda)
-          setLetrasprohibidas([])
-          setPrevPalabra("")
-          setJugadores(data.jugadores)
-          const letras = "abcdefghijklmnñopqrstuvwxyz"
-          const auxiliar = []
-          for (let i = 0; i < cantidadLetras; i++) {
-            const indiceAleatorio = Math.floor(Math.random() * letras.length);
-            auxiliar.push(letras.charAt(indiceAleatorio));
-          }
-          socket.emit("cambioTurnoSend", { index: -1, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda })// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
+        setRonda(data.ronda)
+        setLetrasprohibidas([])
+        setPrevPalabra("")
+        setJugadores(data.jugadores)
+        const letras = "abcdefghijklmnñopqrstuvwxyz"
+        const auxiliar = []
+        const indexN = Math.floor(Math.random() * (refJugadores.current.length + 1));
+        for (let i = 0; i < cantidadLetras; i++) {
+          const indiceAleatorio = Math.floor(Math.random() * letras.length);
+          auxiliar.push(letras.charAt(indiceAleatorio));
+        }
+        socket.emit("cambioTurnoSend", { index: indexN, jugadores: refJugadores.current, palabra: "", letrasProhibidas: auxiliar, ronda: data.ronda})// hay que hacer que el admin no juegue en la ronda inicial siempre//mensaje en socketTurno
          setContador(15)
       }
     }
@@ -127,10 +123,10 @@ export default function Game() {
   useEffect(() => {
     if (!socket) return;
     socket.on("terminarPartidaReceive", data => {
-      if (isAdmin){
+      if (isAdmin) {
         const accion = () => { router.replace('../SalaEspera', { scroll: false }), socket.emit("abandonarPartidaSend") };
         openModal("Partida Finalizada", { accion: accion })
-      }else{
+      } else {
         setRonda(data.ronda)
         openModal("Partida Finalizada, esperandoa que el admin vuelva a la sala")
       }
@@ -140,29 +136,16 @@ export default function Game() {
       //El siguiente codigo se ejecuta al iniciar la partida
     })
     if (!socket) return
-    socket.on("joined_OK_room", data => {})
+    socket.on("joined_OK_room", data => { })
 
     if (!socket);
-    socket.on("abandonarPartidaReceive", (data) =>{
-      if (isAdmin == false){
+    socket.on("abandonarPartidaReceive", (data) => {
+      if (isAdmin == false) {
         router.replace('../SalaEspera', { scroll: false })
       }
     },)
   }, [socket])
-  // socket.emit("cambioRondaSend", { jugadores: jugadores })}
-  // //useEffect(()=>{
-  //  if (!socket) return;
-  // socket.on("cambioTurno", data =>{
-  //  setJugadores(data.jugadores),
-  //  setPrevPalabra(data.palabra),
-  //  let index = data.index}
-  //)
-  //lOS SOCKET MANDAN
-  //jugadores (array) contiene: objeto con (puntos; foto; id;nombre) IMPORTANTE!!!! PARA SABER QUIEN VA DESPUES USA EL INDEX EN EL ARRAY DE JUGADORES, COMPROBA EL ID DEL LOCALSTORAGE CON EL ID DE USUARIO QUE TE DEVUELVE SI HACES JUGADORES[INDEX].id_usuario
-  //prevPalabra (string)
-  //idTurno de quien vaya (se puede poner nombre tambien)
-  //ronda por la que se vaya
-  //letras que estan prohibidas
+
   useEffect(() => {
     if (!socket) return
     socket.on("cambioTurnoReceive", (data) => {
@@ -264,12 +247,12 @@ export default function Game() {
 
           setActivo(0)
           if (jugadores[i].id_usuario == id && activo) {
-            if(jugadores[i].puntos >=10){
+            if (jugadores[i].puntos >= 10) {
               jugadores[i].puntos -= 10;
               setJugadores((prevArray) => [...prevArray, {}])
               setJugadores((prevArray) => prevArray.slice(0, -1))
               break; // corta el bucle si ya lo encontró
-            }else{
+            } else {
               jugadores[i].puntos = 0;
               setJugadores((prevArray) => [...prevArray, {}])
               setJugadores((prevArray) => prevArray.slice(0, -1))
@@ -288,10 +271,10 @@ export default function Game() {
   return (
     <>
 
-    {activo &&(<>
-    <div className={stylesG.expandDiv}></div>
-    <div className={stylesG.expandDiv2}></div>
-    <p className={stylesG.contador}>{contador}'</p></>)}
+      {activo && (<>
+        <div className={stylesG.expandDiv}></div>
+        <div className={stylesG.expandDiv2}></div>
+        <p className={stylesG.contador}>{contador}'</p></>)}
 
       <div className={stylesG[activo]}>
         <div className={styles.top}>

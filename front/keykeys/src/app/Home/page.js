@@ -38,10 +38,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    //Aca van a ir los cambios si recibe una invitacion a la partida
-  }, [socket])
-
-  useEffect(() => {
     let id = localStorage.getItem("idUser")
     setIdUser(id)
     fetchFotoUsuario(id)
@@ -71,6 +67,7 @@ export default function Home() {
     socket.emit("joinRoom", { room: id_partida.result.id_partida[0].id_partida, user: idUser })
     localStorage.setItem("idAdmin", idUser)
     localStorage.setItem("room", id_partida.result.id_partida[0].id_partida)
+    localStorage.setItem("codigo_entrada", id_partida.result.codigo_entrada)
     setIsModalPartidasOpen(false)
     router.push(`/SalaEspera`, { scroll: false })
   }
@@ -82,10 +79,6 @@ export default function Home() {
     };
     openModal("Estás seguro?", {accion: accionDeCierre})
     setBooleanoLogout(true)
-  }
-  
-  function showConfiguracion() {
-    console.log("Mostrando el modal de configuracion"); //<---ACÁ SE MUESTRA EL MODAL
   }
 
   const openModalEleccion = () => {
@@ -159,11 +152,6 @@ export default function Home() {
     }
   }
 
-  useEffect(()=>{
-    console.log(partidas)
-    console.log(partidas.length > 0)
-  }, [partidas])
-
   async function mostrarPartidas() {
     const partidasData = await traerPartidasActivasAmigos(idUser);
     setPartidas(partidasData.result || []);
@@ -188,19 +176,6 @@ export default function Home() {
     router.push("Admin")
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  
   return (
     <div>
       <div className={styles.container}>
