@@ -23,6 +23,7 @@ export default function Game() {
   const [modalMessage, setModalMessage] = useState("");
   const [modalAction, setModalAction] = useState("");
   const [jugadoresId, setJugadoresId] = useState([]);
+  const [codigoEntrada, setCodigoEntrada] = useState("")
   const { socket } = useSocket()
   const refJugadores = useRef(jugadores)
   const [cantidadRondas, setCantidadRondas] = useState(1);
@@ -70,6 +71,7 @@ export default function Game() {
   useEffect(() => {
     setId(localStorage.getItem('idUser'))
     setRoom(localStorage.getItem("room"))
+    setCodigoEntrada(localStorage.getItem("codigo_entrada"))
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("Usuarios");
       if (stored) {
@@ -207,6 +209,7 @@ export default function Game() {
   function abandonarPartida() {
     if (idAdmin > 0) {
       socket.emit("leaveRoomAdmin")
+      localStorage.removeItem("codigo_entrada")
       salirSala()
     } else {
       socket.emit("leaveRoomPlayer", { id })
@@ -249,6 +252,7 @@ export default function Game() {
               <p>Rondas seleccionadas: {cantidadRondas}</p>
               <p>Letras prohibidas: {letrasProhibidas}</p>
               <Button onClick={partidaInit} text={"Inicie partida"} className={"buttonAbandonar"} />
+              <h3 className={styles.subtittle}>Codigo de entrada: {codigoEntrada}</h3>
             </div>
           </>
         )

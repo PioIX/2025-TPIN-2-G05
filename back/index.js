@@ -128,8 +128,9 @@ io.on("connection", (socket) => {
 
   socket.on("abandonarPartidaSend", (data) => {
     io.to(req.session.room).emit("abandonarPartidaReceive", {
-      
-    })})
+
+    })
+  })
 
   socket.on("pingAll", (data) => {
     console.log("PING ALL: ", data);
@@ -270,7 +271,7 @@ app.put('/modificarUsuario', async function (req, res) {
   try {
     const oldUsername = req.body.oldUsername;
     const newUsername = req.body.newUsername;
-    
+
     // Actualizar la partida en la base de datos
     await realizarQuery(`
       UPDATE UsuariosKey
@@ -440,7 +441,10 @@ app.post("/crearPartida", async function (req, res) {
     let respuesta = await realizarQuery(
       `SELECT MAX(id_partida) AS id_partida FROM Partidas`
     );
-    res.send({ id_partida: respuesta });
+    res.send({
+      id_partida: respuesta,
+      codigo_entrada: codigo_entrada
+    });
   } catch (error) {
     res.send({ mensaje: "Error al crear partida", error: error.message });
   }
