@@ -212,6 +212,7 @@ export default function Game() {
     if (idAdmin > 0) {
       socket.emit("leaveRoomAdmin")
       localStorage.removeItem("codigo_entrada")
+      actualizarValoresPartidaFalse(room)
       salirSala()
     } else {
       socket.emit("leaveRoomPlayer", { id })
