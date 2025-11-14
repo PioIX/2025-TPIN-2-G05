@@ -4,6 +4,7 @@ Grupo 05 - Trabajo Segundo Cuatrimestre
 ## Título de la propuesta: Key Keys  
 **Grupo:** 05  
 **División:** 5A  
+<img width="1919" height="839" alt="Screenshot 2025-11-14 133208" src="https://github.com/user-attachments/assets/ce4bf28f-c6a9-40a2-b014-7738a715dc1c" />
 
 ---
 
@@ -14,6 +15,16 @@ Grupo 05 - Trabajo Segundo Cuatrimestre
 - Francisco Pascuet  
 - Matías Mahlknecht  
 - Martín Tello  
+
+<img width="1919" height="838" alt="Screenshot 2025-11-14 133508" src="https://github.com/user-attachments/assets/b8ffade4-b249-4e0c-a657-68784d927fcd" />
+
+---
+
+
+## Temática
+
+Un juego de conocimiento sobre el lenguaje, tenés 15 segundos para pensar una palabra cada vez mas larga que la del rival. Tenes que demostrar que sos el hispanohablante definitivo
+<img width="1904" height="840" alt="Screenshot 2025-11-14 133748" src="https://github.com/user-attachments/assets/eb6ff412-a661-4c9a-bb21-5c2774a2c88a" />
 
 ---
 
@@ -30,12 +41,6 @@ Se suma un Punto por cada letra de la palabra que escribiste bien (si la palabra
 
 ---
 
-## Temática
-
-Un juego de conocimiento sobre el lenguaje, tenés 10 segundos para pensar una palabra cada vez mas larga que la del rival. Tenes que demostrar que sos el hispanohablante definitivo?
-
----
-
 ## Alcance
 
 - Sistema de amistades
@@ -43,3 +48,5 @@ Un juego de conocimiento sobre el lenguaje, tenés 10 segundos para pensar una p
 - Creación de salas para jugar (customización de rondas), más poder reiniciar la partida con la misma sala.
 - Cuentas de jugador(básicas) o de administrador(con capacidad de modificar la bdd)
 - Utilización de API externa con acceso al diccionario español
+
+---
