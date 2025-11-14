@@ -182,6 +182,8 @@ export default function Game() {
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
       let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      console.log(valid)
+      console.log(palabra)
       if (valid) {
         let index
         setPalabraMasCorta(false)
