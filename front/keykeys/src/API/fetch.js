@@ -1,5 +1,13 @@
 //insertar todos los fetch
+import { cargarListado } from "@/API/cargarListado";
 
+export async function palabraExiste(palabra) {
+    const letra = palabra.trim().toLowerCase()[0];
+    const listado = await cargarListado(letra);
+    const p = palabra.trim().toLowerCase();
+
+    return listado.some(item => item.toLowerCase() === p);
+}
 
 //API API API API API API API API API API API API API API API API API
 export async function checkearPalabra(palabra) {
@@ -307,7 +315,7 @@ export async function editUser(newUsername, oldUsername) {
 }
 
 export async function actualizarDatosUsuario(formData) {
-    return fetch(`http://localhost:4000/cambiarDatosUsuario`,{
+    return fetch(`http://localhost:4000/cambiarDatosUsuario`, {
         method: "PUT",
         body: formData
     })

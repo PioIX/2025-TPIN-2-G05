@@ -2,7 +2,7 @@
 
 import styles from "../page.module.css";
 import stylesG from "./game.module.css";
-import { checkearPalabra } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
+import { checkearPalabra,palabraExiste } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import UserPoint from "@/Components/UserPoint"
 import ImagenClick from "@/Components/ImagenClick"
 import Input from "@/Components/Input";
@@ -181,7 +181,8 @@ export default function Game() {
   //Esto va en el onchange del input
   async function envioPalabra() {
     if (prevPalabra.length < palabra.length) {
-      let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
+      const valid = await palabraExiste(palabra);//si no funciona la api
+      // let valid = await checkearPalabra(palabra)//fetch de palabras o comprobacion si la palabra existe-es valida
       console.log(valid)
       console.log(palabra)
       if (valid) {
