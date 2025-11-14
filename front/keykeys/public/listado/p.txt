@@ -1,4 +1,5 @@
 p
+paralelepípedo
 pa
 pabellón
 pabellónes
@@ -2429,7 +2430,7 @@ pantalonetas
 pantalán
 pantalánes
 pantalón
-pantalónes
+pantalones
 pantana
 pantanal
 pantanales

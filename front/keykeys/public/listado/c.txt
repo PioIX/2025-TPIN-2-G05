@@ -4540,6 +4540,7 @@ camies
 camilla
 camillas
 camillero
+camillera
 camilleros
 camilo
 camilos
@@ -4585,6 +4586,7 @@ caminí
 caminíes
 caminó
 camio
+camiones
 camionada
 camionadas
 camionaje
@@ -10534,6 +10536,7 @@ casaquillas
 casaquín
 casaquínes
 casar
+casarse
 casaremos
 casares
 casariego

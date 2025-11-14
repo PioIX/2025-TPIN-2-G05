@@ -50,7 +50,7 @@ export default function Game() {
   const handleLetrasProhibidasChange = (event) => {
     if (event.target.value < 1) {
       event.preventDefault()
-    } if(event.target.value > 10){
+    } if(event.target.value > 8){
       event.preventDefault()
     }else {
       setLetrasprohibidas(event.target.value)
