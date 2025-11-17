@@ -3,13 +3,11 @@ import Modal from "@/Components/Modal";
 import ImagenClick from "@/Components/ImagenClick";
 import styles from "@/app/page.module.css";
 import settingsStyles from "./settings.module.css";
-import clsx from "clsx";
 import Input from "@/Components/Input";
 import { actualizarDatosUsuario } from "@/API/fetch";
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
 export default function Settings() {
   const [id, setIdUser] = useState(0);
@@ -48,7 +46,7 @@ export default function Settings() {
   }
 
     function volver(){
-    router.push("/Home")
+    router.replace("/Home")
   }
 
   async function enviarDatos() {

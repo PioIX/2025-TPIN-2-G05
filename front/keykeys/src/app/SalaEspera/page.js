@@ -1,7 +1,5 @@
 "use client";
 
-import clsx from "clsx";
-// import {  } from "@/API/fetch"; //REEMPLAZAR CON EL FETCH CORRESPONDIENTE
 import Input from "@/Components/Input";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
@@ -42,7 +40,9 @@ export default function Game() {
   const handleCantidadRondasChange = (event) => {
     if (event.target.value < 1) {
       event.preventDefault()
-    } else {
+    } if(event.target.value > 10){
+      event.preventDefault()
+    }else {
       setCantidadRondas(event.target.value);
     }
   };
@@ -50,7 +50,9 @@ export default function Game() {
   const handleLetrasProhibidasChange = (event) => {
     if (event.target.value < 1) {
       event.preventDefault()
-    } else {
+    } if(event.target.value > 10){
+      event.preventDefault()
+    }else {
       setLetrasprohibidas(event.target.value)
     }
   };

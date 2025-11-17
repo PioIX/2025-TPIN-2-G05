@@ -3,7 +3,6 @@ import Modal from "@/Components/Modal";
 import ImagenClick from '@/Components/ImagenClick';
 import stylesL from "./login.module.css";
 import styles from "@/app/page.module.css";
-import clsx from "clsx";
 import Input from "@/Components/Input";
 import { loguearUsuario } from "@/API/fetch";
 import Button from "@/Components/Button";

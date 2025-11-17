@@ -59,7 +59,7 @@ export default function Home() {
     }
 
     function volver(){
-      router.push("Home")
+      router.replace("Home")
     }
 
     function menuAdmin(){

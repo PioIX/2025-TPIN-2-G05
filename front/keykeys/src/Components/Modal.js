@@ -34,7 +34,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
 
   function unirseASala(item) {
     localStorage.setItem("room", item.id_partida)
-    router.push('/SalaEspera', { scroll: false })
+    router.replace('/SalaEspera', { scroll: false })
   }
 
   async function checkCodigoEntrada() {
@@ -43,7 +43,7 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
     if (puedeEntrar.result.length > 0) {
       console.log("Puede entrar a la partida")
       localStorage.setItem("room", puedeEntrar.result[0].id_partida)
-      router.push(`/SalaEspera`, { scroll: false })
+      router.replace(`/SalaEspera`, { scroll: false })
     } else {
       alert("El código es incorrecto, no puede ingresar a la partida")
     }
@@ -217,32 +217,3 @@ function Modal({ isOpen, onClose, mensaje, action, aceptarSolicitud, eleccion, e
 };
 
 export default Modal;
-
-//Para usarlo tienen que:
-// añadir esto en el medio del return
-// {/* Modal Component */}
-// <Modal
-//   isOpen={isModalOpen}
-//   onClose={closeModal}
-//   mensaje={modalMessage}
-//   action={modalAction || null} // Si modalAction está vacío, pasa null
-// />
-// poner esto arriba
-// const [isModalOpen, setIsModalOpen] = useState(false);
-// const [modalMessage, setModalMessage] = useState("");  // Estado para almacenar el mensaje
-// const [modalAction, setModalAction] = useState("");  // Estado para poner una accion
-// const openModal = (mensaje) => {
-// setModalMessage(mensaje);
-// setIsModalOpen(true);       // Abre el modal
-// };
-// function openModal(mensaje,action){
-//   setModalMessage(mensaje);  // Establece el mensaje que se mostrará en el modal
-//   setModalAction(action)     // pone accion q hace despues del cierre
-//   setIsModalOpen(true);     // Abre el modal
-// };
-// const closeModal = () => {
-// setIsModalOpen(false);  // Cierra el modal
-// };
-//abrirlo
-// const accion = () => {router.replace('../Home', { scroll: false })};
-// openModal("texto...",{accion: accion})
